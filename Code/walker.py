@@ -1,14 +1,14 @@
-#################################################################
-# FILE : Walker.py
-# WRITER : Dori_Peleg , dori.plg , 207685306
-# EXERCISE : intro2cs final_project 2024
-# DESCRIPTION: A class for the walker object
-# STUDENTS I DISCUSSED THE EXERCISE WITH: 
-# WEB PAGES I USED:
-# NOTES: ...
-#################################################################
+"""
+FILE : Walker.py
+WRITER : Dori_Peleg , dori.plg , 207685306
+EXERCISE : intro2cs final_project 2024
+DESCRIPTION: A class for the walker object
+STUDENTS I DISCUSSED THE EXERCISE WITH: None
+WEB PAGES I USED:
+NOTES: ...
+"""
 
-from typing import Tuple, List, Dict
+from typing import Tuple
 import math
 import random
 
@@ -37,7 +37,7 @@ class Walker:
                             'D': "Direction chosen at Random but favoring up, step site 1 unit"
                             }
         :param location:    a tuple representing the starting place for the Walker,
-                            defualts to (0,0)
+                            defualts to (0,0) for (x,y)
         :param color:       a charcter representing the walker's color,
                             from {'R': "Red", 'B': "Blue", 'G': "Green", 'Y': "Yellow", 'B': "Black"},
                             defaults to black.
@@ -52,11 +52,16 @@ class Walker:
         else:
             raise ValueError("Color can only be of ('R','G','B','Y')")
 
-    def move(self) -> None:
+    def move(self) -> bool:
         """
         Moves the walker one step in it's own way.
         When needed, angles are in radians
+        Returns True if successful, False if not.
         """
+        # For B
+        DISTANCES = (0.5,1.5)
+
+        # For C
         DIRECTIONS = {'up': math.pi/2,
                       'right': 0,
                       'down': (3/2)*math.pi,
@@ -64,13 +69,34 @@ class Walker:
         
         if self.__movement == 'A':
             angle = 2 * math.pi * random.random()
+            return self.jump((self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle)))
+
         if self.__movement == 'B':
-            pass
+            angle = 2 * math.pi * random.random()
+            distance = random.choice(DISTANCES)
+            return self.jump((self.__location[0] + distance * math.cos(angle),
+                        self.__location[1] + distance * math.sin(angle)))
+
         if self.__movement == 'C':
-            pass
+            angle = random.choice(DIRECTIONS.values())
+            return self.jump((self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle)))
+
         if self.__movement == 'D':
-            pass
+            angle = random.gauss(math.pi, math.pi/2) - math.pi/2
+            return self.jump((self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle)))
+        return False
 
-    def jump(self, location: Coordinates):
+    def jump(self, location: Coordinates) -> bool:
+        """
+        Sets anew the Walker's location. 
+        Used in the move function and accessible from th API for portals.
+        :param location: the desired location to wich the walker's location will be set
+        """
+        self.__location = location
+        return True
+
+    def pull_push(self, other, power: int = 1,gravity: bool = True) -> None:
+        """
+        Additional feature for a walkers that attract or push each other, for pairs
+        """
         pass
-
