@@ -15,9 +15,13 @@ from simulation import Simulation
 
 
 if __name__ == "__main__":
-    walk = Walker('A')
     simulation = Simulation()
-    simulation.add_walker(walk)
-    simulation.simulation_average(1,50,10*5,
-                                  "/home/dori/Documents/UNI/Intro/final_project/Results")
+    for _ in range(5):
+        simulation.add_walker(Walker('C'))
+    simulation.add_barrier(Barrier((0,7),6,0))
+    simulation.add_portal(Portal((4,3),2.5))
+    simulation.simulation_average(1,100,10**5,
+                                  "/home/dori/Documents/UNI/Intro/final_project/Results/results.json")
+    #simulation.simulation_average(6,100,10*5,
+    #                              "/home/dori/Documents/UNI/Intro/final_project/Results/results1")
     print("Done")

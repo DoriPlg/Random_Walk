@@ -23,3 +23,20 @@ def save_to_json(data, filename) -> None:
     """
     with open(filename, 'w', encoding='UTF-8') as json_file:
         json.dump(data, json_file)
+
+def passes_0(lst: list[float]) -> int:
+    """
+    returns the amount of times a given list passes through 0
+    """
+    if lst == []: 
+        return 0
+    count = 0
+    for index in range(1, len(lst)):
+        if lst[index] != 0:
+            for i in range(1,len(lst)-index):
+                if lst[index]*lst[index-i] < 0:
+                    count += 1
+                    break
+                elif lst[index]*lst[index-i] > 0:
+                    break
+    return count

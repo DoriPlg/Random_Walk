@@ -8,6 +8,7 @@ WEB PAGES I USED:
 NOTES: ...
 """
 
+from copy import deepcopy
 from typing import Tuple
 from walker import Walker, pull_push
 from barrier import Barrier
@@ -40,19 +41,11 @@ class Simulation:
     def add_walker(self, walker: Walker) -> None:
         """
         Adds a walker to the simulation
-        Once a walker is added may only be terminated!
+        Once a walker is added it can't be terminated!
         :param walker: the Walker to add
         """
         self.__walkers.append(walker)
-        self.__location_log[walker] = []
-
-    def __terminate_walker(self, index: int) -> None:
-        """
-        If you wish to terminate a walker. All log data will remain.
-        Notice: once terminated the walker will not return to move, ever.
-        :param index: the index for the exact walker you wish to remove
-        """
-        del self.__walkers[index]
+        self.__location_log[len(self.__location_log)] = []
 
     def add_portal(self, portal: Portal) ->None:
         """"
@@ -68,26 +61,34 @@ class Simulation:
         """
         self.__barriers.append(barrier)
 
-    def __step(self) -> int:
+    def step(self) -> int:
         """
         Preforms one step of the entire simulation.
         Returns the number of the step preformed.
         """
-        for walker in self.__walkers:
+        for index, walker in enumerate(self.__walkers):
             current_place = walker.get_location()
-            self.__location_log[walker].append(current_place)
+            self.__location_log[index].append(current_place)
             next_place = walker.next_location()
             for barrier in self.__barriers:
                 if barrier.intersects(current_place, next_place):
+                    print(f"hit barrier on {self.__iteration}th iteration")
                     next_place = current_place
             for portal in self.__portals:
                 if portal.inbounds(next_place):
+                    print(f"passed through portal on {self.__iteration}th iteration")
                     next_place = portal.get_end()
             walker.jump(next_place)
 
         self.__iteration += 1
         return self.__iteration
 
+    def get_log(self):
+        """
+        returns the location log of a specific simulation
+        """
+        return self.__location_log
+    
     def run_simulation(self,n: int, max_depth: int = 10**3) -> dict:
         """
         runs a single simulation and returns a dictionary where we have for each walker:
@@ -102,25 +103,31 @@ class Simulation:
         :param n: the N for which the values will be calculated
         "param max_depth: the greatest number of runs the simulation will allow.
         """
+        stunt_double = deepcopy(self)
         info_dict = {}
-        for walker in self.__walkers:
-            step = 1
-            info_dict[walker] = {"crosses": 0, "escape": None}
-        while (step < max_depth or
-                None not in [info_dict[walker]["escape"] for walker in self.__walkers])\
-              and step < n:
-            step = self.__step()
-            for walker in self.__walkers:
-                if walker.get_location()[0] ** 2 + walker.get_location()[1] ** 2 == 10 ** 2:
-                    info_dict[walker]["escape"] = step
-                if self.__location_log[walker][-2] * self.__location_log[walker][-1] < 0:
-                    info_dict[walker]["crosses"] += 1
-        for walker in self.__walkers:
-            locations = [loc for loc in self.__location_log[walker][:n]]
-            distances_from_0 = [(location[0] ** 2 + location[1] ** 2) for location in locations]
-            info_dict[walker]["distance_0"] = sum(distances_from_0)/len(distances_from_0)
-            info_dict[walker]["distance_axis"] = (sum([x[0] for x in locations]) / len(locations),
-                                                  sum([x[1] for x in locations]) / len(locations))
+        for index, _ in enumerate(self.__walkers):
+            info_dict[index] = {"crosses": 0, "escape": None}
+
+        step = 1
+        while (step < max_depth and
+                None in [info_dict[index]["escape"] for index,_ in enumerate(self.__walkers)])\
+              or step < n:
+            step = stunt_double.step()
+            for index, _ in enumerate(self.__walkers):
+                if stunt_double.get_log()[index][-1][0] ** 2 + \
+                      stunt_double.get_log()[index][-1][1] ** 2 > 10 ** 2 \
+                    and info_dict[index]["escape"] is None:
+                    info_dict[index]["escape"] = step
+
+        for index, _ in enumerate(self.__walkers):
+            locations = list(stunt_double.get_log()[index][:n])
+            info_dict[index]["distance_0"] = \
+                (locations[-1][0] ** 2 + locations[-1][1] ** 2) ** (1/2)
+            x_values = [x[0] for x in locations]
+            info_dict[index]["distance_axis"] = (locations[-1][0],
+                                                  locations[-1][1])
+            info_dict[index]["crosses"] = helper_functions.passes_0(x_values)
+            print(locations, index)
         return info_dict
 
     def simulation_average(self, iterations: int, n: int, max_depth: int, path: str) -> None:
@@ -141,26 +148,38 @@ class Simulation:
         :param max_depth: the most iterations before we give up on a walker escaping the circle
         :param path: the desired loction where to save the results
         """
-        distance_0 =[]
-        escape = []
-        distance_x_axis = []
-        distance_y_axis = []
-        crosses = []
+        data_for_all_walkers = {}
+        distance_0 = {}
+        escape = {}
+        distance_x_axis = {}
+        distance_y_axis = {}
+        crosses = {}
+
+        for index, _ in enumerate(self.__walkers):
+            distance_0[index] =[]
+            escape[index] = []
+            distance_x_axis[index] = []
+            distance_y_axis[index] = []
+            crosses[index] = []
 
         for _ in range(iterations):
             simulation_results = self.run_simulation(n,max_depth)
-            distance_0.append(simulation_results["distance_0"])
-            escape.append(simulation_results["escape"])
-            distance_x_axis.append(simulation_results["distance_axis"][0])
-            distance_y_axis.append(simulation_results["distance_axis"][1])
-            crosses.append(simulation_results["crosses"])
+            for index, _ in enumerate(self.__walkers):
+                distance_0[index].append(simulation_results[index]["distance_0"])
+                escape[index].append(simulation_results[index]["escape"])
+                distance_x_axis[index].append(simulation_results[index]["distance_axis"][0])
+                distance_y_axis[index].append(simulation_results[index]["distance_axis"][1])
+                crosses[index].append(simulation_results[index]["crosses"])
 
-        dict_to_save = {
-                            "distance_0": sum(distance_0)/iterations,
-                            "escape": sum(escape)/iterations,
-                            "distance_axis": (sum(distance_x_axis)/iterations,
-                                              sum(distance_y_axis)/iterations),
-                            "crosses": sum(crosses)/iterations
-                        }
+        for index, _ in enumerate(self.__walkers):
+            dict_to_save = {
+                            "distance_0": sum(distance_0[index])/iterations,
+                            "escape": sum([number for number in escape[index] if number is not None])/
+                            iterations,
+                            "distance_axis": (sum(distance_x_axis[index])/iterations,
+                                            sum(distance_y_axis[index])/iterations),
+                            "crosses": sum(crosses[index])/iterations
+                            }
+            data_for_all_walkers[index] = dict_to_save
         
-        helper_functions.save_to_json(dict_to_save, path)
+        helper_functions.save_to_json(data_for_all_walkers, path)

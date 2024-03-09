@@ -47,18 +47,23 @@ class Barrier:
         if line_function[0] == barrier_function[0]:
             # line perpendicular to barrier
             return False
+        if line_function == "vertical":
+            intersection_y = barrier_function[0] * point_a[0] + barrier_function[1]
+            return min(point_a[1],point_b[1]) <= intersection_y <= max(point_a[1],point_b[1])
         intersection_x = ((barrier_function[1] - line_function[1]) /
                            (line_function[0] - barrier_function[0]))
         return min(point_a[0],point_b[0]) <= intersection_x <= max(point_a[0],point_b[0])
 
 
-def get_function(a, b) -> Tuple[float, float]:
+def get_function(a, b) -> Tuple[float, float] | str:
     """
     recieves two points and returns a tuple containing the ratio between them and
     the additional part to add to offset from the x axis as a tuple: (ratio, aditional)
     :param a: the first point in the comparison
     :param b: the second point in the comparison
     """
+    if a[0] - b[0] == 0:
+        return "vertical"
     ratio = (a[1] - b[1]) / (a[0] - b[0])
     additional = a[1] - ratio * a[0]
     return (ratio, additional)

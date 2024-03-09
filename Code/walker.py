@@ -14,14 +14,14 @@ import random
 
 Coordinates = Tuple[float,float]
 
-__movements = {
+MOVEMENTS = {
                     'A': "Random direction, step size 1 unit",
                     'B': "Random direction, step size chosen equally between [0.5,1.5]",
                     'C': "Random direction chosen equally between (Up,Down,Right,Left),\
                           step size 1 unit",
                     'D': "Direction chosen at Random but favoring up, step site 1 unit"
                     }
-__colors = {'R': "Red", 'G': "Green", 'Y': "Yellow", 'B': "Black"}
+COLORS = {'R': "Red", 'G': "Green", 'Y': "Yellow", 'B': "Black"}
 
 class Walker:
     """
@@ -46,14 +46,14 @@ class Walker:
                         defaults to black.
         """
         self.__location = location
-        if movement in __movements:
+        if movement in MOVEMENTS:
             self.__movement = movement
         else:
-            raise ValueError("Movement can only be of ('A','B','C','D')")
-        if color in __colors:
+            raise ValueError(f"Movement can only be of {MOVEMENTS.keys()}")
+        if color in COLORS:
             self.__color = color
         else:
-            raise ValueError("Color can only be of ('R','G','B','Y')")
+            raise ValueError(f"Color can only be of {COLORS.keys()}")
 
     def next_location(self) -> Coordinates:
         """
@@ -79,8 +79,8 @@ class Walker:
                         self.__location[1] + distance * math.sin(angle))
 
         if self.__movement == 'C':
-            angle = random.choice(DIRECTIONS.values())
-            return (self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle))
+            angle = random.choice([direction for direction in DIRECTIONS.values()])
+            return (int(self.__location[0] + math.cos(angle)), int(self.__location[1] + math.sin(angle)))
 
         if self.__movement == 'D':
             angle = random.gauss(math.pi, math.pi/2) - math.pi/2
@@ -100,7 +100,7 @@ class Walker:
         """
         Sets anew the Walker's location. 
         Used in the move function and accessible from th API for portals.
-        :param location: the desired location to wich the walker's location will be set
+        :param location: the desired location to which the walker's location will be set
         """
         if location:
             self.__location = location
@@ -117,13 +117,13 @@ class Walker:
         """
         returns a walkers color, as a full name
         """
-        return __colors[self.__color]
+        return COLORS[self.__color]
 
-def get_move_dict(self) -> dict:
+def get_move_dict() -> dict:
     """
     For UI reasons, returns the dictionary describing the walker class movement types
     """
-    return __movements
+    return MOVEMENTS
 
 def pull_push(walkers: list[Walker], power: int = 1, gravity: bool = True) -> None:
     """
