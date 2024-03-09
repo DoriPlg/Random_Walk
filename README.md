@@ -2,6 +2,7 @@
 An application for creating differrent kinds of random walk simulations.
 
 Classes:
+
     Simulation:
     Sets up the simulation, handles saving data and adding the simulation objects
 
@@ -16,8 +17,7 @@ Classes:
 
 Features:
 
-
-
-
+    Can aggragate the information from multiple simulations into an average result.
+    Has a function for running an expirement and saving its result.
 
 This is my final project in the Introduction to Computer Science course at HUJI.
