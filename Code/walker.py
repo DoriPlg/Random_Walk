@@ -12,7 +12,7 @@ from typing import Tuple
 import math
 import random
 
-Coordinates = Tuple[int, int]
+Coordinates = Tuple[float,float]
 
 class Walker:
     """
@@ -52,11 +52,9 @@ class Walker:
         else:
             raise ValueError("Color can only be of ('R','G','B','Y')")
 
-    def move(self) -> bool:
+    def next_loc(self) -> Coordinates:
         """
-        Moves the walker one step in it's own way.
-        When needed, angles are in radians
-        Returns True if successful, False if not.
+        Rreturns the next place the walker is to go to
         """
         # For B
         DISTANCES = (0.5,1.5)
@@ -69,22 +67,31 @@ class Walker:
         
         if self.__movement == 'A':
             angle = 2 * math.pi * random.random()
-            return self.jump((self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle)))
+            return (self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle))
 
         if self.__movement == 'B':
             angle = 2 * math.pi * random.random()
             distance = random.choice(DISTANCES)
-            return self.jump((self.__location[0] + distance * math.cos(angle),
-                        self.__location[1] + distance * math.sin(angle)))
+            return (self.__location[0] + distance * math.cos(angle),
+                        self.__location[1] + distance * math.sin(angle))
 
         if self.__movement == 'C':
             angle = random.choice(DIRECTIONS.values())
-            return self.jump((self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle)))
+            return (self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle))
 
         if self.__movement == 'D':
             angle = random.gauss(math.pi, math.pi/2) - math.pi/2
-            return self.jump((self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle)))
-        return False
+            return self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle)
+        
+        return None
+
+    def move(self) -> bool:
+        """
+        Moves the walker one step in it's own way.
+        When needed, angles are in radians
+        Returns True if successful, False if not.
+        """
+        return self.jump(self.next_loc())
 
     def jump(self, location: Coordinates) -> bool:
         """
@@ -92,8 +99,10 @@ class Walker:
         Used in the move function and accessible from th API for portals.
         :param location: the desired location to wich the walker's location will be set
         """
-        self.__location = location
-        return True
+        if location:
+            self.__location = location
+            return True
+        return False
     
     def get_location(self) -> Coordinates:
         """

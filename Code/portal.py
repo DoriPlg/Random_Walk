@@ -2,7 +2,7 @@
 FILE : portal.py
 WRITER : Dori_Peleg , dori.plg , 207685306
 EXERCISE : intro2cs final_project 2024
-DESCRIPTION: A calss for barrier objects within a simulation
+DESCRIPTION: A calss for portal objects within a simulation
 STUDENTS I DISCUSSED THE EXERCISE WITH: 
 WEB PAGES I USED:
 NOTES: ...
@@ -10,7 +10,7 @@ NOTES: ...
 
 from typing import Tuple
 
-Coordinates = Tuple[int, int]
+Coordinates = Tuple[float,float]
 
 class Portal:
     """
@@ -19,12 +19,12 @@ class Portal:
     Portals ore mono-directional.
     """
 
-    def __init__(self, center: Coordinates, radius: int = 5, endpoint: Coordinates = (0,0)) -> None:
+    def __init__(self, center: Coordinates, radius: float = 5, endpoint: Coordinates = (0,0)) -> None:
         """
         initiates a new portal object.
         :param center: the portal entry's center point.
         :param radius: the radius of the portal endpoint, defaults to 5 units.
-                        negatives will be treated by absolute value
+                        negatives will be treated as absolute values
         :param endpoint: the endpoint of the portal, defaults to (0,0).
         """
         self.__center = center
