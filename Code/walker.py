@@ -14,45 +14,48 @@ import random
 
 Coordinates = Tuple[float,float]
 
+__movements = {
+                    'A': "Random direction, step size 1 unit",
+                    'B': "Random direction, step size chosen equally between [0.5,1.5]",
+                    'C': "Random direction chosen equally between (Up,Down,Right,Left),\
+                          step size 1 unit",
+                    'D': "Direction chosen at Random but favoring up, step site 1 unit"
+                    }
+__colors = {'R': "Red", 'G': "Green", 'Y': "Yellow", 'B': "Black"}
+
 class Walker:
     """
     A class for Walker objects in a random walker simulation
     """
-    __movements = {
-                    'A': "Random direction, step size 1 unit",
-                    'B': "Random direction, step size chosen equally between [0.5,1.5]",
-                    'C': "Random direction chosen equally between (Up,Down,Right,Left), step size 1 unit",
-                    'D': "Direction chosen at Random but favoring up, step site 1 unit"
-                    }
-    __colors = {'R': "Red", 'G': "Green", 'Y': "Yellow", 'B': "Black"}
 
     def __init__(self, movement: str, location: Coordinates = (0,0), color: str = 'B') -> None:
         """
         A constructor for a Walker object.
-        :param movement:    a string representing the walkers movement type from:
-                            {
-                            'A': "Random direction, step size 1 unit",
-                            'B': "Random direction, step size chosen equally between [0.5,1.5]",
-                            'C': "Random direction chosen equally between (Up,Down,Right,Left), step size 1 unit",
-                            'D': "Direction chosen at Random but favoring up, step site 1 unit"
-                            }
-        :param location:    a tuple representing the starting place for the Walker,
-                            defualts to (0,0) for (x,y)
-        :param color:       a charcter representing the walker's color,
-                            from {'R': "Red", 'B': "Blue", 'G': "Green", 'Y': "Yellow", 'B': "Black"},
-                            defaults to black.
+        :param movement:a string representing the walkers movement type from:
+                        {
+                        'A': "Random direction, step size 1 unit",
+                        'B': "Random direction, step size chosen equally between [0.5,1.5]",
+                        'C': "Random direction chosen equally between (Up,Down,Right,Left),
+                             step size 1 unit",
+                        'D': "Direction chosen at Random but favoring up, step site 1 unit"
+                        }
+        :param location:a tuple representing the starting place for the Walker,
+                        defualts to (0,0) for (x,y)
+        :param color:   a charcter representing the walker's color,
+                        from {'R': "Red", 'B': "Blue", 'G': "Green", 'Y': "Yellow", 'B': "Black"},
+                        defaults to black.
         """
         self.__location = location
-        if movement in self.__movements:
+        if movement in __movements:
             self.__movement = movement
         else:
             raise ValueError("Movement can only be of ('A','B','C','D')")
-        if color in self.__colors:
+        if color in __colors:
             self.__color = color
         else:
             raise ValueError("Color can only be of ('R','G','B','Y')")
 
-    def next_loc(self) -> Coordinates:
+    def next_location(self) -> Coordinates:
         """
         Rreturns the next place the walker is to go to
         """
@@ -64,7 +67,7 @@ class Walker:
                       'right': 0,
                       'down': (3/2)*math.pi,
                       'left': math.pi}
-        
+
         if self.__movement == 'A':
             angle = 2 * math.pi * random.random()
             return (self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle))
@@ -82,7 +85,7 @@ class Walker:
         if self.__movement == 'D':
             angle = random.gauss(math.pi, math.pi/2) - math.pi/2
             return self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle)
-        
+
         return None
 
     def move(self) -> bool:
@@ -91,7 +94,7 @@ class Walker:
         When needed, angles are in radians
         Returns True if successful, False if not.
         """
-        return self.jump(self.next_loc())
+        return self.jump(self.next_location())
 
     def jump(self, location: Coordinates) -> bool:
         """
@@ -103,21 +106,27 @@ class Walker:
             self.__location = location
             return True
         return False
-    
+
     def get_location(self) -> Coordinates:
         """
         returns a Walker's location coordinates
         """
         return self.__location
-    
+
     def get_color(self) -> str:
         """
         returns a walkers color, as a full name
         """
-        return self.__colors[self.__color]
+        return __colors[self.__color]
 
-    def pull_push(self, other, power: int = 1,gravity: bool = True) -> None:
-        """
-        Additional feature for a walkers that attract or push each other, for pairs
-        """
-        pass
+def get_move_dict(self) -> dict:
+    """
+    For UI reasons, returns the dictionary describing the walker class movement types
+    """
+    return __movements
+
+def pull_push(walkers: list[Walker], power: int = 1, gravity: bool = True) -> None:
+    """
+    Additional feature for a walkers that attract or push each other, for pairs
+    """
+    pass
