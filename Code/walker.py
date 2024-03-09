@@ -21,7 +21,8 @@ MOVEMENTS = {
                           step size 1 unit",
                     'D': "Direction chosen at Random but favoring up, step site 1 unit"
                     }
-COLORS = {'R': "Red", 'G': "Green", 'Y': "Yellow", 'B': "Black"}
+COLORS = {'R': "red", 'G': "green", 'Y': "yellow", 'Bl': "blue", 'C': "cyan", 'Or': "orange",
+          'Br': "brown", 'P': "Purple", 'Ol': "olive"}
 
 class Walker:
     """
@@ -83,7 +84,7 @@ class Walker:
             return (self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle))
 
         if self.__movement == 'D':
-            angle = random.gauss(math.pi, math.pi * 2 / 3) - math.pi/2
+            angle = random.gauss(math.pi, math.pi / 2) - math.pi/2
             return self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle)
 
         return None

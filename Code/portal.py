@@ -41,10 +41,21 @@ class Portal:
         """
         return ((self.__center[0] - location[0])**2 +
                 (self.__center[1] - location[1])**2) <= self.__radius**2
-    
+
     def get_end(self) -> Coordinates:
         """
         returns the endpoint of the portal
         """
         return self.__endpoint
-        
+
+    def get_center(self) -> Coordinates:
+        """
+        returns the center of the portal
+        """
+        return self.__center
+
+    def get_radius(self) -> float:
+        """
+        returns the radius of the pportal
+        """
+        return self.__radius

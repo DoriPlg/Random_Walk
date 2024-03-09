@@ -44,15 +44,27 @@ class Barrier:
         """
         barrier_function = get_function(self.__point1,self.__point2)
         line_function = get_function(point_a,point_b)
-        if line_function[0] == barrier_function[0]:
+        if line_function[0] == barrier_function[0] or line_function == barrier_function:
             # line perpendicular to barrier
             return False
         if line_function == "vertical":
+            # line vertical, relies only on it's x value and y span
             intersection_y = barrier_function[0] * point_a[0] + barrier_function[1]
-            return min(point_a[1],point_b[1]) <= intersection_y <= max(point_a[1],point_b[1])
+            return min(self.__point1[1],self.__point2[1]) <= intersection_y \
+                 <= max(self.__point1[1],self.__point2[1])
+        elif barrier_function == "vertical":
+            intersection_y = line_function[0] * self.__point1[0] + line_function[1]
+            return min(self.__point1[1],self.__point2[1]) <= intersection_y \
+                 <= max(self.__point1[1],self.__point2[1])
         intersection_x = ((barrier_function[1] - line_function[1]) /
                            (line_function[0] - barrier_function[0]))
-        return min(point_a[0],point_b[0]) <= intersection_x <= max(point_a[0],point_b[0])
+        return min(self.__point1[0],self.__point2[0]) <= intersection_x <= max(self.__point1[0],self.__point2[0])
+    
+    def get_points(self) -> tuple[Coordinates,Coordinates]:
+        """
+        returns the points between which a barrier is strung
+        """
+        return (self.__point1,self.__point2)
 
 
 def get_function(a, b) -> Tuple[float, float] | str:

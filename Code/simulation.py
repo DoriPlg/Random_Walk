@@ -78,9 +78,9 @@ class Simulation:
             self.__location_log[index].append(current_place)
             next_place = walker.next_location()
             for barrier in self.__barriers:
-                if barrier.intersects(current_place, next_place):
+                while barrier.intersects(current_place, next_place):
                     # print(f"hit barrier on {self.__iteration}th iteration")
-                    next_place = current_place
+                    next_place = walker.next_location()
             for portal in self.__portals:
                 if portal.inbounds(next_place):
                     # print(f"passed through portal on {self.__iteration}th iteration")
@@ -123,12 +123,12 @@ class Simulation:
         info_dict = {}
         for index, _ in enumerate(self.__walkers):
             info_dict[index] = {"crosses": 0, "escape": None}
-        step = 1
+        step = 0
 
         # Runs through the steps, checking when ESCAPE_RAD is escaped
-        while (step < max_depth and
+        while (step < max_depth + 1 and
                 None in [info_dict[index]["escape"] for index,_ in enumerate(self.__walkers)])\
-              or step < n:
+              or step < n + 1:
             step = stunt_double.step()
             for index, _ in enumerate(self.__walkers):
                 if stunt_double.get_log()[index][-1][0] ** 2 + \
@@ -138,7 +138,8 @@ class Simulation:
 
         # Runs through the locations the simulation passed through and gets the desired answers
         for index, _ in enumerate(self.__walkers):
-            locations = list(stunt_double.get_log()[index][:n])
+            self.__location_log[index].append(self.__walkers[index].get_location())
+            locations = list(stunt_double.get_log()[index][:n+1])
             info_dict[index]["distance_0"] = \
                 (locations[-1][0] ** 2 + locations[-1][1] ** 2) ** (1/2)
             x_values = [x[0] for x in locations]
@@ -146,7 +147,6 @@ class Simulation:
                                                   abs(locations[-1][1]))
             info_dict[index]["crosses"] = helper_functions.passes_0(x_values)
             info_dict[index]["location_list"] = locations
-            print(locations, index)
 
         return info_dict
 
@@ -230,5 +230,10 @@ class Simulation:
         simulation_results = self.run_simulation(n,n)
         locations_dict = {index: simulation_results[index]["location_list"]
                            for index in simulation_results}
+        barriers = [barrier.get_points() for barrier in self.__barriers]
+        portals = [(portal.get_center(), portal.get_radius(), portal.get_end()) \
+                    for portal in self.__portals]
         for index, locations in locations_dict.items():
-            graph.show_walker_way(locations, DESTINATION_PATH+file_name+str(index))
+            color = self.__walkers[index].get_color()
+            graph.show_walker_way(locations, barriers, portals,
+                                   DESTINATION_PATH+file_name+str(index), color)
