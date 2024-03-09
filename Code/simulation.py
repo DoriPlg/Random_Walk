@@ -8,14 +8,21 @@ WEB PAGES I USED:
 NOTES: ...
 """
 
+
 from copy import deepcopy
 from typing import Tuple
 from walker import Walker, pull_push
 from barrier import Barrier
 from portal import Portal
 import helper_functions
+import graph
 
 Coordinates = Tuple[float,float]
+
+# The radius we check if a walker escapes
+ESCAPE_RAD = 10
+# The path prefix to any file I save
+DESTINATION_PATH = "/home/dori/Documents/UNI/Intro/final_project/Results/"
 
 class Simulation:
     """
@@ -72,11 +79,11 @@ class Simulation:
             next_place = walker.next_location()
             for barrier in self.__barriers:
                 if barrier.intersects(current_place, next_place):
-                    print(f"hit barrier on {self.__iteration}th iteration")
+                    # print(f"hit barrier on {self.__iteration}th iteration")
                     next_place = current_place
             for portal in self.__portals:
                 if portal.inbounds(next_place):
-                    print(f"passed through portal on {self.__iteration}th iteration")
+                    # print(f"passed through portal on {self.__iteration}th iteration")
                     next_place = portal.get_end()
             walker.jump(next_place)
 
@@ -88,7 +95,7 @@ class Simulation:
         returns the location log of a specific simulation
         """
         return self.__location_log
-    
+
     def run_simulation(self,n: int, max_depth: int = 10**3) -> dict:
         """
         runs a single simulation and returns a dictionary where we have for each walker:
@@ -99,38 +106,51 @@ class Simulation:
             "distance_axis": average distance from the x and y axis after N steps 
                                 rep. as (distance_x, distance_y)
             "crosses": number of crosses of y axis
+            "location_list": an ordered list of coordinates visited by the walker
         }
         :param n: the N for which the values will be calculated
         "param max_depth: the greatest number of runs the simulation will allow.
         """
+
+        # Deals with problematic input
+        if n <= 0:
+            raise ValueError("The simulation must be set for at least 1 time")
+        if max_depth < n:
+            raise ValueError("The max depth cannot be lower then the depth to check")
+
+        # "Zero"s the variables
         stunt_double = deepcopy(self)
         info_dict = {}
         for index, _ in enumerate(self.__walkers):
             info_dict[index] = {"crosses": 0, "escape": None}
-
         step = 1
+
+        # Runs through the steps, checking when ESCAPE_RAD is escaped
         while (step < max_depth and
                 None in [info_dict[index]["escape"] for index,_ in enumerate(self.__walkers)])\
               or step < n:
             step = stunt_double.step()
             for index, _ in enumerate(self.__walkers):
                 if stunt_double.get_log()[index][-1][0] ** 2 + \
-                      stunt_double.get_log()[index][-1][1] ** 2 > 10 ** 2 \
+                      stunt_double.get_log()[index][-1][1] ** 2 > ESCAPE_RAD ** 2 \
                     and info_dict[index]["escape"] is None:
                     info_dict[index]["escape"] = step
 
+        # Runs through the locations the simulation passed through and gets the desired answers
         for index, _ in enumerate(self.__walkers):
             locations = list(stunt_double.get_log()[index][:n])
             info_dict[index]["distance_0"] = \
                 (locations[-1][0] ** 2 + locations[-1][1] ** 2) ** (1/2)
             x_values = [x[0] for x in locations]
-            info_dict[index]["distance_axis"] = (locations[-1][0],
-                                                  locations[-1][1])
+            info_dict[index]["distance_axis"] = (abs(locations[-1][0]),
+                                                  abs(locations[-1][1]))
             info_dict[index]["crosses"] = helper_functions.passes_0(x_values)
+            info_dict[index]["location_list"] = locations
             print(locations, index)
+
         return info_dict
 
-    def simulation_average(self, iterations: int, n: int, max_depth: int, path: str) -> None:
+    def simulation_average(self, iterations: int, n: int, max_depth: int, file_name: str) -> None:
         """
         runs multiple simulations and saves a json with their average outcome for:
         {
@@ -148,6 +168,15 @@ class Simulation:
         :param max_depth: the most iterations before we give up on a walker escaping the circle
         :param path: the desired loction where to save the results
         """
+
+        # Checking correct values of input
+        if iterations <= 0:
+            raise ValueError("The simulation must be set for at least 1 iteration")
+        if n <= 0:
+            raise ValueError("The simulation must be set for at least 1 time")
+        if max_depth < n:
+            raise ValueError("The max depth of the simulation cannot be less than the desired one")
+        # Prepares dictionaries for the data
         data_for_all_walkers = {}
         distance_0 = {}
         escape = {}
@@ -155,6 +184,7 @@ class Simulation:
         distance_y_axis = {}
         crosses = {}
 
+        # "Zero"s the values for each walker
         for index, _ in enumerate(self.__walkers):
             distance_0[index] =[]
             escape[index] = []
@@ -162,6 +192,7 @@ class Simulation:
             distance_y_axis[index] = []
             crosses[index] = []
 
+        # Preforms the desired iterations of the simulation
         for _ in range(iterations):
             simulation_results = self.run_simulation(n,max_depth)
             for index, _ in enumerate(self.__walkers):
@@ -171,15 +202,33 @@ class Simulation:
                 distance_y_axis[index].append(simulation_results[index]["distance_axis"][1])
                 crosses[index].append(simulation_results[index]["crosses"])
 
+        # Compresses the data to averages for each walker
         for index, _ in enumerate(self.__walkers):
             dict_to_save = {
                             "distance_0": sum(distance_0[index])/iterations,
-                            "escape": sum([number for number in escape[index] if number is not None])/
+                            "escape": sum(number for number in escape[index]\
+                                 if number is not None)/
                             iterations,
                             "distance_axis": (sum(distance_x_axis[index])/iterations,
                                             sum(distance_y_axis[index])/iterations),
                             "crosses": sum(crosses[index])/iterations
                             }
             data_for_all_walkers[index] = dict_to_save
-        
-        helper_functions.save_to_json(data_for_all_walkers, path)
+
+        # Saves the data constructed to the desired path
+        helper_functions.save_to_json(data_for_all_walkers, f"{DESTINATION_PATH}{file_name}")
+
+    def plot_simulation(self, n: int, file_name: str = "walkerplot") -> None:
+        """
+        Runs the simulation independently of the simulation_average method.
+        Saves to the destination folder graphs of the locations visited by the walker
+        :param n: the N for which the values will be calculated
+        :param file_name: the first part of the filename for the graph, *.png will be added automaticaly. 
+                            an index discerning which walker is shown will be added
+                            defaults to 'walkerplot'
+        """
+        simulation_results = self.run_simulation(n,n)
+        locations_dict = {index: simulation_results[index]["location_list"]
+                           for index in simulation_results}
+        for index, locations in locations_dict.items():
+            graph.show_walker_way(locations, DESTINATION_PATH+file_name+str(index))

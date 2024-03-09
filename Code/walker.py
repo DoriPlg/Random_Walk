@@ -79,11 +79,11 @@ class Walker:
                         self.__location[1] + distance * math.sin(angle))
 
         if self.__movement == 'C':
-            angle = random.choice([direction for direction in DIRECTIONS.values()])
-            return (int(self.__location[0] + math.cos(angle)), int(self.__location[1] + math.sin(angle)))
+            angle = random.choice(list(DIRECTIONS.values()))
+            return (self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle))
 
         if self.__movement == 'D':
-            angle = random.gauss(math.pi, math.pi/2) - math.pi/2
+            angle = random.gauss(math.pi, math.pi * 2 / 3) - math.pi/2
             return self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle)
 
         return None

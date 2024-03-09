@@ -16,12 +16,10 @@ from simulation import Simulation
 
 if __name__ == "__main__":
     simulation = Simulation()
-    for _ in range(5):
-        simulation.add_walker(Walker('C'))
-    simulation.add_barrier(Barrier((0,7),6,0))
-    simulation.add_portal(Portal((4,3),2.5))
-    simulation.simulation_average(1,100,10**5,
-                                  "/home/dori/Documents/UNI/Intro/final_project/Results/results.json")
-    #simulation.simulation_average(6,100,10*5,
-    #                              "/home/dori/Documents/UNI/Intro/final_project/Results/results1")
+    letters = "ABCD"
+    for i in range(4):
+        simulation.add_walker(Walker(letters[i]))
+
+    simulation.plot_simulation(100)
+    simulation.simulation_average(10,1000,10**5,"results.json")
     print("Done")
