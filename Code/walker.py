@@ -1,5 +1,5 @@
 """
-FILE : Walker.py
+FILE : walker.py
 WRITER : Dori_Peleg , dori.plg , 207685306
 EXERCISE : intro2cs final_project 2024
 DESCRIPTION: A class for the walker object
@@ -94,6 +94,18 @@ class Walker:
         """
         self.__location = location
         return True
+    
+    def get_location(self) -> Coordinates:
+        """
+        returns a Walker's location coordinates
+        """
+        return self.__location
+    
+    def get_color(self) -> str:
+        """
+        returns a walkers color, as a full name
+        """
+        return self.__colors[self.__color]
 
     def pull_push(self, other, power: int = 1,gravity: bool = True) -> None:
         """
