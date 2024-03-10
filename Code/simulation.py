@@ -77,9 +77,6 @@ class Simulation:
             current_place = walker.get_location()
             self.__location_log[index].append(current_place)
             next_place = walker.next_location()
-            if index == 2:
-                print(next_place)
-            """ There is a problem here (same problem)"""
             for barrier in self.__barriers:
                 while barrier.intersects(current_place, next_place):
                     # print(f"hit barrier on {self.__iteration}th iteration")
@@ -238,8 +235,5 @@ class Simulation:
                     for portal in self.__portals]
         for index, locations in locations_dict.items():
             color = self.__walkers[index].get_color()
-            if index == 2:
-                print(locations)
-            """ There is a problem here"""
             graph.show_walker_way(locations, barriers, portals,
                                    DESTINATION_PATH+file_name+str(index), color)
