@@ -45,13 +45,13 @@ class Barrier:
         barrier_function = get_function(self.__point1,self.__point2)
         line_function = get_function(point_a,point_b)
         if line_function[0] == barrier_function[0] or line_function == barrier_function:
-            # line perpendicular to barrier
+            # line paralel to barrier
             return False
         if line_function == "vertical":
             # line vertical, relies only on it's x value and y span
             intersection_y = barrier_function[0] * point_a[0] + barrier_function[1]
-            return min(self.__point1[1],self.__point2[1]) <= intersection_y \
-                 <= max(self.__point1[1],self.__point2[1])
+            return min(point_a[1],point_b[1]) <= intersection_y \
+                 <= max(point_a[1],point_b[1])
         elif barrier_function == "vertical":
             intersection_y = line_function[0] * self.__point1[0] + line_function[1]
             return min(self.__point1[1],self.__point2[1]) <= intersection_y \
