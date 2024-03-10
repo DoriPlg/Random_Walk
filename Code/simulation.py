@@ -22,7 +22,7 @@ Coordinates = Tuple[float,float]
 # The radius we check if a walker escapes
 ESCAPE_RAD = 10
 # The path prefix to any file I save
-DESTINATION_PATH = "/home/dori/Documents/UNI/Intro/final_project/Results/"
+DESTINATION_PATH = "../Results/"
 
 class Simulation:
     """
