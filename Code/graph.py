@@ -14,7 +14,7 @@ import matplotlib.patches as patches
 
 Coordinates = Tuple[float,float]
 
-DESTINATION_PATH = "/home/dori/Documents/UNI/Intro/final_project/Results/"
+DESTINATION_PATH = "../Results/"
 
 
 def show_walker_way(movement_log: list[Coordinates], barriers: list[tuple[Coordinates]], portals: list,
