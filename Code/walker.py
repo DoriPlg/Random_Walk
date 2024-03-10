@@ -71,7 +71,8 @@ class Walker:
 
         if self.__movement == 'A':
             angle = 2 * math.pi * random.random()
-            return (self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle))
+            return (self.__location[0] + math.cos(angle),
+                    self.__location[1] + math.sin(angle))
 
         if self.__movement == 'B':
             angle = 2 * math.pi * random.random()
@@ -81,11 +82,13 @@ class Walker:
 
         if self.__movement == 'C':
             angle = random.choice(list(DIRECTIONS.values()))
-            return (self.__location[0] + int(math.cos(angle)), self.__location[1] + int(math.sin(angle)))
+            return (self.__location[0] + int(math.cos(angle)),
+                    self.__location[1] + int(math.sin(angle)))
 
         if self.__movement == 'D':
             angle = random.gauss(math.pi, math.pi / 2) - math.pi/2
-            return self.__location[0] + math.cos(angle), self.__location[1] + math.sin(angle)
+            return (self.__location[0] + math.cos(angle),
+                    self.__location[1] + math.sin(angle))
 
         return None
 
