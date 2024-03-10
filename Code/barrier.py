@@ -42,8 +42,8 @@ class Barrier:
         :param point_a: the first point.
         :param point_b: the second point.
         """
-        barrier_function = get_function(self.__point1,self.__point2)
-        line_function = get_function(point_a,point_b)
+        barrier_function = self.get_function(self.__point1,self.__point2)
+        line_function = self.get_function(point_a,point_b)
         if line_function[0] == barrier_function[0] or line_function == barrier_function:
             # line paralel to barrier
             return False
@@ -59,23 +59,24 @@ class Barrier:
         intersection_x = ((barrier_function[1] - line_function[1]) /
                            (line_function[0] - barrier_function[0]))
         return min(self.__point1[0],self.__point2[0]) <= intersection_x <= max(self.__point1[0],self.__point2[0])
-    
-    def get_points(self) -> tuple[Coordinates,Coordinates]:
+
+    @property
+    def points(self) -> tuple[Coordinates,Coordinates]:
         """
         returns the points between which a barrier is strung
         """
         return (self.__point1,self.__point2)
 
-
-def get_function(a, b) -> Tuple[float, float] | str:
-    """
-    recieves two points and returns a tuple containing the ratio between them and
-    the additional part to add to offset from the x axis as a tuple: (ratio, aditional)
-    :param a: the first point in the comparison
-    :param b: the second point in the comparison
-    """
-    if a[0] - b[0] == 0:
-        return "vertical"
-    ratio = (a[1] - b[1]) / (a[0] - b[0])
-    additional = a[1] - ratio * a[0]
-    return (ratio, additional)
+    @staticmethod
+    def get_function(a, b) -> Tuple[float, float] | str:
+        """
+        recieves two points and returns a tuple containing the ratio between them and
+        the additional part to add to offset from the x axis as a tuple: (ratio, aditional)
+        :param a: the first point in the comparison
+        :param b: the second point in the comparison
+        """
+        if a[0] - b[0] == 0:
+            return "vertical"
+        ratio = (a[1] - b[1]) / (a[0] - b[0])
+        additional = a[1] - ratio * a[0]
+        return (ratio, additional)

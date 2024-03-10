@@ -8,9 +8,10 @@ WEB PAGES I USED:
 NOTES: ...
 """
 
-from walker import Walker, get_move_dict
+from walker import Walker
 from barrier import Barrier
 from portal import Portal
+from mud import Mud
 from simulation import Simulation
 
 
@@ -19,12 +20,12 @@ if __name__ == "__main__":
     letters = "ABCD"
     colors = "GCYR"
     for i in range(4):
-        simulation.add_walker(Walker(letters[i], color= colors[i]))
+        simulation.add_walker(Walker(letters[i], color= colors[1]))
     simulation.add_barrier(Barrier((0,10), 5, 0))
     simulation.add_portal(Portal((5,12),2.3))
     simulation.add_portal(Portal((-5,12),2.3))
-    # simulation.add_portal(Portal((6,5),4, (-3,-2)))
-    
-    simulation.plot_simulation(500)
+    simulation.add_mud(Mud((-3,-4),6,3))
+
+    simulation.plot_simulation(100)
     #simulation.simulation_average(5,500,10**5,"results.json")
     print("Done")

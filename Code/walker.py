@@ -111,23 +111,26 @@ class Walker:
             return True
         return False
 
-    def get_location(self) -> Coordinates:
+    @property
+    def location(self) -> Coordinates:
         """
         returns a Walker's location coordinates
         """
         return self.__location
 
-    def get_color(self) -> str:
+    @property
+    def color(self) -> str:
         """
         returns a walkers color, as a full name
         """
         return COLORS[self.__color]
 
-def get_move_dict() -> dict:
-    """
-    For UI reasons, returns the dictionary describing the walker class movement types
-    """
-    return MOVEMENTS
+    @staticmethod
+    def move_dict() -> dict:
+        """
+        For UI reasons, returns the dictionary describing the walker class movement types
+        """
+        return MOVEMENTS
 
 def pull_push(walkers: list[Walker], power: int = 1, gravity: bool = True) -> None:
     """

@@ -14,6 +14,7 @@ from typing import Tuple
 from walker import Walker, pull_push
 from barrier import Barrier
 from portal import Portal
+from mud import Mud
 import helper_functions
 import graph
 
@@ -22,7 +23,7 @@ Coordinates = Tuple[float,float]
 # The radius we check if a walker escapes
 ESCAPE_RAD = 10
 # The path prefix to any file I save
-DESTINATION_PATH = "../Results/"
+DESTINATION_PATH = "./Results/"
 
 class Simulation:
     """
@@ -44,6 +45,7 @@ class Simulation:
         self.__barriers = []
         self.__portals = []
         self.__iteration = 0
+        self.__mudspots = []
 
     def add_walker(self, walker: Walker) -> None:
         """
@@ -68,29 +70,43 @@ class Simulation:
         """
         self.__barriers.append(barrier)
 
+    def add_mud(self, mud: Mud) -> None:
+        """
+        Adds mud to the simulation
+        :param mus: The mud to add
+        """
+        self.__mudspots.append(mud)
+
     def step(self) -> int:
         """
         Preforms one step of the entire simulation.
         Returns the number of the step preformed.
         """
         for index, walker in enumerate(self.__walkers):
-            current_place = walker.get_location()
+            current_place = walker.location
             self.__location_log[index].append(current_place)
             next_place = walker.next_location()
             for barrier in self.__barriers:
                 while barrier.intersects(current_place, next_place):
                     # print(f"hit barrier on {self.__iteration}th iteration")
                     next_place = walker.next_location()
+            for mud in self.__mudspots:
+                if mud.point_in_area(current_place):
+                    next_place = (current_place[0] +
+                                  (next_place[0] - current_place[0]) * mud.get_lag(),
+                                  current_place[1] +
+                                  (next_place[1] - current_place[1]) * mud.get_lag())
             for portal in self.__portals:
                 if portal.inbounds(next_place):
                     # print(f"passed through portal on {self.__iteration}th iteration")
-                    next_place = portal.get_end()
+                    next_place = portal.endpoint
             walker.jump(next_place)
 
         self.__iteration += 1
         return self.__iteration
 
-    def get_log(self):
+    @property
+    def log(self):
         """
         returns the location log of a specific simulation
         """
@@ -131,15 +147,15 @@ class Simulation:
               or step < n + 1:
             step = stunt_double.step()
             for index, _ in enumerate(self.__walkers):
-                if stunt_double.get_log()[index][-1][0] ** 2 + \
-                      stunt_double.get_log()[index][-1][1] ** 2 > ESCAPE_RAD ** 2 \
+                if stunt_double.log[index][-1][0] ** 2 + \
+                      stunt_double.log[index][-1][1] ** 2 > ESCAPE_RAD ** 2 \
                     and info_dict[index]["escape"] is None:
                     info_dict[index]["escape"] = step
 
         # Runs through the locations the simulation passed through and gets the desired answers
         for index, _ in enumerate(self.__walkers):
-            self.__location_log[index].append(self.__walkers[index].get_location())
-            locations = list(stunt_double.get_log()[index][:n+1])
+            self.__location_log[index].append(self.__walkers[index].location)
+            locations = list(stunt_double.log[index][:n+1])
             info_dict[index]["distance_0"] = \
                 (locations[-1][0] ** 2 + locations[-1][1] ** 2) ** (1/2)
             x_values = [x[0] for x in locations]
@@ -218,7 +234,7 @@ class Simulation:
         # Saves the data constructed to the desired path
         helper_functions.save_to_json(data_for_all_walkers, f"{DESTINATION_PATH}{file_name}")
 
-    def plot_simulation(self, n: int, file_name: str = "walkerplot") -> None:
+    def plot_simulation(self, n: int, file_name: str = f"{DESTINATION_PATH}walkerplot") -> None:
         """
         Runs the simulation independently of the simulation_average method.
         Saves to the destination folder graphs of the locations visited by the walker
@@ -230,10 +246,11 @@ class Simulation:
         simulation_results = self.run_simulation(n,n)
         locations_dict = {index: simulation_results[index]["location_list"]
                            for index in simulation_results}
-        barriers = [barrier.get_points() for barrier in self.__barriers]
-        portals = [(portal.get_center(), portal.get_radius(), portal.get_end()) \
+        barriers = [barrier.points for barrier in self.__barriers]
+        portals = [(portal.center, portal.radius, portal.endpoint) \
                     for portal in self.__portals]
+        mudspots = [mud.properties for mud in self.__mudspots]
         for index, locations in locations_dict.items():
-            color = self.__walkers[index].get_color()
-            graph.show_walker_way(locations, barriers, portals,
-                                   DESTINATION_PATH+file_name+str(index), color)
+            color = self.__walkers[index].color
+            graph.show_walker_way(locations, (barriers, portals, mudspots),
+                                   file_name+str(index), color)
