@@ -14,12 +14,17 @@ import random
 
 Coordinates = Tuple[float,float]
 
+PI = math.pi
 MOVEMENTS = {
                     'A': "Random direction, step size 1 unit",
                     'B': "Random direction, step size chosen equally between [0.5,1.5]",
                     'C': "Random direction chosen equally between (Up,Down,Right,Left),\
                           step size 1 unit",
-                    'D': "Direction chosen at Random but favoring up, step site 1 unit"
+                    'Dup': "Direction chosen at Random but favoring up, step site 1 unit",
+                    'Ddown': "Direction chosen at Random but favoring down, step site 1 unit",
+                    'Dright': "Direction chosen at Random but favoring right, step site 1 unit",
+                    'Dleft': "Direction chosen at Random but favoring left, step site 1 unit",
+                    'Daxis': "Direction chosen at Random but favoring axis, step site 1 unit"
                     }
 COLORS = {'R': "red", 'G': "green", 'Y': "yellow", 'Bl': "blue", 'C': "cyan", 'Or': "orange",
           'Br': "brown", 'P': "Purple", 'Ol': "olive"}
@@ -38,12 +43,17 @@ class Walker:
                         'B': "Random direction, step size chosen equally between [0.5,1.5]",
                         'C': "Random direction chosen equally between (Up,Down,Right,Left),
                              step size 1 unit",
-                        'D': "Direction chosen at Random but favoring up, step site 1 unit"
+                        'Dup': "Direction chosen at Random but favoring up, step site 1 unit",
+                        'Ddown': "Direction chosen at Random but favoring down, step site 1 unit",
+                        'Dright': "Direction chosen at Random but favoring right, step site 1 unit",
+                        'Dleft': "Direction chosen at Random but favoring left, step site 1 unit",
+                        'Daxis': "Direction chosen at Random but favoring axis, step site 1 unit"
                         }
         :param location:a tuple representing the starting place for the Walker,
                         defualts to (0,0) for (x,y)
-        :param color:   a charcter representing the walker's color,
-                        from {'R': "Red", 'B': "Blue", 'G': "Green", 'Y': "Yellow", 'B': "Black"},
+        :param color:   a charcter representing the walker's color, from:
+                        {'R': "red", 'G': "green", 'Y': "yellow", 'Bl': "blue", 'C': "cyan",
+                        'Or': "orange", 'Br': "brown", 'P': "Purple", 'Ol': "olive"},
                         defaults to black.
         """
         self.__location = location
@@ -64,18 +74,18 @@ class Walker:
         DISTANCES = (0.5,1.5)
 
         # For C
-        DIRECTIONS = {'up': math.pi/2,
+        DIRECTIONS = {'up': PI/2,
                       'right': 0,
-                      'down': (3/2)*math.pi,
-                      'left': math.pi}
+                      'down': (3/2)*PI,
+                      'left': PI}
 
         if self.__movement == 'A':
-            angle = 2 * math.pi * random.random()
+            angle = 2 * PI * random.random()
             return (self.__location[0] + math.cos(angle),
                     self.__location[1] + math.sin(angle))
 
         if self.__movement == 'B':
-            angle = 2 * math.pi * random.random()
+            angle = 2 * PI * random.random()
             distance = random.choice(DISTANCES)
             return (self.__location[0] + distance * math.cos(angle),
                         self.__location[1] + distance * math.sin(angle))
@@ -85,8 +95,20 @@ class Walker:
             return (self.__location[0] + int(math.cos(angle)),
                     self.__location[1] + int(math.sin(angle)))
 
-        if self.__movement == 'D':
-            angle = random.gauss(math.pi, math.pi / 2) - math.pi/2
+        if self.__movement[0] == 'D':
+            angle = random.gauss(0, PI / 2)
+            inclination = self.__movement[1:]
+            if inclination in DIRECTIONS:
+                angle += DIRECTIONS[inclination]
+            elif inclination == "axis":
+                if self.__location[0] > 0:
+                    angle += math.tanh(self.__location[1] / self.__location[0]) + PI
+                elif self.__location[0] < 0:
+                    angle += math.tanh(self.__location[1] / self.__location[0])
+                else:
+                    angle -= math.copysign(PI, self.__location[1])
+            else:
+                raise AttributeError("Somewhere the second part of inclination changed")
             return (self.__location[0] + math.cos(angle),
                     self.__location[1] + math.sin(angle))
 
@@ -119,6 +141,13 @@ class Walker:
         return self.__location
 
     @property
+    def movement(self) -> str:
+        """
+        returns the walker's movement type
+        """
+        return self.__movement
+
+    @property
     def color(self) -> str:
         """
         returns a walkers color, as a full name
@@ -137,3 +166,4 @@ def pull_push(walkers: list[Walker], power: int = 1, gravity: bool = True) -> No
     Additional feature for a walkers that attract or push each other, for pairs
     """
     pass
+

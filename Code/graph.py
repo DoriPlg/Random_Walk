@@ -17,10 +17,11 @@ Coordinates = Tuple[float,float]
 DESTINATION_PATH = "./Results/"
 
 
-def show_walker_way(movement_log: list[Coordinates], obstacles: Tuple,
+def show_walker_way(name:str, movement_log: list[Coordinates], obstacles: Tuple,
                     file_to_save: str = f"{DESTINATION_PATH}scatterplot", color: str = "black") -> None:
     """
     A function that plots on a graph the path a waker went through.
+    :param name: the title of the Graph
     :param movement_log: a list containing ordered moves made by the walker
     :param file_to_save: the desired filepath in which to save the path taken by the walker
     :param obstacles: tuple containing:
@@ -43,6 +44,8 @@ def show_walker_way(movement_log: list[Coordinates], obstacles: Tuple,
     fig = plt.figure()
     ax = plt.axes()
 
+    plt.title(name)
+
     ax.scatter(x[1:], y[1:], color=color)
     ax.plot(x, y, color=color)
 
@@ -60,6 +63,7 @@ def show_walker_way(movement_log: list[Coordinates], obstacles: Tuple,
         rectangle = patches.Rectangle(*mud, facecolor="brown")
         ax.add_patch(rectangle)
 
+    ax.axis('equal')
     ax.scatter(endpoints_x,endpoints_y, marker= "*")
     ax.scatter(0, 0, color='black', marker='x')
     # fig.show()

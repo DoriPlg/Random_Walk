@@ -252,5 +252,6 @@ class Simulation:
         mudspots = [mud.properties for mud in self.__mudspots]
         for index, locations in locations_dict.items():
             color = self.__walkers[index].color
-            graph.show_walker_way(locations, (barriers, portals, mudspots),
+            graph_name = f"Graph number {index + 1}, showing a walker with {self.__walkers[index].movement} type movement"
+            graph.show_walker_way(graph_name,locations, (barriers, portals, mudspots),
                                    file_name+str(index), color)
