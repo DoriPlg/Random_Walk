@@ -9,6 +9,7 @@ NOTES: ...
 """
 
 import json
+from tkinter import filedialog
 
 def save_to_json(data, filename) -> None:
     """
@@ -23,6 +24,15 @@ def save_to_json(data, filename) -> None:
     """
     with open(filename, 'w', encoding='UTF-8') as json_file:
         json.dump(data, json_file)
+
+def load_simulation() -> dict:
+        """
+        loads data from a json from a chosen location"""
+        file_path = filedialog.askopenfilename(filetypes=[("JSON Files", "*.json")])
+        if file_path:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                simulation_data = json.load(file)
+            return simulation_data
 
 def passes_0(lst: list[float]) -> int:
     """

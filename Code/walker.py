@@ -18,8 +18,7 @@ PI = math.pi
 MOVEMENTS = {
                     'A': "Random direction, step size 1 unit",
                     'B': "Random direction, step size chosen equally between [0.5,1.5]",
-                    'C': "Random direction chosen equally between (Up,Down,Right,Left),\
-                          step size 1 unit",
+                    'C': "Random direction chosen equally between (Up,Down,Right,Left), step size 1 unit",
                     'Dup': "Direction chosen at Random but favoring up, step site 1 unit",
                     'Ddown': "Direction chosen at Random but favoring down, step site 1 unit",
                     'Dright': "Direction chosen at Random but favoring right, step site 1 unit",
@@ -153,6 +152,13 @@ class Walker:
         returns a walkers color, as a full name
         """
         return COLORS[self.__color]
+
+    @staticmethod
+    def color_pallet() -> dict:
+        """
+        For UI reasons, returns the dictionary describing the walker colors
+        """
+        return COLORS
 
     @staticmethod
     def move_dict() -> dict:
