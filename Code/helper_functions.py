@@ -25,6 +25,7 @@ def save_to_json(data, filename) -> None:
     with open(filename, 'w', encoding='UTF-8') as json_file:
         json.dump(data, json_file)
 
+
 def load_simulation() -> dict:
         """
         loads data from a json from a chosen location"""
@@ -50,3 +51,24 @@ def passes_0(lst: list[float]) -> int:
                 elif lst[index]*lst[index-i] > 0:
                     break
     return count
+
+def is_int(x) -> bool:
+    """
+    Checks if an input is a integer
+    :param x: the input to check
+    """
+    try:
+        return x == int(x)
+    except:
+        return False
+    
+def is_float(x) -> bool:
+    """
+    checks if an input is a floating point number
+    :param x: the input to check
+    """
+    try:
+        float(x)
+        return True
+    except ValueError:
+        return False
