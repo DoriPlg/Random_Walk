@@ -1,0 +1,28 @@
+{
+    "Walkers": 
+    [
+        {"movement": "A", "color": "R", "location": [0.0, 0.0]}, 
+        {"movement": "A", "color": "R", "location": [0.0, 0.0]}
+    ], 
+    "Barriers": 
+    [
+        {"center": [0.0, 0.0], "length": 10.0, "angle": 0.0}, 
+        {"center": [0.0, 0.0], "length": 10.0, "angle": 0.0}
+    ], 
+    "Portals": 
+    [
+        {"center": [0.0, 0.0], "endpoint": [0.0, 0.0], "radius": 10.0}, 
+        {"center": [0.0, 0.0], "endpoint": [0.0, 0.0], "radius": 10.0}
+    ], 
+    "Mudspots": 
+    [
+        {"bottom_left": [0.0, 0.0], "width": 10.0, "height": 10.0}, 
+        {"bottom_left": [0.0, 0.0], "width": 10.0, "height": 10.0}
+    ], 
+    "Simulation": 
+    {
+        "type": "Plotting", 
+        "n": 2000, 
+        "file_name": "/home/dori/Documents/UNI/Intro/final_project/Results/first_simulation.json"
+    }
+}

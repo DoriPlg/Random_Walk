@@ -1,22 +1,25 @@
-from helper_functions import load_simulation, is_int, is_float
+from helper_functions import load_simulation, is_int, is_float, is_intable
 from simulation import Simulation
 from walker import Walker
 import tkinter as tk
 from tkinter import filedialog
 from typing import Tuple
+import functools as ft
 
 Coordinates = Tuple[float,float]
 MOVE_DICT = {Walker.move_dict()[k]: k for k in Walker.move_dict()}
 COLOR_PALLET = {Walker.color_pallet()[k]: k for k in Walker.color_pallet()}
 
 class SimulationGUI:
-
+    """
+    A class managing the program UI, recieves the user's input.
+    """
 
 
     def __init__(self, root) ->None:
         self.root = root
         self.root.title("Simulation App")
-        self.root.geometry("700x400")  # Set permanent window size
+        self.root.geometry("1500x800")  # Set permanent window size
 
         self.welcome_label = tk.Label(self.root,
                                       text="Welcome to the Random Walker Simulation App!")
@@ -34,67 +37,41 @@ class SimulationGUI:
         for widgets in self.root.winfo_children():
             widgets.destroy()
 
-    def single_float_user_input(self,frame: tk.Frame,def_value = None,
-                           message: str =None, width =5) -> tk.Entry:
-        """
-        allows user to make an input
-        :param frame: the fraame where this is happening
-        :def_value: the default value for the entry
-        :param message: the message to display, if None, no label willl be shown
-        :param width: the width of the input box
-        """
-        var = tk.DoubleVar()
-        if message:
-            label = tk.Label(frame, text=message)
-            label.pack(side=tk.LEFT)
-        entry = tk.Entry(frame, textvariable=var, width=width)
-        if def_value:
-            entry.insert(0,def_value)
-        entry.pack(side=tk.LEFT)
-        return var, entry
 
-    def double_float_user_input(self,frame: tk.Frame,def_value1 = None,
-                           def_value2 = None, message: str =None, width = 5) -> tk.Entry:
+    def user_input(self, frame: tk.Frame, var_type = tk.StringVar, n_inputs: int =1,
+                   message: str = None, def_values: list = None, width: int =5):
         """
-        allows user to make an input
-        :param frame: the fraame where this is happening
-        :def_value1: the default value for the entry1
-        :def_value2: the default value for the entry2
+        A function for recieving user input
+        :param frame: the frame in which it will exist
+        :param var_type: the type of variable to recieve
+        :param n_inputs: the number of inputs to recieve
+        :def_values: the default values for the entry, as a tuple
         :param message: the message to display, if None, no label willl be shown
         :param width: the width of the input box
         """
-        var1, var2 = tk.DoubleVar(), tk.DoubleVar()
-        if message:
-            label = tk.Label(frame, text=message)
-            label.pack(side=tk.LEFT)
-        entry1 = tk.Entry(frame, textvariable=var1, width=width)
-        if def_value1:
-            entry1.insert(0,def_value1)
-        entry1.pack(side=tk.LEFT)
-        entry2 = tk.Entry(frame, textvariable=var2, width=width)
-        if def_value2:
-            entry2.insert(0,def_value2)
-        entry2.pack(side=tk.LEFT)
-        return var1, var2, entry1, entry2
-
-    def single_int_user_input(self,frame: tk.Frame,def_value = None,
-                           message: str =None, width =5) -> tk.Entry:
-        """
-        allows user to make an input
-        :param frame: the fraame where this is happening
-        :def_value: the default value for the entry
-        :param message: the message to display, if None, no label willl be shown
-        :param width: the width of the input box
-        """
-        var = tk.IntVar()
+        variables = []
         if message:
             label = tk.Label(frame, text=message)
             label.pack()
-        entry = tk.Entry(frame, textvariable=var, width=width)
-        if def_value:
-            entry.insert(0,def_value)
-        entry.pack()
-        return var, entry
+        if var_type is tk.IntVar:
+            # Function to validate entry input
+            validate = (self.root.register(is_intable), '%P')
+        elif var_type is tk.DoubleVar:
+            # Function to validate entry input
+            validate = (self.root.register(is_float), '%P')
+        for i in range(n_inputs):
+            var = var_type()
+            entry = tk.Entry(frame, textvariable=var, width=width)
+            if def_values:
+                entry.insert(0,def_values[i])
+            entry.pack()
+            # Apply validation to walker_center_entry_x and walker_center_entry_y
+            entry.config(validate="key", validatecommand=validate)
+            variables.append(var)
+        return variables
+    single_int_user_input = ft.partial(user_input,var_type=tk.IntVar,n_inputs=1)
+    single_float_user_input = ft.partial(user_input,var_type=tk.DoubleVar,n_inputs=1)
+    double_float_user_input = ft.partial(user_input,var_type=tk.DoubleVar,n_inputs=2)
 
     def build_simulation(self, err_message: str = None) ->None:
         self.clear_frame()
@@ -189,7 +166,7 @@ class SimulationGUI:
             walker_type_var = tk.StringVar()
             walker_type_var.set(walker_types[0])  # Set default value
             walker_type_optionmenu = tk.OptionMenu(walker_frame, walker_type_var, *walker_types)
-            walker_type_optionmenu.config(width=10)
+            walker_type_optionmenu.config(width=20)
             walker_type_optionmenu.pack(side=tk.LEFT)
 
             walker_color_label = tk.Label(walker_frame, text="Color:")
@@ -200,15 +177,9 @@ class SimulationGUI:
             walker_color_optionmenu.config(width=5)
             walker_color_optionmenu.pack(side=tk.LEFT)
 
-            walker_center_x,walker_center_y,\
-            walker_center_entry_x, walker_center_entry_y =\
-                self.double_float_user_input(walker_frame,0,0,"Starting location (x,y):",5)
-            # Function to validate entry input
-            validate_float = (self.root.register(is_float), '%P')
-
-            # Apply validation to walker_center_entry_x and walker_center_entry_y
-            walker_center_entry_x.config(validate="key", validatecommand=validate_float)
-            walker_center_entry_y.config(validate="key", validatecommand=validate_float)
+            walker_center_x,walker_center_y=\
+                self.double_float_user_input(self,walker_frame,def_values=[0,0],
+                                             message="Starting location (x,y):",width=5)
 
             self.__walkers_data.append({
                 "Type": walker_type_var, 
@@ -229,24 +200,14 @@ class SimulationGUI:
             barrier_frame = tk.Frame(barrier_input_frame)
             barrier_frame.pack()
 
-            barrier_center_x,barrier_center_y,\
-            barrier_center_entry_x, barrier_center_entry_y =\
-                self.double_float_user_input(barrier_frame,0,0,
-                                             f"Input for Barrier {i+1}: Center Location (x,y):",5)
-            barrier_length, barrier_length_entry =\
-            self.single_float_user_input(barrier_frame,1,"Length")
+            barrier_center_x,barrier_center_y =\
+                self.double_float_user_input(self,barrier_frame,def_values=[0,0],message=\
+                                             f"Input for Barrier {i+1}: Center Location (x,y):",width=5)
+            barrier_length =\
+            self.single_float_user_input(self,barrier_frame,def_values=[1],message="Length")[0]
 
-            barrier_angle, barrier_angle_entry =\
-            self.single_float_user_input(barrier_frame,0,"Angle:")
-
-            # Function to validate entry input
-            validate_float = (self.root.register(is_float), '%P')
-
-            # Apply validation to walker_center_entry_x and walker_center_entry_y
-            barrier_center_entry_x.config(validate="key", validatecommand=validate_float)
-            barrier_center_entry_y.config(validate="key", validatecommand=validate_float)
-            barrier_length_entry.config(validate="key", validatecommand=validate_float)
-            barrier_angle_entry.config(validate="key", validatecommand=validate_float)
+            barrier_angle =\
+            self.single_float_user_input(self,barrier_frame,def_values=[0],message="Angle:")[0]
 
             self.__barriers_data.append({"Locationx": barrier_center_x,
                                          "Locationy":barrier_center_y,
@@ -267,27 +228,15 @@ class SimulationGUI:
             portal_frame = tk.Frame(portal_input_frame)
             portal_frame.pack()
 
-            portal_center_x,portal_center_y,\
-            portal_center_entry_x, portal_center_entry_y =\
-                self.double_float_user_input(portal_frame,0,0,
-                                             f"Input for Portal {i+1}: Center Location (x,y):",5)
-            portal_radius, portal_radius_entry =\
-            self.single_float_user_input(portal_frame,1,"Portal radius:")
+            portal_center_x,portal_center_y=\
+                self.double_float_user_input(self,portal_frame,def_values=[0,0],
+                                             message=f"Input for Portal {i+1}: Center Location (x,y):",width=5)
+            portal_radius =\
+            self.single_float_user_input(self,portal_frame,def_values=[1],message="Portal radius:")[0]
 
-            portal_dest_x,portal_dest_y,\
-            portal_dest_entry_x, portal_dest_entry_y =\
-                self.double_float_user_input(portal_frame,0,0,
-                                             "Destination (x,y):",5)
-
-            # Function to validate entry input
-            validate_float = (self.root.register(is_float), '%P')
-
-            # Apply validation to walker_center_entry_x and walker_center_entry_y
-            portal_center_entry_x.config(validate="key", validatecommand=validate_float)
-            portal_center_entry_y.config(validate="key", validatecommand=validate_float)
-            portal_radius_entry.config(validate="key", validatecommand=validate_float)
-            portal_dest_entry_x.config(validate="key", validatecommand=validate_float)
-            portal_dest_entry_y.config(validate="key", validatecommand=validate_float)
+            portal_dest_x,portal_dest_y =\
+            self.double_float_user_input(self,portal_frame,def_values=[0,0],
+                                             message="Destination (x,y):",width=5)
 
             self.__portals_data.append({"Centerx": portal_center_x,
                                         "Centery": portal_center_y,
@@ -310,20 +259,11 @@ class SimulationGUI:
                 mudspot_frame = tk.Frame(mudspot_input_frame)
                 mudspot_frame.pack()
 
-                bottom_left_x, bottom_left_y,\
-                bottom_left_entry_x, bottom_left_entry_y =\
-                self.double_float_user_input(mudspot_frame,0,0,f"Input for Mudspot{i+1} Bottom-left corner (x,y):")
-                width, height, width_entry, height_entry =\
-                self.double_float_user_input(mudspot_frame,1,1,"Width and Height of the patch:")
-
-                # Function to validate entry input
-                validate_float = (self.root.register(is_float), '%P')
-
-                # Apply validation to walker_center_entry_x and walker_center_entry_y
-                bottom_left_entry_x.config(validate="key", validatecommand=validate_float)
-                bottom_left_entry_y.config(validate="key", validatecommand=validate_float)
-                width_entry.config(validate="key", validatecommand=validate_float)
-                height_entry.config(validate="key", validatecommand=validate_float)
+                bottom_left_x, bottom_left_y =\
+                self.double_float_user_input(self,mudspot_frame,def_values=[0,0],
+                                             message=f"Input for Mudspot{i+1} Bottom-left corner (x,y):")
+                width, height=\
+                self.double_float_user_input(self,mudspot_frame,def_values=[1,1],message="Width and Height of the patch:")
 
                 self.__mudspots_data.append({"Locationx": bottom_left_x,
                                              "Locationy": bottom_left_y,
@@ -370,19 +310,13 @@ class SimulationGUI:
                 tk.Label(self.root,
                 text="\nPlotting simulation (will show graphs tracing each walker)")
             title.pack()
-            iterations, iterations_entry =\
-            self.single_int_user_input(simulation_input_frame, def_value=200,
-                                         message="How many steps do you wish to plot for?", width= 20)
-
-            # Function to validate entry input
-            validate_int = (self.root.register(is_int), '%P')
-
-            # Apply validation to walker_center_entry_x and walker_center_entry_y
-            iterations_entry.config(validate="key", validatecommand=validate_int)
+            iterations =self.single_int_user_input(self,
+                simulation_input_frame, def_values=[200],
+                message="How many steps do you wish to plot for?", width= 20)[0]
 
             plotting = tk.StringVar(value="Plotting")
-            self.__simulation_data = {"Type": plotting,
-                                    "Iterations": iterations}
+            self.__simulation_data = {"type": plotting,
+                                    "n": iterations}
         else:
             title =\
                     tk.Label(self.root,
@@ -390,33 +324,24 @@ class SimulationGUI:
 data for different number of iterations)")
             title.pack()
 
-            iterations, iterations_entry =\
-            self.single_int_user_input(simulation_input_frame, def_value=5,
-                                         message="How many iterations do you wish to average for?", width= 5)
+            iterations =self.single_int_user_input(self,
+                simulation_input_frame, def_values=[5],
+                message="How many iterations do you wish to average for?", width= 5)[0]
 
-            max_iterations, max_iterations_entry =\
-            self.single_int_user_input(simulation_input_frame, def_value=1000,
-                                         message="How many maximum steps do you wish to plot for?", width= 5)
+            max_iterations =self.single_int_user_input(self,
+                simulation_input_frame, def_values=[1000],
+                message="How many maximum steps do you wish to plot for?", width= 5)[0]
 
-            jumps, jumps_entry =\
-            self.single_int_user_input(simulation_input_frame, def_value=20,
-                                         message="How many every how many steps do you want a point?", width= 5)
-
-            """Number validation bad"""
-            # Function to validate entry input
-            validate_int = (self.root.register(is_int), '%P')
-
-            # Apply validation to walker_center_entry_x and walker_center_entry_y
-            iterations_entry.config(validate="key", validatecommand=validate_int)
-            max_iterations_entry.config(validate="key", validatecommand=validate_int)
-            jumps_entry.config(validate="key", validatecommand=validate_int)
+            jumps=self.single_int_user_input(self,
+                simulation_input_frame, def_values=[20],
+                message="How many every how many steps do you want a point?", width= 5)[0]
 
 
             graph = tk.StringVar(value="graph")
-            self.__simulation_data = {"Type": graph,
-                                      "Iterations": iterations,
-                                      "Max iterations": max_iterations,
-                                      "Jumps": jumps}
+            self.__simulation_data = {"type": graph,
+                                      "iteration": iterations,
+                                      "max_depth": max_iterations,
+                                      "jumps": jumps}
 
 
         self.dir_path_label = tk.Label(self.root, text="Directory Path:")
@@ -448,37 +373,38 @@ data for different number of iterations)")
         self.clear_frame()
         simulation_data = {"Walkers": [], "Barriers": [], "Portals": [], "Mudspots": []}
 
-        print(self.__walkers_data)
         for walker in self.__walkers_data:
+            print(walker["Locationx"])
+            print(walker["Locationy"].get())
             location = [walker["Locationx"].get(), walker["Locationy"].get()]
-            simulation_data["Walkers"].append({"Type": MOVE_DICT[walker["Type"].get()],
-                                                "Color": COLOR_PALLET[walker["Color"].get()],
-                                                "Location": location})
+            simulation_data["Walkers"].append({"movement": MOVE_DICT[walker["Type"].get()],
+                                                "color": COLOR_PALLET[walker["Color"].get()],
+                                                "location": location})
 
         for barrier in self.__barriers_data:
             location = [barrier["Locationx"].get(), barrier["Locationy"].get()]
-            simulation_data["Barriers"].append({"Center Location": location,
-                                                 "Length": barrier["Length"].get(),
-                                                 "Angle": barrier["Angle"].get()})
+            simulation_data["Barriers"].append({"center": location,
+                                                 "length": barrier["Length"].get(),
+                                                 "angle": barrier["Angle"].get()})
 
         for portal in self.__portals_data:
             center_location = [portal["Centerx"].get(), portal["Centery"].get()]
             dest_location = [portal["Destinationx"].get(), portal["Destinationy"].get()]
-            simulation_data["Portals"].append({"Center": center_location,
-                                                 "Destination": dest_location,
-                                                 "Radius": portal["Radius"].get()})
+            simulation_data["Portals"].append({"center": center_location,
+                                                 "endpoint": dest_location,
+                                                 "radius": portal["Radius"].get()})
             
         for mudspot in self.__mudspots_data:
             location = [mudspot["Locationx"].get(), mudspot["Locationy"].get()]
-            simulation_data["Mudspots"].append({"Corner": location,
-                                                 "Width": mudspot["Width"].get(),
-                                                 "Height": mudspot["Height"].get()})
+            simulation_data["Mudspots"].append({"bottom_left": location,
+                                                 "width": mudspot["Width"].get(),
+                                                 "height": mudspot["Height"].get()})
 
-        path = self.__simulation_path["Directory"].get() +\
-              self.__simulation_path["Filename"].get()
+        path = f"{self.__simulation_path["Directory"].get()}/{self.__simulation_path["Filename"].get()}"
         simulation_data["Simulation"] =\
             {key: self.__simulation_data[key].get() for key in self.__simulation_data}
-        simulation_data["Simulation"]["Path"] = path
+        simulation_data["Simulation"]["file_name"] = path
         # Process the simulation data
         print("Simulation Data:", simulation_data)
         # Implement simulation logic here
+

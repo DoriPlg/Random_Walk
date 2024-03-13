@@ -52,6 +52,17 @@ def passes_0(lst: list[float]) -> int:
                     break
     return count
 
+def is_intable(x) -> bool:
+    """
+    checks if a characther is int
+    :param x: the input to check
+    """
+    try:
+        int(x)
+        return True
+    except ValueError:
+        return False
+
 def is_int(x) -> bool:
     """
     Checks if an input is a integer
