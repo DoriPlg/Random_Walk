@@ -400,7 +400,7 @@ data for different number of iterations)")
                                                  "width": mudspot["Width"].get(),
                                                  "height": mudspot["Height"].get()})
 
-        path = f"{self.__simulation_path["Directory"].get()}/{self.__simulation_path["Filename"].get()}"
+        path = f"{self.__simulation_path['Directory'].get()}/{self.__simulation_path['Filename'].get()}"
         simulation_data["Simulation"] =\
             {key: self.__simulation_data[key].get() for key in self.__simulation_data}
         simulation_data["Simulation"]["file_name"] = path

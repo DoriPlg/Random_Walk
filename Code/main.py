@@ -23,17 +23,17 @@ if __name__ == "__main__":
 
 
 
-if __name__ == "__not__":
+if __name__ == "__n__":
     simulation = Simulation()
     letters = ('Dup','Dright','Ddown','Dleft','Daxis')
     colors = "GCYR"
     for i in range(5):
-        simulation.add_walker(Walker(letters[i], color= colors[1]))
+        simulation.add_walker(Walker(letters[4], color= colors[1]))
     simulation.add_barrier(Barrier((0,10), 5, 0))
     simulation.add_portal(Portal((5,12),2.3))
     simulation.add_portal(Portal((-5,12),2.3))
     simulation.add_mud(Mud((-3,-4),6,3))
 
     simulation.plot_simulation(100)
-    #simulation.simulation_average(5,500,10**5,"results.json")
+    simulation.simulation_average(5,500,10**5,"results.json")
     print("Done")
