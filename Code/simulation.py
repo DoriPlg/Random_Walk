@@ -166,7 +166,7 @@ class Simulation:
 
         return info_dict
 
-    def simulation_average(self, iterations: int, n: int, max_depth: int, file_name: str) -> None:
+    def simulation_average(self, iterations: int, n: int, max_depth: int) -> None:
         """
         runs multiple simulations and saves a json with their average outcome for:
         {
@@ -232,7 +232,13 @@ class Simulation:
             data_for_all_walkers[index] = dict_to_save
 
         # Saves the data constructed to the desired path
-        helper_functions.save_to_json(data_for_all_walkers, f"{DESTINATION_PATH}{file_name}")
+        return data_for_all_walkers
+
+    def graph_simulation(self, iterations: int, n: int, max_depth: int,jump: str,file_name: str) -> None:
+        data_for_graph = {}
+        for index in range(jump, n, jump):
+            data_for_graph[index] =(self.simulation_average(iterations, index, max_depth))
+        graph.show_walker_graph(data_for_graph, file_name)
 
     def plot_simulation(self, n: int, file_name: str = f"{DESTINATION_PATH}walkerplot") -> None:
         """
@@ -255,3 +261,43 @@ class Simulation:
             graph_name = f"Graph number {index + 1}, showing a walker with {self.__walkers[index].movement} type movement"
             graph.show_walker_way(graph_name,locations, (barriers, portals, mudspots),
                                    file_name+str(index), color)
+            
+
+def run_from_json(filename: str) -> None:
+    """
+    loads a simulation from a json file and runs the desired simulatoin
+    :param filename: the path to the json
+    """
+    if not filename:
+        filename = helper_functions.get_filepath_to_json()
+    data = helper_functions.load_simulation(f"{filename}_simulation.json")
+    keys = ['Walkers', 'Barriers', 'Portals', 'Mudspots', 'Simulation']
+
+    # Check valid input
+    if [key for key in data.keys()] == keys:
+        if data["Simulation"]["type"] == "plot":
+            simulation = Simulation()
+            for walker in data["Walkers"]:
+                simulation.add_walker(**walker)
+            for barrier in data["Barriers"]:
+                simulation.add_barrier(**barrier)
+            for portal in data["Portals"]:
+                simulation.add_portal(**portal)
+            for mudspot in data["Mudspots"]:
+                simulation.add_mud(**mudspot)
+            simulation.plot_simulation(**data["Simulation"])
+        elif data["Simulation"]["type"] == "graph":
+            simulation = Simulation()
+            for walker in data["Walkers"]:
+                simulation.add_walker(**walker)
+            for barrier in data["Barriers"]:
+                simulation.add_barrier(**barrier)
+            for portal in data["Portals"]:
+                simulation.add_portal(**portal)
+            for mudspot in data["Mudspots"]:
+                simulation.add_mud(**mudspot)
+            simulation.simulation_average(**data["Simulation"])
+        else:
+            pass
+    else:
+        print("trash")

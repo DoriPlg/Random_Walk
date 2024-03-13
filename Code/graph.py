@@ -68,3 +68,32 @@ def show_walker_way(name:str, movement_log: list[Coordinates], obstacles: Tuple,
     ax.scatter(0, 0, color='black', marker='x')
     # fig.show()
     fig.savefig(file_to_save+".png")
+
+def show_walker_graph(data, file_to_save: str = f"{DESTINATION_PATH}graph") -> None:
+    """
+    A function that plots on a graph the data picked up by the walker.
+    :param data: a dictionary containing the data to be plotted
+    :param file_to_save: the desired filepath in which to save the path taken by the walker
+    :param color: the color to trace the course
+    """
+    data = {1:{"0": {"distance_0": 12.829550312031577, "escape": 134.8, "distance_axis": [10.446449317460795, 5.314618044112166], "crosses": 16.0}, "1": {"distance_0": 17.356898839317008, "escape": 93.2, "distance_axis": [9.819990267498948, 12.478367202045224], "crosses": 11.6}, "2": {"distance_0": 28.2, "escape": 157.6, "distance_axis": [28.2, 3.113052163432568e-14], "crosses": 8.4}, "3": {"distance_0": 66.92273883291057, "escape": 35.2, "distance_axis": [6.819226583392487, 65.95841562042902], "crosses": 41.2}},
+2:{"0": {"distance_0": 12.829550312031577, "escape": 134.8, "distance_axis": [10.446449317460795, 5.314618044112166], "crosses": 16.0}, "1": {"distance_0": 17.356898839317008, "escape": 93.2, "distance_axis": [9.819990267498948, 12.478367202045224], "crosses": 11.6}, "2": {"distance_0": 28.2, "escape": 157.6, "distance_axis": [28.2, 3.113052163432568e-14], "crosses": 8.4}, "3": {"distance_0": 66.92273883291057, "escape": 35.2, "distance_axis": [6.819226583392487, 65.95841562042902], "crosses": 41.2}},
+3:{"0": {"distance_0": 12.829550312031577, "escape": 134.8, "distance_axis": [10.446449317460795, 5.314618044112166], "crosses": 16.0}, "1": {"distance_0": 17.356898839317008, "escape": 93.2, "distance_axis": [9.819990267498948, 12.478367202045224], "crosses": 11.6}, "2": {"distance_0": 28.2, "escape": 157.6, "distance_axis": [28.2, 3.113052163432568e-14], "crosses": 8.4}, "3": {"distance_0": 66.92273883291057, "escape": 35.2, "distance_axis": [6.819226583392487, 65.95841562042902], "crosses": 41.2}},
+4:{"0": {"distance_0": 12.829550312031577, "escape": 134.8, "distance_axis": [10.446449317460795, 5.314618044112166], "crosses": 16.0}, "1": {"distance_0": 17.356898839317008, "escape": 93.2, "distance_axis": [9.819990267498948, 12.478367202045224], "crosses": 11.6}, "2": {"distance_0": 28.2, "escape": 157.6, "distance_axis": [28.2, 3.113052163432568e-14], "crosses": 8.4}, "3": {"distance_0": 66.92273883291057, "escape": 35.2, "distance_axis": [6.819226583392487, 65.95841562042902], "crosses": 41.2}},
+5:{"0": {"distance_0": 12.829550312031577, "escape": 134.8, "distance_axis": [10.446449317460795, 5.314618044112166], "crosses": 16.0}, "1": {"distance_0": 17.356898839317008, "escape": 93.2, "distance_axis": [9.819990267498948, 12.478367202045224], "crosses": 11.6}, "2": {"distance_0": 28.2, "escape": 157.6, "distance_axis": [28.2, 3.113052163432568e-14], "crosses": 8.4}, "3": {"distance_0": 66.92273883291057, "escape": 35.2, "distance_axis": [6.819226583392487, 65.95841562042902], "crosses": 41.2}},
+}
+    x = [int(k) for k in data]
+    walkers = list(data[x[0]].keys())
+    for graph_type in data[x[0]][walkers[0]]:
+        fig = plt.figure()
+        ax = plt.axes()
+        plt.title(f"Graph of {graph_type}")
+        for walker in data[x[0]]:
+            print(walker)
+            to_plot = [data[i][walker][graph_type] for i in x]
+            ax.plot(x, to_plot, label=f"Walker {walker}")
+        fig.show()
+
+
+show_walker_graph(2)
+input()

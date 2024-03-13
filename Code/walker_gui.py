@@ -1,5 +1,5 @@
-from helper_functions import load_simulation, is_int, is_float, is_intable
-from simulation import Simulation
+from helper_functions import *
+from simulation import Simulation, run_from_json
 from walker import Walker
 import tkinter as tk
 from tkinter import filedialog
@@ -26,12 +26,18 @@ class SimulationGUI:
         self.welcome_label.pack(pady=10)
 
         self.load_button = tk.Button(self.root,
-                                     text="Load Simulation from JSON", command=load_simulation)
+                                     text="Load Simulation from JSON", command=self.load_from_file)
         self.load_button.pack()
 
         self.manual_button = tk.Button(self.root,
                                        text="Manually Build Simulation", command=self.build_simulation)
         self.manual_button.pack()
+
+    def load_from_file(self):
+        filename = get_filepath_to_json()
+        if isinstance(filename, str) and filename != "":
+            run_from_json(filename)
+            self.clear_frame()
 
     def clear_frame(self):
         for widgets in self.root.winfo_children():
@@ -314,7 +320,7 @@ class SimulationGUI:
                 simulation_input_frame, def_values=[200],
                 message="How many steps do you wish to plot for?", width= 20)[0]
 
-            plotting = tk.StringVar(value="Plotting")
+            plotting = tk.StringVar(value="plot")
             self.__simulation_data = {"type": plotting,
                                     "n": iterations}
         else:
@@ -339,7 +345,7 @@ data for different number of iterations)")
 
             graph = tk.StringVar(value="graph")
             self.__simulation_data = {"type": graph,
-                                      "iteration": iterations,
+                                      "iterations": iterations,
                                       "max_depth": max_iterations,
                                       "jumps": jumps}
 
@@ -353,10 +359,12 @@ data for different number of iterations)")
                                         state="readonly", width=50)
         self.directory_path_entry.pack()
 
-        self.browse_button = tk.Button(self.root, text="Browse", command=self.browse_directory)
+        self.browse_button = tk.Button(self.root,
+                                       text="Choose where the simulation data will be saved",
+                                       command=self.browse_directory)
         self.browse_button.pack(pady=10)
 
-        self.file_path_label = tk.Label(self.root, text="File name:")
+        self.file_path_label = tk.Label(self.root, text="Simulation name:")
         self.file_path_label.pack(pady=10)
 
         self.file_path_var = tk.StringVar()
@@ -374,8 +382,6 @@ data for different number of iterations)")
         simulation_data = {"Walkers": [], "Barriers": [], "Portals": [], "Mudspots": []}
 
         for walker in self.__walkers_data:
-            print(walker["Locationx"])
-            print(walker["Locationy"].get())
             location = [walker["Locationx"].get(), walker["Locationy"].get()]
             simulation_data["Walkers"].append({"movement": MOVE_DICT[walker["Type"].get()],
                                                 "color": COLOR_PALLET[walker["Color"].get()],
@@ -404,7 +410,8 @@ data for different number of iterations)")
         simulation_data["Simulation"] =\
             {key: self.__simulation_data[key].get() for key in self.__simulation_data}
         simulation_data["Simulation"]["file_name"] = path
-        # Process the simulation data
-        print("Simulation Data:", simulation_data)
-        # Implement simulation logic here
+
+        save_to_json(simulation_data,f"{path}_simulation.json")
+        run_from_json(path)
+
 
