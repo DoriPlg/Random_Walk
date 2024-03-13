@@ -19,7 +19,7 @@ class SimulationGUI:
     def __init__(self, root) ->None:
         self.root = root
         self.root.title("Simulation App")
-        self.root.geometry("1500x800")  # Set permanent window size
+        self.root.geometry("700x800")  # Set permanent window size
 
         self.welcome_label = tk.Label(self.root,
                                       text="Welcome to the Random Walker Simulation App!")
@@ -34,10 +34,12 @@ class SimulationGUI:
         self.manual_button.pack()
 
     def load_from_file(self):
-        filename = get_filepath_to_json()
-        if isinstance(filename, str) and filename != "":
-            run_from_json(filename)
-            self.clear_frame()
+        run_from_json()
+        self.clear_frame()
+    #    filename = get_filepath_to_json()
+    #    if isinstance(filename, str) and filename != "":
+    #        run_from_json(filename)
+    #        self.clear_frame()
 
     def clear_frame(self):
         for widgets in self.root.winfo_children():
@@ -409,7 +411,7 @@ data for different number of iterations)")
         path = f"{self.__simulation_path['Directory'].get()}/{self.__simulation_path['Filename'].get()}"
         simulation_data["Simulation"] =\
             {key: self.__simulation_data[key].get() for key in self.__simulation_data}
-        simulation_data["Simulation"]["file_name"] = path
+        simulation_data["Simulation"]["filename"] = path
 
         save_to_json(simulation_data,f"{path}_simulation.json")
         run_from_json(path)

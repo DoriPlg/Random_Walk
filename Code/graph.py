@@ -69,31 +69,83 @@ def show_walker_way(name:str, movement_log: list[Coordinates], obstacles: Tuple,
     # fig.show()
     fig.savefig(file_to_save+".png")
 
-def show_walker_graph(data, file_to_save: str = f"{DESTINATION_PATH}graph") -> None:
+def walkers_unision(graph_name, data, color_list: list = None,obstacles: tuple = None , file_to_save: str = f"{DESTINATION_PATH}_plot") -> None:
+    """
+    A function that plots on a graph the data picked up by the walker.
+    :param graph_name: the title of the graph
+    :param data: a dictionary containing the data to be plotted
+    :param file_to_save: the desired filepath in which to save the path taken by the walker
+    """
+    fig, ax = plt.subplots()
+    plt.title(graph_name)
+
+
+    if not color_list:
+        color_list = ["black", "blue", "red", "green", "yellow", "purple", "orange", "pink", "cyan", "magenta"]
+    for walker in data:
+        x = [i[0] for i in data[walker]]
+        y = [i[1] for i in data[walker]]
+        try:
+            ax.scatter(x[1:], y[1:], color=color_list[walker])
+            ax.plot(x, y, color=color_list[walker])
+        except IndexError:
+            ax.scatter(x[1:], y[1:], color="black")
+            ax.plot(x, y, color="black")
+
+    if obstacles:
+        barriers = obstacles[0]
+        portals = obstacles[1]
+        muds = obstacles[2]
+    else:
+        barriers = []
+        portals = []
+        muds = []
+
+    for barrier in barriers:
+        ax.plot([barrier[0][0],barrier[1][0]],[barrier[0][1],barrier[1][1]], color='black')
+    endpoints_x = []
+    endpoints_y = []
+    for portal in portals:
+        circle = patches.Circle((portal[0][0], portal[0][1]),
+                                       radius=portal[1], edgecolor='purple', facecolor='none')
+        endpoints_x.append(portal[2][0])
+        endpoints_y.append(portal[2][1])
+        ax.add_patch(circle)
+    for mud in muds:
+        rectangle = patches.Rectangle(*mud, facecolor="brown")
+        ax.add_patch(rectangle)
+       
+    ax.axis('equal')
+    ax.scatter(endpoints_x,endpoints_y, marker= "*")
+    ax.scatter(0, 0, color='black', marker='x')
+    fig.savefig(file_to_save+".png")
+
+def show_walker_graph(data, file_to_save: str = f"{DESTINATION_PATH}_graph") -> None:
     """
     A function that plots on a graph the data picked up by the walker.
     :param data: a dictionary containing the data to be plotted
     :param file_to_save: the desired filepath in which to save the path taken by the walker
     :param color: the color to trace the course
     """
-    data = {1:{"0": {"distance_0": 12.829550312031577, "escape": 134.8, "distance_axis": [10.446449317460795, 5.314618044112166], "crosses": 16.0}, "1": {"distance_0": 17.356898839317008, "escape": 93.2, "distance_axis": [9.819990267498948, 12.478367202045224], "crosses": 11.6}, "2": {"distance_0": 28.2, "escape": 157.6, "distance_axis": [28.2, 3.113052163432568e-14], "crosses": 8.4}, "3": {"distance_0": 66.92273883291057, "escape": 35.2, "distance_axis": [6.819226583392487, 65.95841562042902], "crosses": 41.2}},
-2:{"0": {"distance_0": 12.829550312031577, "escape": 134.8, "distance_axis": [10.446449317460795, 5.314618044112166], "crosses": 16.0}, "1": {"distance_0": 17.356898839317008, "escape": 93.2, "distance_axis": [9.819990267498948, 12.478367202045224], "crosses": 11.6}, "2": {"distance_0": 28.2, "escape": 157.6, "distance_axis": [28.2, 3.113052163432568e-14], "crosses": 8.4}, "3": {"distance_0": 66.92273883291057, "escape": 35.2, "distance_axis": [6.819226583392487, 65.95841562042902], "crosses": 41.2}},
-3:{"0": {"distance_0": 12.829550312031577, "escape": 134.8, "distance_axis": [10.446449317460795, 5.314618044112166], "crosses": 16.0}, "1": {"distance_0": 17.356898839317008, "escape": 93.2, "distance_axis": [9.819990267498948, 12.478367202045224], "crosses": 11.6}, "2": {"distance_0": 28.2, "escape": 157.6, "distance_axis": [28.2, 3.113052163432568e-14], "crosses": 8.4}, "3": {"distance_0": 66.92273883291057, "escape": 35.2, "distance_axis": [6.819226583392487, 65.95841562042902], "crosses": 41.2}},
-4:{"0": {"distance_0": 12.829550312031577, "escape": 134.8, "distance_axis": [10.446449317460795, 5.314618044112166], "crosses": 16.0}, "1": {"distance_0": 17.356898839317008, "escape": 93.2, "distance_axis": [9.819990267498948, 12.478367202045224], "crosses": 11.6}, "2": {"distance_0": 28.2, "escape": 157.6, "distance_axis": [28.2, 3.113052163432568e-14], "crosses": 8.4}, "3": {"distance_0": 66.92273883291057, "escape": 35.2, "distance_axis": [6.819226583392487, 65.95841562042902], "crosses": 41.2}},
-5:{"0": {"distance_0": 12.829550312031577, "escape": 134.8, "distance_axis": [10.446449317460795, 5.314618044112166], "crosses": 16.0}, "1": {"distance_0": 17.356898839317008, "escape": 93.2, "distance_axis": [9.819990267498948, 12.478367202045224], "crosses": 11.6}, "2": {"distance_0": 28.2, "escape": 157.6, "distance_axis": [28.2, 3.113052163432568e-14], "crosses": 8.4}, "3": {"distance_0": 66.92273883291057, "escape": 35.2, "distance_axis": [6.819226583392487, 65.95841562042902], "crosses": 41.2}},
-}
     x = [int(k) for k in data]
     walkers = list(data[x[0]].keys())
-    for graph_type in data[x[0]][walkers[0]]:
+    for index, graph_type in enumerate(data[x[0]][walkers[0]]):
         fig = plt.figure()
-        ax = plt.axes()
+        plt.xlabel("Amount of steps")
+        if graph_type == "distance_axis":
+            y_label = "Distance from the origin"
+        elif graph_type == "crosses":
+            y_label = "Amount of times the walker crossed the y-axis"
+        elif graph_type == "escape":
+            y_label = "Amount of time it took the walker to escape"
+        elif graph_type == "distance_0":
+            y_label = "Distance from the origin"
+        plt.ylabel(y_label)
         plt.title(f"Graph of {graph_type}")
         for walker in data[x[0]]:
             print(walker)
             to_plot = [data[i][walker][graph_type] for i in x]
-            ax.plot(x, to_plot, label=f"Walker {walker}")
+            plt.plot(x, to_plot, label=f"Walker {walker}")
+        plt.legend(loc="upper left")
         fig.show()
-
-
-show_walker_graph(2)
-input()
+        fig.savefig(file_to_save+f"{index}.png")

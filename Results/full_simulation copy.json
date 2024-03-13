@@ -1,0 +1,6 @@
+{"Walkers": 
+[{"movement": "Dup", "color": "Or", "location": [0.0, 0.0]}, {"movement": "Ddown", "color": "R", "location": [0.0, 0.0]}], 
+"Barriers": [{"center": [0.0, 10.0], "length": 10.0, "angle": 0.0}, {"center": [0.0, -10.0], "length": 10.0, "angle": 0.0}], 
+"Portals": [{"center": [5.0, 0.0], "endpoint": [0.0, 0.0], "radius": 2.0}, {"center": [-5.0, 0.0], "endpoint": [0.0, 0.0], "radius": 2.0}], 
+"Mudspots": [{"bottom_left": [0.0, 0.0], "width": 10.0, "height": 10.0}, {"bottom_left": [0.0, 0.0], "width": 10.0, "height": 10.0}], 
+"Simulation": {"type": "graph", "n": 1000, "iterations":20,"max_depth":2000,"jump": 100, "filename": "/home/dori/Documents/UNI/Intro/final_project/Results/Full"}}

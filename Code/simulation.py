@@ -119,8 +119,7 @@ class Simulation:
             "distance_0": the distance from (0,0) after N steps
             "escape": the amount of steps it took the each walker to leave
                      the 10 unit circle around (0,0)
-            "distance_axis": average distance from the x and y axis after N steps 
-                                rep. as (distance_x, distance_y)
+            "distance_axis": average distance from the y axis after N steps 
             "crosses": number of crosses of y axis
             "location_list": an ordered list of coordinates visited by the walker
         }
@@ -159,8 +158,7 @@ class Simulation:
             info_dict[index]["distance_0"] = \
                 (locations[-1][0] ** 2 + locations[-1][1] ** 2) ** (1/2)
             x_values = [x[0] for x in locations]
-            info_dict[index]["distance_axis"] = (abs(locations[-1][0]),
-                                                  abs(locations[-1][1]))
+            info_dict[index]["distance_axis"] = abs(locations[-1][0])
             info_dict[index]["crosses"] = helper_functions.passes_0(x_values)
             info_dict[index]["location_list"] = locations
 
@@ -173,8 +171,7 @@ class Simulation:
             "distance_0": the distance from (0,0) after N steps
             "escape": the amount of steps it took the each walker to leave
                      the 10 unit circle around (0,0)
-            "distance_axis": average distance from the x and y axis after N steps 
-                                rep. as (distance_x, distance_y)
+            "distance_axis": average distance from the y axis after N steps 
             "crosses": number of crosses of y axis
         } 
         Note that if the simulation contains multiple walkers, 
@@ -214,8 +211,7 @@ class Simulation:
             for index, _ in enumerate(self.__walkers):
                 distance_0[index].append(simulation_results[index]["distance_0"])
                 escape[index].append(simulation_results[index]["escape"])
-                distance_x_axis[index].append(simulation_results[index]["distance_axis"][0])
-                distance_y_axis[index].append(simulation_results[index]["distance_axis"][1])
+                distance_y_axis[index].append(simulation_results[index]["distance_axis"])
                 crosses[index].append(simulation_results[index]["crosses"])
 
         # Compresses the data to averages for each walker
@@ -225,13 +221,12 @@ class Simulation:
                             "escape": sum(number for number in escape[index]\
                                  if number is not None)/
                             iterations,
-                            "distance_axis": (sum(distance_x_axis[index])/iterations,
-                                            sum(distance_y_axis[index])/iterations),
+                            "distance_axis": sum(distance_y_axis[index])/iterations,
                             "crosses": sum(crosses[index])/iterations
                             }
             data_for_all_walkers[index] = dict_to_save
 
-        # Saves the data constructed to the desired path
+        # Returns the data constructed
         return data_for_all_walkers
 
     def graph_simulation(self, iterations: int, n: int, max_depth: int,jump: str,file_name: str) -> None:
@@ -256,47 +251,50 @@ class Simulation:
         portals = [(portal.center, portal.radius, portal.endpoint) \
                     for portal in self.__portals]
         mudspots = [mud.properties for mud in self.__mudspots]
+        color_list = [walker.color for walker in self.__walkers]
+        obstacles = (barriers, portals, mudspots)
         for index, locations in locations_dict.items():
-            color = self.__walkers[index].color
             graph_name = f"Graph number {index + 1}, showing a walker with {self.__walkers[index].movement} type movement"
-            graph.show_walker_way(graph_name,locations, (barriers, portals, mudspots),
-                                   file_name+str(index), color)
+            graph.show_walker_way(graph_name,locations, obstacles,
+                                   file_name+str(index), color_list[index])
+        graph_name = f"Graph number {len(color_list) + 1}, showing all walkers in unision"
+        graph.walkers_unision(graph_name, locations_dict, color_list=color_list,obstacles=obstacles, file_to_save=file_name+"_all")
             
 
-def run_from_json(filename: str) -> None:
+def run_from_json(filename: str = None) -> None:
     """
     loads a simulation from a json file and runs the desired simulatoin
     :param filename: the path to the json
     """
     if not filename:
         filename = helper_functions.get_filepath_to_json()
-    data = helper_functions.load_simulation(f"{filename}_simulation.json")
+    else:
+        filename = filename + "_simulation.json"
+    data = helper_functions.load_simulation(filename)
     keys = ['Walkers', 'Barriers', 'Portals', 'Mudspots', 'Simulation']
 
     # Check valid input
     if [key for key in data.keys()] == keys:
-        if data["Simulation"]["type"] == "plot":
+        if data["Simulation"]["type"] in ("plot", "graph"):
             simulation = Simulation()
             for walker in data["Walkers"]:
-                simulation.add_walker(**walker)
+                simulation.add_walker(Walker(**walker))
             for barrier in data["Barriers"]:
-                simulation.add_barrier(**barrier)
+                simulation.add_barrier(Barrier(**barrier))
             for portal in data["Portals"]:
-                simulation.add_portal(**portal)
+                simulation.add_portal(Portal(**portal))
             for mudspot in data["Mudspots"]:
-                simulation.add_mud(**mudspot)
-            simulation.plot_simulation(**data["Simulation"])
-        elif data["Simulation"]["type"] == "graph":
-            simulation = Simulation()
-            for walker in data["Walkers"]:
-                simulation.add_walker(**walker)
-            for barrier in data["Barriers"]:
-                simulation.add_barrier(**barrier)
-            for portal in data["Portals"]:
-                simulation.add_portal(**portal)
-            for mudspot in data["Mudspots"]:
-                simulation.add_mud(**mudspot)
-            simulation.simulation_average(**data["Simulation"])
+                simulation.add_mud(Mud(**mudspot))
+            if data["Simulation"]["type"] == "plot":
+                n, filename = data["Simulation"]["n"], data["Simulation"]["filename"]
+                simulation.plot_simulation(n, filename)
+            elif data["Simulation"]["type"] == "graph":
+                iterations = data["Simulation"]["iterations"]
+                n = data["Simulation"]["n"]
+                max_depth = data["Simulation"]["max_depth"]
+                jump = data["Simulation"]["jump"]
+                file_name = data["Simulation"]["filename"]
+                simulation.graph_simulation(iterations, n, max_depth, jump, file_name)
         else:
             pass
     else:
