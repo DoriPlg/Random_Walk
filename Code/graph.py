@@ -12,22 +12,20 @@ from typing import Tuple
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.image as mpimg
+import os
 
 Coordinates = Tuple[float,float]
 
 DESTINATION_PATH = "./Results/"
+
 try:
-    with open("files/mud.jpg", "r") as file:
-        print("Mud file found")
+    PORTAL = mpimg.imread("../Code/files/portal.jpg")
 except FileNotFoundError:
-    print("Mud file not found")
+    pass
 try:
-    with open("files/portal.jpg", "r") as file:
-        print("Portal file found") 
-except FileNotFoundError:   
-    print("Portal file not found")
-PORTAL = mpimg.imread("files/portal.jpg")
-MUD = mpimg.imread('files/mud.jpg')
+    MUD = mpimg.imread('../Code/files/mud.jpg')
+except FileNotFoundError:
+    pass
 
 def show_walker_way(name:str, movement_log: list[Coordinates], obstacles: Tuple,
                     file_to_save: str = f"{DESTINATION_PATH}scatterplot", color: str = "black") -> None:
@@ -68,13 +66,23 @@ def show_walker_way(name:str, movement_log: list[Coordinates], obstacles: Tuple,
     for portal in portals:
         circle = patches.Circle((portal[0][0], portal[0][1]),
                                        radius=portal[1], edgecolor='purple')
-        circle.set_facecolor(PORTAL)
+        try:
+            circle.set_facecolor(PORTAL)
+        except FileNotFoundError:
+                circle.set_facecolor("purple")
+        except NameError:
+            circle.set_facecolor("purple")
         endpoints_x.append(portal[2][0])
         endpoints_y.append(portal[2][1])
         ax.add_patch(circle)
     for mud in muds:
         rectangle = patches.Rectangle(*mud)
-        rectangle.set_facecolor(MUD)
+        try:
+            rectangle.set_facecolor(MUD)
+        except FileNotFoundError:
+            rectangle.set_facecolor("brown")
+        except NameError:
+            rectangle.set_facecolor("brown")
         ax.add_patch(rectangle)
 
     ax.axis('equal')
@@ -122,13 +130,23 @@ def walkers_unision(graph_name, data, color_list: list = None,obstacles: tuple =
     for portal in portals:
         circle = patches.Circle((portal[0][0], portal[0][1]),
                                        radius=portal[1], edgecolor='purple')
-        circle.set_facecolor(PORTAL)
+        try:
+            circle.set_facecolor(PORTAL)
+        except FileNotFoundError:
+                circle.set_facecolor("purple")
+        except NameError:
+            circle.set_facecolor("purple")
         endpoints_x.append(portal[2][0])
         endpoints_y.append(portal[2][1])
         ax.add_patch(circle)
     for mud in muds:
         rectangle = patches.Rectangle(*mud)
-        rectangle.set_facecolor(MUD)
+        try:
+            rectangle.set_facecolor(MUD)
+        except FileNotFoundError:
+            rectangle.set_facecolor("brown")
+        except NameError:
+            rectangle.set_facecolor("brown")
         ax.add_patch(rectangle)
        
     ax.axis('equal')
