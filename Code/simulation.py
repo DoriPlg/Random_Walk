@@ -8,7 +8,7 @@ WEB PAGES I USED:
 NOTES: ...
 """
 
-
+import os
 from copy import deepcopy
 from typing import Tuple
 from walker import Walker, pull_push
@@ -259,7 +259,43 @@ class Simulation:
                                    file_name+str(index), color_list[index])
         graph_name = f"Graph number {len(color_list) + 1}, showing all walkers in unision"
         graph.walkers_unision(graph_name, locations_dict, color_list=color_list,obstacles=obstacles, file_to_save=file_name+"_all")
-            
+
+def check_data(data: dict) -> bool:
+    """
+    checks if the data is valid for a simulation
+    :param data: the data to check
+    """
+    keys = ['Walkers', 'Barriers', 'Portals', 'Mudspots', 'Simulation']
+    try:
+       [key for key in data.keys()]
+    except AttributeError:
+        raise AttributeError("Empty data was given for the simulation")
+    except:
+        return False 
+    if [key for key in data.keys()] == keys:
+        if data["Simulation"]["type"] in ("plot", "graph"):
+            try:
+                for walker in data["Walkers"]:
+                    Walker(**walker)
+                for barrier in data["Barriers"]:
+                    Barrier(**barrier)
+                for portal in data["Portals"]:
+                    Portal(**portal)
+                for mudspot in data["Mudspots"]:
+                    Mud(**mudspot)
+                int(data["Simulation"]["n"])
+                if data["Simulation"]["type"] == "graph":
+                    int(data["Simulation"]["iterations"])
+                    int(data["Simulation"]["max_depth"])
+                    int(data["Simulation"]["jump"])
+                #check if the filename leads to a valid path
+                split_path = data["Simulation"]["filename"].split("/")
+                directory = "/".join(split_path[:-1])
+                if os.path.exists(directory):
+                    return True
+            except:
+                return False
+    return False
 
 def run_from_json(filename: str = None) -> None:
     """
@@ -271,6 +307,8 @@ def run_from_json(filename: str = None) -> None:
     else:
         filename = filename + "_simulation.json"
     data = helper_functions.load_simulation(filename)
+    if not check_data(data):
+        raise ValueError("The data in the file is not valid for a simulation")
     keys = ['Walkers', 'Barriers', 'Portals', 'Mudspots', 'Simulation']
 
     # Check valid input
