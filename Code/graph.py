@@ -19,13 +19,13 @@ Coordinates = Tuple[float,float]
 DESTINATION_PATH = "./Results/"
 
 try:
-    PORTAL = mpimg.imread("../Code/files/portal.jpg")
+    PORTAL = mpimg.imread("/home/dori/Documents/UNI/Intro/final_project/Code/files/portal.jpg")
 except FileNotFoundError:
-    pass
+    print("no image")
 try:
-    MUD = mpimg.imread('../Code/files/mud.jpg')
+    MUD = mpimg.imread('/home/dori/Documents/UNI/Intro/final_project/Code/files/mud.jpg')
 except FileNotFoundError:
-    pass
+    print("no image")
 
 def show_walker_way(name:str, movement_log: list[Coordinates], obstacles: Tuple,
                     file_to_save: str = f"{DESTINATION_PATH}scatterplot", color: str = "black") -> None:
@@ -58,11 +58,11 @@ def show_walker_way(name:str, movement_log: list[Coordinates], obstacles: Tuple,
 
     ax.scatter(x[1:], y[1:], color=color)
     ax.plot(x, y, color=color)
-
     for barrier in barriers:
         ax.plot([barrier[0][0],barrier[1][0]],[barrier[0][1],barrier[1][1]], color='black')
     endpoints_x = []
     endpoints_y = []
+
     for portal in portals:
         circle = patches.Circle((portal[0][0], portal[0][1]),
                                        radius=portal[1], edgecolor='purple')
@@ -72,9 +72,12 @@ def show_walker_way(name:str, movement_log: list[Coordinates], obstacles: Tuple,
                 circle.set_facecolor("purple")
         except NameError:
             circle.set_facecolor("purple")
+        except ValueError:
+            circle.set_facecolor("purple")
         endpoints_x.append(portal[2][0])
         endpoints_y.append(portal[2][1])
         ax.add_patch(circle)
+
     for mud in muds:
         rectangle = patches.Rectangle(*mud)
         try:
@@ -83,8 +86,9 @@ def show_walker_way(name:str, movement_log: list[Coordinates], obstacles: Tuple,
             rectangle.set_facecolor("brown")
         except NameError:
             rectangle.set_facecolor("brown")
+        except ValueError:
+            rectangle.set_facecolor("brown")
         ax.add_patch(rectangle)
-
     ax.axis('equal')
     ax.scatter(endpoints_x,endpoints_y, marker= "*")
     ax.scatter(0, 0, color='black', marker='x')
@@ -136,6 +140,8 @@ def walkers_unision(graph_name, data, color_list: list = None,obstacles: tuple =
                 circle.set_facecolor("purple")
         except NameError:
             circle.set_facecolor("purple")
+        except ValueError:
+            circle.set_facecolor("purple")
         endpoints_x.append(portal[2][0])
         endpoints_y.append(portal[2][1])
         ax.add_patch(circle)
@@ -146,6 +152,8 @@ def walkers_unision(graph_name, data, color_list: list = None,obstacles: tuple =
         except FileNotFoundError:
             rectangle.set_facecolor("brown")
         except NameError:
+            rectangle.set_facecolor("brown")
+        except ValueError:
             rectangle.set_facecolor("brown")
         ax.add_patch(rectangle)
        
@@ -177,9 +185,8 @@ def show_walker_graph(data, file_to_save: str = f"{DESTINATION_PATH}_graph") -> 
         plt.ylabel(y_label)
         plt.title(f"Graph of {graph_type}")
         for walker in data[x[0]]:
-            print(walker)
             to_plot = [data[i][walker][graph_type] for i in x]
             plt.plot(x, to_plot, label=f"Walker {walker}")
         plt.legend(loc="upper left")
-        fig.show()
-        fig.savefig(file_to_save+f"{index}.png")
+        # fig.show()
+        fig.savefig(file_to_save+f"_{index}.png")

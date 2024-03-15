@@ -19,14 +19,14 @@ MOVEMENTS = {
                     'A': "Random direction, step size 1 unit",
                     'B': "Random direction, step size chosen equally between [0.5,1.5]",
                     'C': "Random direction chosen equally between (Up,Down,Right,Left), step size 1 unit",
-                    'Dup': "Direction chosen at Random but favoring up, step site 1 unit",
-                    'Ddown': "Direction chosen at Random but favoring down, step site 1 unit",
-                    'Dright': "Direction chosen at Random but favoring right, step site 1 unit",
-                    'Dleft': "Direction chosen at Random but favoring left, step site 1 unit",
-                    'Daxis': "Direction chosen at Random but favoring axis, step site 1 unit"
+                    'D_up': "Direction chosen at Random but favoring up, step site 1 unit",
+                    'D_down': "Direction chosen at Random but favoring down, step site 1 unit",
+                    'D_right': "Direction chosen at Random but favoring right, step site 1 unit",
+                    'D_left': "Direction chosen at Random but favoring left, step site 1 unit",
+                    'D_axis': "Direction chosen at Random but favoring axis, step site 1 unit"
                     }
 COLORS = {'R': "red", 'G': "green", 'Y': "yellow", 'Bl': "blue", 'C': "cyan", 'Or': "orange",
-          'Br': "brown", 'P': "Purple", 'Ol': "olive"}
+          'Br': "brown", 'P': "purple", 'Ol': "olive"}
 
 class Walker:
     """
@@ -73,10 +73,10 @@ class Walker:
         DISTANCES = (0.5,1.5)
 
         # For C
-        DIRECTIONS = {'up': PI/2,
-                      'right': 0,
-                      'down': (3/2)*PI,
-                      'left': PI}
+        DIRECTIONS = {'_up': PI/2,
+                      '_right': 0,
+                      '_down': (3/2)*PI,
+                      '_left': PI}
 
         if self.__movement == 'A':
             angle = 2 * PI * random.random()
@@ -99,7 +99,7 @@ class Walker:
             inclination = self.__movement[1:]
             if inclination in DIRECTIONS:
                 angle += DIRECTIONS[inclination]
-            elif inclination == "axis":
+            elif inclination == "_axis":
                 angle += self.directional_angle()
             else:
                 raise AttributeError("Somewhere the second part of inclination changed")

@@ -1,0 +1,13 @@
+{"Walkers": [{"movement": "D_up", "color": "R", "location": [0.0, 0.0]},
+ {"movement": "D_up", "color": "G", "location": [0.0, 0.0]},
+  {"movement": "D_up", "color": "Bl", "location": [0.0, 0.0]}, 
+  {"movement": "D_up", "color": "Or", "location": [0.0, 0.0]}, 
+  {"movement": "D_up", "color": "P", "location": [0.0, 0.0]}], 
+  "Barriers": 
+  [{"center": [4.0, 20.0], "length": 8.0, "angle": -1.5}, 
+  {"center": [-4.0, 20.0], "length": 8.0, "angle": 1.5}], 
+  "Portals": 
+  [{"center": [0.0, 40.0], "endpoint": [0.0, 0.0], "radius": 1.5}], 
+  "Mudspots": [], 
+  "Simulation": 
+  {"type": "plot", "n": 1000, "filename": "/home/dori/Documents/UNI/Intro/final_project/Results/bottleneck"}}

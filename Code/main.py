@@ -12,28 +12,28 @@ from walker import Walker
 from barrier import Barrier
 from portal import Portal
 from mud import Mud
-from simulation import Simulation
+from simulation import Simulation,run_from_json
 import tkinter as tk
 from walker_gui import SimulationGUI
+import sys
+import os
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = SimulationGUI(root)
-    root.mainloop()
 
-
-
-if __name__ == "__min__":
-    simulation = Simulation()
-    letters = ('Dup','Dright','Ddown','Dleft','Daxis')
-    colors = "GCYRP"
-    for i in range(5):
-        simulation.add_walker(Walker(letters[4], color= colors[i]))
-    simulation.add_barrier(Barrier((0,10), 5, 0))
-    simulation.add_portal(Portal((5,12),2.3))
-    simulation.add_portal(Portal((-5,12),2.3))
-    simulation.add_mud(Mud((-3,-4),6,3))
-
-    simulation.plot_simulation(100)
-    simulation.simulation_average(5,500,10**5)
-    input("Done")
+    if len(sys.argv) == 1:
+        root = tk.Tk()
+        app = SimulationGUI(root)
+        root.mainloop()
+    elif len(sys.argv) == 2:
+        json_path = sys.argv[1]
+        if not os.path.isfile(json_path):
+            print("Invalid JSON path. Please provide a valid file path or run with no arguments to use the GUI.")
+            sys.exit(1)
+        try:
+            Simulation.run_from_json(json_path)
+            print("Simulation completed successfully. \
+You may view the results in the same directory as the JSON file.")
+        except Exception as e:
+            print(f"An error occurred while running the simulation: {e}")
+    else:
+        print("Invalid number of arguments. Please provide either no arguments or a single JSON path.")

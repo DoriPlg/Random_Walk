@@ -139,7 +139,6 @@ class Simulation:
         for index, _ in enumerate(self.__walkers):
             info_dict[index] = {"crosses": 0, "escape": None}
         step = 0
-
         # Runs through the steps, checking when ESCAPE_RAD is escaped
         while (step < max_depth + 1 and
                 None in [info_dict[index]["escape"] for index,_ in enumerate(self.__walkers)])\
@@ -229,10 +228,24 @@ class Simulation:
         # Returns the data constructed
         return data_for_all_walkers
 
-    def graph_simulation(self, iterations: int, n: int, max_depth: int,jump: str,file_name: str) -> None:
+    def graph_simulation(self, iterations: int, n: int, max_depth: int, jump: str, file_name: str) -> None:
+        """
+        Perform a graph simulation.
+
+        Parameters:
+        - iterations (int): The number of iterations to perform.
+        - n (int): The maximum value for the range.
+        - max_depth (int): The maximum depth for the simulation.
+        - jump (str): The step size for the range.
+        - file_name (str): The name of the file to save the graph.
+
+        Returns:
+        None
+        """
+
         data_for_graph = {}
         for index in range(jump, n, jump):
-            data_for_graph[index] =(self.simulation_average(iterations, index, max_depth))
+            data_for_graph[index] = self.simulation_average(iterations, index, max_depth)
         graph.show_walker_graph(data_for_graph, file_name)
 
     def plot_simulation(self, n: int, file_name: str = f"{DESTINATION_PATH}walkerplot") -> None:
@@ -256,7 +269,7 @@ class Simulation:
         for index, locations in locations_dict.items():
             graph_name = f"Graph number {index + 1}, showing a walker with {self.__walkers[index].movement} type movement"
             graph.show_walker_way(graph_name,locations, obstacles,
-                                   file_name+str(index), color_list[index])
+                                   f"{file_name}_{index}", color_list[index])
         graph_name = f"Graph number {len(color_list) + 1}, showing all walkers in unision"
         graph.walkers_unision(graph_name, locations_dict, color_list=color_list,obstacles=obstacles, file_to_save=file_name+"_all")
 
@@ -287,7 +300,8 @@ def check_data(data: dict) -> bool:
                 if data["Simulation"]["type"] == "graph":
                     int(data["Simulation"]["iterations"])
                     int(data["Simulation"]["max_depth"])
-                    int(data["Simulation"]["jump"])
+                    int(data["Simulation"]["jumps"])
+                print("passed this point")
                 #check if the filename leads to a valid path
                 split_path = data["Simulation"]["filename"].split("/")
                 directory = "/".join(split_path[:-1])
@@ -297,43 +311,45 @@ def check_data(data: dict) -> bool:
                 return False
     return False
 
-def run_from_json(filename: str = None) -> None:
+def run_from_json(filename: str = None) -> str:
     """
-    loads a simulation from a json file and runs the desired simulatoin
+    loads a simulation from a json file and runs the desired simulation
     :param filename: the path to the json
+
+    returns the base path to the file saved
     """
     if not filename:
         filename = helper_functions.get_filepath_to_json()
     else:
         filename = filename + "_simulation.json"
     data = helper_functions.load_simulation(filename)
+    data["Simulation"]["filename"] = filename.removesuffix("_simulation.json")
     if not check_data(data):
+        print("The data in the file is not valid for a simulation")
         raise ValueError("The data in the file is not valid for a simulation")
-    keys = ['Walkers', 'Barriers', 'Portals', 'Mudspots', 'Simulation']
-
-    # Check valid input
-    if [key for key in data.keys()] == keys:
-        if data["Simulation"]["type"] in ("plot", "graph"):
-            simulation = Simulation()
-            for walker in data["Walkers"]:
-                simulation.add_walker(Walker(**walker))
-            for barrier in data["Barriers"]:
-                simulation.add_barrier(Barrier(**barrier))
-            for portal in data["Portals"]:
-                simulation.add_portal(Portal(**portal))
-            for mudspot in data["Mudspots"]:
-                simulation.add_mud(Mud(**mudspot))
-            if data["Simulation"]["type"] == "plot":
-                n, filename = data["Simulation"]["n"], data["Simulation"]["filename"]
-                simulation.plot_simulation(n, filename)
-            elif data["Simulation"]["type"] == "graph":
-                iterations = data["Simulation"]["iterations"]
-                n = data["Simulation"]["n"]
-                max_depth = data["Simulation"]["max_depth"]
-                jump = data["Simulation"]["jump"]
-                file_name = data["Simulation"]["filename"]
-                simulation.graph_simulation(iterations, n, max_depth, jump, file_name)
-        else:
-            pass
     else:
-        print("trash")
+        print("The data is valid")
+
+    simulation = Simulation()
+    for walker in data["Walkers"]:
+        simulation.add_walker(Walker(**walker))
+    for barrier in data["Barriers"]:
+        simulation.add_barrier(Barrier(**barrier))
+    for portal in data["Portals"]:
+        simulation.add_portal(Portal(**portal))
+    for mudspot in data["Mudspots"]:
+        simulation.add_mud(Mud(**mudspot))
+    if data["Simulation"]["type"] == "plot":
+        n, filename = data["Simulation"]["n"], data["Simulation"]["filename"]
+        simulation.plot_simulation(n, filename)
+    elif data["Simulation"]["type"] == "graph":
+        iterations = data["Simulation"]["iterations"]
+        n = data["Simulation"]["n"]
+        max_depth = data["Simulation"]["max_depth"]
+        jump = data["Simulation"]["jumps"]
+        file_name = data["Simulation"]["filename"]
+        simulation.graph_simulation(iterations, n, max_depth, jump, file_name)
+    
+    return filename.removesuffix("_simulation.json")
+
+

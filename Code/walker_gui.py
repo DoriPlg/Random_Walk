@@ -1,3 +1,4 @@
+import os
 from helper_functions import *
 from simulation import Simulation, run_from_json
 from walker import Walker
@@ -62,8 +63,16 @@ class SimulationGUI:
             None
         """
         self.root = root
+        self.clear_frame()
         self.root.title("Simulation App")
-        self.root.geometry("700x800")  # Set permanent window size
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        window_width = int(screen_width * 0.8)
+        window_height = int(screen_height * 0.8)
+        window_position_x = int((screen_width - window_width) / 2)
+        window_position_y = int((screen_height - window_height) / 2)
+        self.root.geometry(f"{window_width}x{window_height}+{window_position_x}+{window_position_y}")
+        #self.root.geometry("700x800")  # Set permanent window size
 
         self.welcome_label = tk.Label(self.root,
                                       text="Welcome to the Random Walker Simulation App!")
@@ -77,7 +86,7 @@ class SimulationGUI:
                                        text="Manually Build Simulation", command=self.build_simulation)
         self.manual_button.pack()
 
-        self.add_exit_button()
+        self.bottom_buttons()
 
     def load_from_file(self):
         """
@@ -87,8 +96,9 @@ class SimulationGUI:
         If the JSON file is invalid, it displays an error message and prompts the user to enter the data manually.
         """
         try:
-            run_from_json()
-            self.show_results()
+            path = run_from_json()
+            self.clear_frame()
+            self.show_results(path)
         except ValueError:
             self.build_simulation(err_message="Invalid input, please enter manually")
         except AttributeError:
@@ -113,33 +123,35 @@ class SimulationGUI:
         variables = []
         if message:
             label = tk.Label(frame, text=message)
-            label.pack()
+            label.pack(side=tk.TOP)
         if var_type is tk.IntVar:
             # Function to validate entry input
             validate = (self.root.register(is_intable), '%P')
         elif var_type is tk.DoubleVar:
             # Function to validate entry input
             validate = (self.root.register(is_float), '%P')
+        input_frame = tk.Frame(frame)
         for i in range(n_inputs):
             var = var_type()
-            entry = tk.Entry(frame, textvariable=var, width=width)
+            entry = tk.Entry(input_frame, textvariable=var, width=width)
             if def_values:
                 entry.insert(0,def_values[i])
-            entry.pack()
+            entry.pack(side=tk.LEFT)
             # Apply validation to walker_center_entry_x and walker_center_entry_y
             entry.config(validate="key", validatecommand=validate)
             variables.append(var)
+        input_frame.pack()
         return variables
     single_int_user_input = ft.partial(user_input,var_type=tk.IntVar,n_inputs=1)
     single_float_user_input = ft.partial(user_input,var_type=tk.DoubleVar,n_inputs=1)
     double_float_user_input = ft.partial(user_input,var_type=tk.DoubleVar,n_inputs=2)
 
-    def add_exit_button(self):
-        """
-        Add an exit button to the GUI.
 
-        This method creates a button labeled "Exit" and adds it to the GUI window.
-        When the button is clicked, it will quit the application.
+    def bottom_buttons(self):
+        """
+        Adds the home and exit buttons to the GUI.
+
+        This method adds the "Home" and "Exit" buttons to the GUI window.
 
         Args:
             None
@@ -147,23 +159,44 @@ class SimulationGUI:
         Returns:
             None
         """
-        exit_button = tk.Button(self.root, text="Exit", command=self.root.quit)
-        exit_button.pack()
+        def add_exit_button(frame: tk.Frame):
+            """
+            Add an exit button to the GUI.
 
-    def add_home_button(self):
-        """
-        Adds a home button to the GUI.
+            This method creates a button labeled "Exit" and adds it to the GUI window.
+            When the button is clicked, it will quit the application.
 
-        This method creates a tkinter Button widget with the text "Home" and associates it with the `build_simulation` method as the command to be executed when the button is clicked. The button is then packed into the root window.
+            Args:
+                None
 
-        Parameters:
-            None
+            Returns:
+                None
+            """
+            exit_button = tk.Button(frame, text="Exit", command=self.root.quit)
+            exit_button.pack(side=tk.RIGHT, padx=10)
 
-        Returns:
-            None
-        """
-        home_button = tk.Button(self.root, text="Home", command=self.__init__)
-        home_button.pack()
+        def add_home_button(frame: tk.Frame):
+            """
+            Adds a home button to the GUI.
+
+            This method creates a tkinter Button widget with the text "Home" and associates it with the `build_simulation` method as the command to be executed when the button is clicked. The button is then packed into the root window.
+
+            Parameters:
+                None
+
+            Returns:
+                None
+            """
+            home_button = tk.Button(frame, text="Home", command=ft.partial(self.__init__,root=self.root))
+            home_button.pack(side=tk.LEFT, padx=10)
+        
+        button_frame = tk.Frame(self.root)
+        add_home_button(button_frame)
+        add_exit_button(button_frame)
+        button_frame.pack(side=tk.BOTTOM, pady=5)
+
+
+        
 
 
 
@@ -206,8 +239,7 @@ class SimulationGUI:
         self.build_button = tk.Button(self.root, text="Build", command=self.check_build_input)
         self.build_button.pack()
 
-        self.add_home_button()
-        self.add_exit_button()
+        self.bottom_buttons()
 
     def check_build_input(self) -> bool:
         try:
@@ -287,8 +319,7 @@ class SimulationGUI:
         self.next_button = tk.Button(self.root, text="Next", command=self.create_barrier_input)
         self.next_button.pack()
 
-        self.add_home_button()
-        self.add_exit_button()
+        self.bottom_buttons()
 
 
     def create_barrier_input(self) ->None:
@@ -320,11 +351,19 @@ class SimulationGUI:
         self.next_button = tk.Button(self.root, text="Next", command=self.create_portal_input)
         self.next_button.pack()
 
-        self.add_home_button()
-        self.add_exit_button()
+        self.bottom_buttons()
 
 
-    def create_portal_input(self) ->None:
+    def create_portal_input(self) -> None:
+        """
+        Creates the input interface for the portals.
+        Clears the frame and creates a new frame for portal input.
+        Prompts the user to input the center location, radius, and destination for each portal.
+        Stores the portal data in the __portals_data list.
+        If there are no portals, calls the create_mudspots_input method.
+        Adds the "Next" button to proceed to the mudspots input.
+        Adds the home and exit buttons.
+        """
         self.clear_frame()
         portal_input_frame = tk.Frame(self.root)
         portal_input_frame.pack()
@@ -333,21 +372,21 @@ class SimulationGUI:
             portal_frame = tk.Frame(portal_input_frame)
             portal_frame.pack()
 
-            portal_center_x,portal_center_y=\
-                self.double_float_user_input(self,portal_frame,def_values=[0,0],
-                                             message=f"Input for Portal {i+1}: Center Location (x,y):",width=5)
-            portal_radius =\
-            self.single_float_user_input(self,portal_frame,def_values=[1],message="Portal radius:")[0]
+            portal_center_x, portal_center_y = \
+                self.double_float_user_input(self, portal_frame, def_values=[0, 0],
+                                             message=f"Input for Portal {i+1}: Center Location (x,y):", width=5)
+            portal_radius = \
+                self.single_float_user_input(self, portal_frame, def_values=[1], message="Portal radius:")[0]
 
-            portal_dest_x,portal_dest_y =\
-            self.double_float_user_input(self,portal_frame,def_values=[0,0],
-                                             message="Destination (x,y):",width=5)
+            portal_dest_x, portal_dest_y = \
+                self.double_float_user_input(self, portal_frame, def_values=[0, 0],
+                                             message="Destination (x,y):", width=5)
 
             self.__portals_data.append({"Centerx": portal_center_x,
                                         "Centery": portal_center_y,
-                                       "Radius": portal_radius,
-                                       "Destinationx": portal_dest_x,
-                                       "Destinationy": portal_dest_y})
+                                        "Radius": portal_radius,
+                                        "Destinationx": portal_dest_x,
+                                        "Destinationy": portal_dest_y})
 
         if self.__num_portal == 0:
             self.create_mudspots_input()
@@ -355,11 +394,20 @@ class SimulationGUI:
         self.next_button = tk.Button(self.root, text="Next", command=self.create_mudspots_input)
         self.next_button.pack()
 
-        self.add_home_button()
-        self.add_exit_button()
+        self.bottom_buttons()
 
 
-    def create_mudspots_input(self) ->None:
+    def create_mudspots_input(self) -> None:
+        """
+        Creates the input interface for specifying mudspots.
+
+        This method clears the frame, creates a new frame for mudspot input,
+        and prompts the user to input the details of each mudspot, such as
+        the bottom-left corner coordinates and the width and height of the patch.
+
+        Returns:
+            None
+        """
         self.clear_frame()
         mudspot_input_frame = tk.Frame(self.root)
         mudspot_input_frame.pack()
@@ -368,23 +416,29 @@ class SimulationGUI:
             mudspot_frame = tk.Frame(mudspot_input_frame)
             mudspot_frame.pack()
 
-            bottom_left_x, bottom_left_y =\
-            self.double_float_user_input(self,mudspot_frame,def_values=[0,0],
-                                            message=f"Input for Mudspot{i+1} Bottom-left corner (x,y):")
-            width, height=\
-            self.double_float_user_input(self,mudspot_frame,def_values=[1,1],message="Width and Height of the patch:")
+            bottom_left_x, bottom_left_y = self.double_float_user_input(
+                self, mudspot_frame, def_values=[0, 0],
+                message=f"Input for Mudspot{i+1} Bottom-left corner (x,y):"
+            )
+            width, height = self.double_float_user_input(
+                self, mudspot_frame, def_values=[1, 1],
+                message="Width and Height of the patch:"
+            )
 
-            self.__mudspots_data.append({"Locationx": bottom_left_x,
-                                            "Locationy": bottom_left_y,
-                                    "Width": width,
-                                    "Height": height})
+            self.__mudspots_data.append({
+                "Locationx": bottom_left_x,
+                "Locationy": bottom_left_y,
+                "Width": width,
+                "Height": height
+            })
+
         if self.__num_mudspot == 0:
             self.simulation_variables()
             return
-        self.next_button = tk.Button(self.root, text="Next", command=self.simulation_variables())
+
+        self.next_button = tk.Button(self.root, text="Next", command=self.simulation_variables)
         self.next_button.pack()
-        self.add_home_button()
-        self.add_exit_button()
+        self.bottom_buttons()
 
 
     def browse_file(self):
@@ -440,19 +494,24 @@ data for different number of iterations)")
                 simulation_input_frame, def_values=[5],
                 message="How many iterations do you wish to average for?", width= 5)[0]
 
-            max_iterations =self.single_int_user_input(self,
+            n_iterations =self.single_int_user_input(self,
                 simulation_input_frame, def_values=[1000],
                 message="How many maximum steps do you wish to plot for?", width= 5)[0]
 
             jumps=self.single_int_user_input(self,
                 simulation_input_frame, def_values=[20],
                 message="How many every how many steps do you want a point?", width= 5)[0]
+            
+            max_depth = self.single_int_user_input(self,
+                simulation_input_frame, def_values=[100000],
+                message="What is the max depth you'll allow the simulation to run for?", width= 5)[0]
 
 
             graph = tk.StringVar(value="graph")
             self.__simulation_data = {"type": graph,
                                       "iterations": iterations,
-                                      "max_depth": max_iterations,
+                                        "max_depth": max_depth,
+                                      "n": n_iterations,
                                       "jumps": jumps}
 
 
@@ -483,8 +542,7 @@ data for different number of iterations)")
         self.run_button = tk.Button(self.root, text="Run simulation", command=self.run_simulation)
         self.run_button.pack()
 
-        self.add_home_button()
-        self.add_exit_button()
+        self.bottom_buttons()
 
     def run_simulation(self) ->None:
         
@@ -521,46 +579,53 @@ data for different number of iterations)")
             {key: self.__simulation_data[key].get() for key in self.__simulation_data}
         simulation_data["Simulation"]["filename"] = path
 
+        if path == "/":
+            path = os.path.realpath(__file__).removesuffix("walker_gui.py")+"null_name"
         save_to_json(simulation_data,f"{path}_simulation.json")
         try:
             run_from_json(path)
-            self.show_results()
+            self.show_results(path)
         except ValueError:
             self.build_simulation(err_message="Invalid input, please re-enter")
         except AttributeError:
             self.clear_frame()
             self.__init__(self.root)
 
-    def show_results(self):
+    def show_results(self, path: str):
         """
         Shows the results of the simulation.
         """
         def shuffle_image():
-            if current == "_all":
+            nonlocal current
+            if current == "all":
                 current = 0
             else:
                 current += 1  # Increment the value of current
             try:
-                self.image = tk.PhotoImage(
-                    file=f"{self.__simulation_path['Directory'].get()}/{self.__simulation_path['Filename'].get()}{current}.png")
+                self.image = tk.PhotoImage(file=f"{path}_{current}.png")
                 self.image_label.configure(image=self.image)
             except tk.TclError:
-                current = "_all"
-                self.image = tk.PhotoImage(
-                    file=f"{self.__simulation_path['Directory'].get()}/{self.__simulation_path['Filename'].get()}{current}.png")
-                self.image_label.configure(image=self.image)
-        print("show_results")
-        self.clear_frame()
-        self.results_label = tk.Label(self.root, text="Results")
+                try:
+                    current = "all"
+                    self.image = tk.PhotoImage(file=f"{path}_{current}.png")
+                    self.image_label.configure(image=self.image)
+                except tk.TclError:
+                    current = 0
+                    self.image = tk.PhotoImage(file=f"{path}_{current}.png")
+                    self.image_label.configure(image=self.image)
+
+        #self.clear_frame()
+        results_frame = tk.Frame(self.root)
+        results_frame.pack()
+        self.bottom_buttons()
+        self.results_label = tk.Label(results_frame, text="Results")
+        self.results_label.pack()
         current = 0
-        self.image = tk.PhotoImage(
-            file=f"{self.__simulation_path['Directory'].get()}/{self.__simulation_path['Filename'].get()}{current}.png")
-        self.image_label = tk.Label(self.root, image=self.image)
+        self.image = tk.PhotoImage(file=f"{path}_{current}.png")
+        self.image_label = tk.Label(results_frame, image=self.image)
         self.image_label.pack()
 
-        self.shuffle_button = tk.Button(self.root, text="Chang Image", command=shuffle_image)
+        self.shuffle_button = tk.Button(results_frame, text="Change Image", command=shuffle_image)
         self.shuffle_button.pack()
 
-        self.add_home_button()
-        self.add_exit_button()
 
