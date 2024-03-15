@@ -597,6 +597,21 @@ data for different number of iterations)")
                                         "jumps": jumps}
 
         # Checkboxes for gravities
+        def show_gravity():
+            nonlocal gravity_checkbox
+            if gravity_exists.get():
+                gravity_checkbox.pack()
+            else:
+                gravity_checkbox.destroy()
+
+        gravity_exists = tk.BooleanVar()
+        show_gravity_checkbox = tk.Checkbutton(simulation_input_frame,onvalue=True,offvalue=False,
+                                               variable=gravity_exists,
+                                                 text="Show Gravity", command=show_gravity)
+        show_gravity_checkbox.pack()
+        gravity_checkbox = tk.Checkbutton(simulation_input_frame, text="Gravity")
+
+        
 
         # The parts common to both types of simulations - the directory path and simulation name
         self.dir_path_label = tk.Label(self.root, text="Directory Path:")
