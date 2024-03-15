@@ -48,11 +48,11 @@ def passes_0(lst: list[float]) -> int:
     count = 0
     for index in range(1, len(lst)):
         if lst[index] != 0:
-            for i in range(1,len(lst)-index):
-                if lst[index]*lst[index-i] < 0:
+            for i in range(index - 1, -1, -1):
+                if lst[index]*lst[i] < 0:
                     count += 1
                     break
-                elif lst[index]*lst[index-i] > 0:
+                if lst[index]*lst[i] > 0:
                     break
     return count
 
@@ -64,7 +64,7 @@ def is_intable(x) -> bool:
     try:
         int(x)
         return True
-    except ValueError:
+    except:
         return False
 
 def is_int(x) -> bool:
@@ -85,5 +85,5 @@ def is_float(x) -> bool:
     try:
         float(x)
         return True
-    except ValueError:
+    except:
         return False

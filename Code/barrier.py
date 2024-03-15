@@ -68,7 +68,7 @@ class Barrier:
         return (self.__point1,self.__point2)
 
     @staticmethod
-    def get_function(a, b) -> Tuple[float, float] | str:
+    def get_function(a: Tuple[float,float], b: Tuple[float,float]) -> Tuple[float, float] | str:
         """
         recieves two points and returns a tuple containing the ratio between them and
         the additional part to add to offset from the x axis as a tuple: (ratio, aditional)

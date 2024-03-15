@@ -1,6 +1,3 @@
-import sys
-sys.path.append('../Code')
-print(sys.path)
 import unittest
 import Code.walker as wk
 
