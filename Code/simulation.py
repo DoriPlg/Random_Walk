@@ -11,7 +11,7 @@ NOTES: ...
 import os
 from copy import deepcopy
 from typing import Tuple
-from Code.walker import Walker, pull_push
+from Code.walker import Walker, gravitate
 from Code.barrier import Barrier
 from Code.portal import Portal
 from Code.mud import Mud
@@ -36,7 +36,7 @@ class Simulation:
     :attribute __iteration: counts the iterations of the simulation
     """
 
-    def __init__(self) -> None:
+    def __init__(self, gravity = None) -> None:
         """
         The constructor for Simulation objects
         """
@@ -46,6 +46,7 @@ class Simulation:
         self.__portals = []
         self.__iteration = 0
         self.__mudspots = []
+        self.__gravity = gravity
 
     def add_walker(self, walker: Walker) -> None:
         """
@@ -107,6 +108,8 @@ class Simulation:
                     #print(f"passed through portal on {self.__iteration}th iteration")
                     next_place = portal.endpoint
             walker.jump(next_place)
+        if self.__gravity:
+            gravitate(self.__walkers, gravity=self.__gravity)
 
         self.__iteration += 1
         return self.__iteration
@@ -308,6 +311,14 @@ def check_data(data: dict) -> bool:
                     int(data["Simulation"]["iterations"])
                     int(data["Simulation"]["max_depth"])
                     int(data["Simulation"]["jumps"])
+                try:
+                    if isinstance(data["Simulation"]["gravity"], bool):
+                        pass
+                except:
+                    if "gravity" in data["Simulation"]:
+                        raise ValueError("Something wrong with the gravity")
+                    else:
+                        pass
                 #check if the filename leads to a valid path
                 split_path = data["Simulation"]["filename"].split("/")
                 directory = "/".join(split_path[:-1])
@@ -342,7 +353,10 @@ def run_and_plot(data: dict, filename: str) -> str:
     """
     runs the simulation from the data given
     """
-    simulation = Simulation()
+    if "graph" in data["Simulation"]:
+        simulation = Simulation(data["Simulation"]["graph"])
+    else:
+        simulation = Simulation()
     for walker in data["Walkers"]:
         simulation.add_walker(Walker(**walker))
     for barrier in data["Barriers"]:

@@ -185,9 +185,39 @@ class Walker:
         """
         return MOVEMENTS
 
-def pull_push(walkers: list[Walker], power: int = 1, gravity: bool = True) -> None:
+def gravitate(walkers: list[Walker], degree: int = 5, gravity: bool = True) -> None:
     """
-    Additional feature for a walkers that attract or push each other, for pairs
+    Additional feature for walkers that attract or push each other
+    
+    :param walkers: A list of Walker objects
+    :param degree: The degree of attraction or repulsion between walkers, the higher the weaker. (default: 5)
+    :param gravity: A boolean indicating whether to apply gravity or not (default: True)
+    :return: None
     """
-    pass
+    if len(walkers) <= 1:
+        return
+    nonrelative_locations = {}
+    for walker in walkers:
+        # direction as in (x, y) relative to walker
+        current_direction = (0,0)
+        for other in walkers:
+            if other is walker:
+                continue
+            x_difference = other.location[0] - walker.location[0]
+            y_difference = other.location[1] - walker.location[1]
+            current_direction = (current_direction[0]+x_difference,
+                                 current_direction[1]+y_difference)
+        # Adapt the direction to the desired gravitational power and number of walkers
+        ratio = degree * len(walkers)
+        current_direction = (current_direction[0]/(ratio),
+                             current_direction[1]/(ratio))
+        
+        # Get location not relative to walker
+        nonrelative_locations[walker] = (walker.location[0] + current_direction[0],
+                             walker.location[1] + current_direction[1])
+    for walker in walkers:
+        walker.jump(nonrelative_locations[walker])
+        
+
+
 

@@ -1,5 +1,6 @@
 import unittest
 import Code.walker as wk
+from Code.walker import gravitate
 
 class TestWalker(unittest.TestCase):
     def test_init(self):
@@ -56,6 +57,26 @@ class TestWalker(unittest.TestCase):
         move_dict = wk.Walker.move_dict()
         self.assertIsInstance(move_dict, dict)
         self.assertGreater(len(move_dict), 0)
+
+    def test_gravitate(self):
+        walker_list = []
+        walker1 = wk.Walker("A", location=(10,10))
+        walker_list.append(walker1)
+        walker2 = wk.Walker("A", location=(-10,10))
+        walker_list.append(walker2)
+        gravitate(walker_list,1)
+        self.assertEqual(walker_list[0].location, (0,10))
+        self.assertEqual(walker_list[1].location, (0,10))
+        walker_list = []
+        walker1 = wk.Walker("A", location=(10,10))
+        walker_list.append(walker1)
+        walker2 = wk.Walker("A", location=(-10,10))
+        walker_list.append(walker2)
+        walker3 = wk.Walker("A")
+        walker_list.append(walker3)
+        gravitate(walker_list,2)
+        self.assertTrue(3 < walker_list[2].location[1] < 4)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -596,6 +596,8 @@ data for different number of iterations)")
                                         "n": n_iterations,
                                         "jumps": jumps}
 
+        # Checkboxes for gravities
+
         # The parts common to both types of simulations - the directory path and simulation name
         self.dir_path_label = tk.Label(self.root, text="Directory Path:")
         self.dir_path_label.pack(pady=10)
