@@ -13,9 +13,9 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 from typing import Tuple
 import functools as ft
-from helper_functions import *
-from simulation import *
-from walker import Walker
+from Code.helper_functions import *
+from Code.simulation import *
+from Code.walker import Walker
 
 Coordinates = Tuple[float,float]
 MOVE_DICT = {Walker.move_dict()[k]: k for k in Walker.move_dict()}

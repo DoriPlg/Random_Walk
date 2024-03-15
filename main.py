@@ -9,9 +9,9 @@ NOTES: ...
 """
 
 
-from simulation import run_from_json, run_and_plot
+from Code.simulation import run_from_json, run_and_plot
 import tkinter as tk
-from walker_gui import SimulationGUI
+from Code.walker_gui import SimulationGUI
 import sys
 import os
 

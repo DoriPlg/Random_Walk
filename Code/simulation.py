@@ -11,12 +11,12 @@ NOTES: ...
 import os
 from copy import deepcopy
 from typing import Tuple
-from walker import Walker, pull_push
-from barrier import Barrier
-from portal import Portal
-from mud import Mud
-import helper_functions
-import graph
+from Code.walker import Walker, pull_push
+from Code.barrier import Barrier
+from Code.portal import Portal
+from Code.mud import Mud
+import Code.helper_functions
+import Code.graph
 
 Coordinates = Tuple[float,float]
 

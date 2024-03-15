@@ -33,7 +33,7 @@ class Walker:
     A class for Walker objects in a random walker simulation
     """
 
-    def __init__(self, movement: str, location: Coordinates = (0,0), color: str = 'B') -> None:
+    def __init__(self, movement: str, location: Coordinates = (0,0), color: str = 'Bl') -> None:
         """
         A constructor for a Walker object.
         :param movement:a string representing the walkers movement type from:
