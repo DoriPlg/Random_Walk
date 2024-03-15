@@ -1,15 +1,18 @@
 import os
 from helper_functions import *
-from simulation import Simulation, run_from_json
+from simulation import *
 from walker import Walker
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from typing import Tuple
 import functools as ft
+import time
 
 Coordinates = Tuple[float,float]
 MOVE_DICT = {Walker.move_dict()[k]: k for k in Walker.move_dict()}
 COLOR_PALLET = {Walker.color_pallet()[k]: k for k in Walker.color_pallet()}
+
+
 
 class SimulationGUI:
     """
@@ -96,9 +99,7 @@ class SimulationGUI:
         If the JSON file is invalid, it displays an error message and prompts the user to enter the data manually.
         """
         try:
-            path = run_from_json()
-            self.clear_frame()
-            self.show_results(path)
+            self.run_simulation()
         except ValueError:
             self.build_simulation(err_message="Invalid input, please enter manually")
         except AttributeError:
@@ -106,6 +107,9 @@ class SimulationGUI:
             self.__init__(root=self.root)
 
     def clear_frame(self):
+        """
+        Clears the frame by destroying all widgets.
+        """
         for widgets in self.root.winfo_children():
             widgets.destroy()
 
@@ -135,7 +139,8 @@ class SimulationGUI:
             var = var_type()
             entry = tk.Entry(input_frame, textvariable=var, width=width)
             if def_values:
-                entry.insert(0,def_values[i])
+                entry.insert(tk.END,def_values[i])
+                pass
             entry.pack(side=tk.LEFT)
             # Apply validation to walker_center_entry_x and walker_center_entry_y
             entry.config(validate="key", validatecommand=validate)
@@ -196,52 +201,62 @@ class SimulationGUI:
         button_frame.pack(side=tk.BOTTOM, pady=5)
 
 
-        
-
-
 
     def build_simulation(self, err_message: str = None) ->None:
-        self.clear_frame()
-        self.__num_walkers = tk.DoubleVar()
-        self.__num_walkers.set(1)
-        self.__num_barriers = tk.DoubleVar()
-        self.__num_barriers.set(0)
-        self.__num_portals = tk.DoubleVar()
-        self.__num_portals.set(0)
-        self.__num_mudspots = tk.DoubleVar()
-        self.__num_mudspots.set(0)
+            """
+            Builds the simulation GUI by creating and packing the necessary widgets.
+            
+            Args:
+                err_message (str, optional): Error message to display. Defaults to None.
+            """
+            
+            self.clear_frame()
+            self.__num_walkers = tk.DoubleVar()
+            self.__num_walkers.set(1)
+            self.__num_barriers = tk.DoubleVar()
+            self.__num_barriers.set(0)
+            self.__num_portals = tk.DoubleVar()
+            self.__num_portals.set(0)
+            self.__num_mudspots = tk.DoubleVar()
+            self.__num_mudspots.set(0)
 
 
-        if err_message:
-            self.error_message = tk.Label(self.root,text= err_message, fg="red2")
-            self.error_message.pack()
-        self.num_walkers_label = tk.Label(self.root, text="Number of Walkers:")
-        self.num_walkers_label.pack()
-        self.num_walkers_entry = tk.Entry(self.root, textvariable=self.__num_walkers)
-        self.num_walkers_entry.pack()
+            if err_message:
+                self.error_message = tk.Label(self.root,text= err_message, fg="red2")
+                self.error_message.pack()
+            self.num_walkers_label = tk.Label(self.root, text="Number of Walkers:")
+            self.num_walkers_label.pack()
+            self.num_walkers_entry = tk.Entry(self.root, textvariable=self.__num_walkers)
+            self.num_walkers_entry.pack()
 
-        self.num_barriers_label = tk.Label(self.root, text="Number of Barriers:")
-        self.num_barriers_label.pack()
-        self.num_barriers_entry = tk.Entry(self.root, textvariable=self.__num_barriers)
-        self.num_barriers_entry.pack()
+            self.num_barriers_label = tk.Label(self.root, text="Number of Barriers:")
+            self.num_barriers_label.pack()
+            self.num_barriers_entry = tk.Entry(self.root, textvariable=self.__num_barriers)
+            self.num_barriers_entry.pack()
 
-        self.num_portals_label = tk.Label(self.root, text="Number of Portals:")
-        self.num_portals_label.pack()
-        self.num_portals_entry = tk.Entry(self.root, textvariable=self.__num_portals)
-        self.num_portals_entry.pack()
+            self.num_portals_label = tk.Label(self.root, text="Number of Portals:")
+            self.num_portals_label.pack()
+            self.num_portals_entry = tk.Entry(self.root, textvariable=self.__num_portals)
+            self.num_portals_entry.pack()
 
-        self.num_mudspots_label = tk.Label(self.root, text="Number of Mudspots:")
-        self.num_mudspots_label.pack()
-        self.num_mudspots_entry = tk.Entry(self.root, textvariable=self.__num_mudspots)
-        self.num_mudspots_entry.pack()
+            self.num_mudspots_label = tk.Label(self.root, text="Number of Mudspots:")
+            self.num_mudspots_label.pack()
+            self.num_mudspots_entry = tk.Entry(self.root, textvariable=self.__num_mudspots)
+            self.num_mudspots_entry.pack()
 
-        
-        self.build_button = tk.Button(self.root, text="Build", command=self.check_build_input)
-        self.build_button.pack()
+            
+            self.build_button = tk.Button(self.root, text="Build", command=self.check_build_input)
+            self.build_button.pack()
 
-        self.bottom_buttons()
+            self.bottom_buttons()
 
     def check_build_input(self) -> bool:
+        """
+        Checks the input values for building the simulation.
+
+        Returns:
+            bool: True if the input values are valid, False otherwise.
+        """
         try:
             if is_int(self.__num_walkers.get()) and \
             is_int(self.__num_barriers.get()) and \
@@ -272,6 +287,17 @@ class SimulationGUI:
         return True
 
     def create_walker_input(self):
+        """
+        Creates the input interface for walkers.
+
+        This method clears the frame, initializes the data lists for walkers, barriers, portals, and mudspots.
+        It then creates a frame for walker input and iterates over the number of walkers specified.
+        For each walker, it creates a frame and adds input fields for walker type and color.
+        It also prompts the user for the starting location of the walker.
+        The walker data is stored in the __walkers_data list.
+
+        Finally, it adds a "Next" button to proceed to creating barrier input and calls the bottom_buttons method.
+        """
         self.clear_frame()
 
         self.__walkers_data = []
@@ -322,7 +348,20 @@ class SimulationGUI:
         self.bottom_buttons()
 
 
-    def create_barrier_input(self) ->None:
+    def create_barrier_input(self) -> None:
+        """
+        Creates the barrier input interface.
+
+        This method clears the frame, creates a barrier input frame, and prompts the user to input
+        information for each barrier. The barrier information includes the center location (x, y),
+        length, and angle. The barrier data is stored in the __barriers_data list.
+
+        If there are no barriers, the method calls the create_portal_input method. Otherwise, it
+        creates a "Next" button and calls the bottom_buttons method.
+
+        Returns:
+            None
+        """
         self.clear_frame()
 
         barrier_input_frame = tk.Frame(self.root)
@@ -332,22 +371,30 @@ class SimulationGUI:
             barrier_frame = tk.Frame(barrier_input_frame)
             barrier_frame.pack()
 
-            barrier_center_x,barrier_center_y =\
-                self.double_float_user_input(self,barrier_frame,def_values=[0,0],message=\
-                                             f"Input for Barrier {i+1}: Center Location (x,y):",width=5)
-            barrier_length =\
-            self.single_float_user_input(self,barrier_frame,def_values=[1],message="Length")[0]
+            barrier_center_x, barrier_center_y = self.double_float_user_input(
+                self, barrier_frame, def_values=[0, 0], message=f"Input for Barrier {i+1}: Center Location (x, y):", width=5
+            )
+            barrier_length = self.single_float_user_input(
+                self, barrier_frame, def_values=[1], message="Length"
+            )[0]
 
-            barrier_angle =\
-            self.single_float_user_input(self,barrier_frame,def_values=[0],message="Angle:")[0]
+            barrier_angle = self.single_float_user_input(
+                self, barrier_frame, def_values=[0], message="Angle:"
+            )[0]
 
-            self.__barriers_data.append({"Locationx": barrier_center_x,
-                                         "Locationy":barrier_center_y,
-                                       "Length": barrier_length,
-                                       "Angle": barrier_angle})
+            self.__barriers_data.append(
+                {
+                    "Locationx": barrier_center_x,
+                    "Locationy": barrier_center_y,
+                    "Length": barrier_length,
+                    "Angle": barrier_angle,
+                }
+            )
+
         if self.__num_barrier == 0:
             self.create_portal_input()
             return
+
         self.next_button = tk.Button(self.root, text="Next", command=self.create_portal_input)
         self.next_button.pack()
 
@@ -442,17 +489,39 @@ class SimulationGUI:
 
 
     def browse_file(self):
+        """
+        Allows the user to browse for a file to load.
+        """
         file_path = filedialog.askopenfile()
         if file_path:
             self.directory_path_var.set(file_path)
 
     def browse_directory(self):
+        """
+        Allows the user to browse for a directory to save the simulation data.
+        """
         file_path = filedialog.askdirectory()
         if file_path:
             self.directory_path_var.set(file_path)
 
     __ploting_simulation = True
-    def simulation_variables(self) ->None:
+    def simulation_variables(self) -> None:
+        """
+        Sets up the simulation variables and user interface for selecting simulation options.
+
+        This method clears the frame, creates a new frame for simulation input, and adds buttons and input fields
+        for selecting simulation options. The user can toggle between plotting simulation and graphing simulation,
+        and provide input values such as number of steps, number of iterations, maximum depth, and jump interval.
+
+        The selected simulation options are stored in the `__simulation_data` dictionary and the selected directory
+        path and simulation name are stored in the `__simulation_path` dictionary.
+
+        This method also adds labels and buttons for selecting the directory path and simulation name, and a button
+        for running the simulation.
+
+        Returns:
+            None
+        """
         self.clear_frame()
         simulation_input_frame = tk.Frame(self.root)
         simulation_input_frame.pack()
@@ -468,9 +537,10 @@ class SimulationGUI:
 
         simulation_type = tk.Button(simulation_input_frame,
                                     text="Toggle the type of simulation you would prefer",
-                                     command=switch_simulation)
+                                        command=switch_simulation)
         simulation_type.pack()
 
+        # The parts differing between the two types of simulations
         if self.__ploting_simulation:
             title =\
                 tk.Label(self.root,
@@ -509,43 +579,43 @@ data for different number of iterations)")
 
             graph = tk.StringVar(value="graph")
             self.__simulation_data = {"type": graph,
-                                      "iterations": iterations,
+                                        "iterations": iterations,
                                         "max_depth": max_depth,
-                                      "n": n_iterations,
-                                      "jumps": jumps}
+                                        "n": n_iterations,
+                                        "jumps": jumps}
 
-
+        # The parts common to both types of simulations - the directory path and simulation name
         self.dir_path_label = tk.Label(self.root, text="Directory Path:")
         self.dir_path_label.pack(pady=10)
-
         self.directory_path_var = tk.StringVar()
         self.directory_path_entry = tk.Entry(self.root,
                                         textvariable=self.directory_path_var,
                                         state="readonly", width=50)
         self.directory_path_entry.pack()
-
         self.browse_button = tk.Button(self.root,
-                                       text="Choose where the simulation data will be saved",
-                                       command=self.browse_directory)
+                                        text="Choose where the simulation data will be saved",
+                                        command=self.browse_directory)
         self.browse_button.pack(pady=10)
 
         self.file_path_label = tk.Label(self.root, text="Simulation name:")
         self.file_path_label.pack(pady=10)
-
         self.file_path_var = tk.StringVar()
         self.file_path_entry = tk.Entry(self.root,
                                         textvariable=self.file_path_var, width=20)
         self.file_path_entry.pack()
 
-        self.__simulation_path = {"Directory": self.directory_path_var,
-                                  "Filename":self.file_path_var}
-        self.run_button = tk.Button(self.root, text="Run simulation", command=self.run_simulation)
-        self.run_button.pack()
 
+        self.__simulation_path = {"Directory": self.directory_path_var,
+                                    "Filename":self.file_path_var}
+        self.run_button = tk.Button(self.root, text="Run simulation", command=self.parse_simulation_data)
+        self.run_button.pack()
         self.bottom_buttons()
 
-    def run_simulation(self) ->None:
-        
+    def parse_simulation_data(self) ->None:
+        """
+        Runs the simulation with the user input data.
+        Returns: None
+        """
         self.clear_frame()
         simulation_data = {"Walkers": [], "Barriers": [], "Portals": [], "Mudspots": []}
 
@@ -583,8 +653,7 @@ data for different number of iterations)")
             path = os.path.realpath(__file__).removesuffix("walker_gui.py")+"null_name"
         save_to_json(simulation_data,f"{path}_simulation.json")
         try:
-            run_from_json(path)
-            self.show_results(path)
+            self.run_simulation(path)
         except ValueError:
             self.build_simulation(err_message="Invalid input, please re-enter")
         except AttributeError:
@@ -594,8 +663,12 @@ data for different number of iterations)")
     def show_results(self, path: str):
         """
         Shows the results of the simulation.
+        Takes them from the photos with the same name as the simulation.
         """
         def shuffle_image():
+            """
+            An inner function to shuffle the image.
+            """
             nonlocal current
             if current == "all":
                 current = 0
@@ -617,15 +690,48 @@ data for different number of iterations)")
         #self.clear_frame()
         results_frame = tk.Frame(self.root)
         results_frame.pack()
-        self.bottom_buttons()
+        
         self.results_label = tk.Label(results_frame, text="Results")
         self.results_label.pack()
-        current = 0
-        self.image = tk.PhotoImage(file=f"{path}_{current}.png")
-        self.image_label = tk.Label(results_frame, image=self.image)
-        self.image_label.pack()
+        try:
+            current = 0
+            self.image = tk.PhotoImage(file=f"{path}_{current}.png")
+            self.image_label = tk.Label(results_frame, image=self.image)
+            self.image_label.pack()
 
-        self.shuffle_button = tk.Button(results_frame, text="Change Image", command=shuffle_image)
-        self.shuffle_button.pack()
+            self.shuffle_button = tk.Button(results_frame, text="Change Image", command=shuffle_image)
+            self.shuffle_button.pack()
+        except tk.TclError:
+            self.results_label = tk.Label(results_frame, text="No results to show")
+            self.results_label.pack()
+        finally:
+            self.bottom_buttons()
 
+
+    
+    def run_simulation(self, path: str = None) -> None:
+        """
+        Runs the simulation with the user input data.
+
+        Args:
+            simulation_data (dict): A dictionary containing the simulation data.
+
+        Returns:
+            None
+        """
+        data,path = run_from_json(path)
+        loading_screen = tk.Toplevel(self.root)
+        loading_screen.title("Loading")
+        loading_screen.geometry("400x300")
+        loading_label = tk.Label(loading_screen, text="Running simulation\nThis may take a while...")
+        loading_label.pack()
+        loading_screen.update()
+        try:
+            run_and_plot(data, path)
+        except SimulationError as e:
+            messagebox.showerror("Error",
+                                  f"There was a fundemental problem with the simulation: {e}")
+        loading_screen.destroy()
+        self.clear_frame()
+        self.show_results(path)
 

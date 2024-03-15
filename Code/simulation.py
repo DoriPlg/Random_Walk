@@ -82,14 +82,20 @@ class Simulation:
         Preforms one step of the entire simulation.
         Returns the number of the step preformed.
         """
+        MAX_BARRIER_HITS = 10**3
         for index, walker in enumerate(self.__walkers):
             current_place = walker.location
             self.__location_log[index].append(current_place)
             next_place = walker.next_location()
             for barrier in self.__barriers:
+                barrier_hit = 0
                 while barrier.intersects(current_place, next_place):
-                    # print(f"hit barrier on {self.__iteration}th iteration")
+                    #print(f"hit barrier on {self.__iteration}th iteration")
                     next_place = walker.next_location()
+                    barrier_hit += 1
+                    if barrier_hit > MAX_BARRIER_HITS:
+                        raise SimulationError(
+                            "\nThe walker is stuck in a barrier, please change the simulation")
             for mud in self.__mudspots:
                 if mud.point_in_area(current_place):
                     next_place = (current_place[0] +
@@ -98,7 +104,7 @@ class Simulation:
                                   (next_place[1] - current_place[1]) * mud.get_lag())
             for portal in self.__portals:
                 if portal.inbounds(next_place):
-                    # print(f"passed through portal on {self.__iteration}th iteration")
+                    #print(f"passed through portal on {self.__iteration}th iteration")
                     next_place = portal.endpoint
             walker.jump(next_place)
 
@@ -301,7 +307,6 @@ def check_data(data: dict) -> bool:
                     int(data["Simulation"]["iterations"])
                     int(data["Simulation"]["max_depth"])
                     int(data["Simulation"]["jumps"])
-                print("passed this point")
                 #check if the filename leads to a valid path
                 split_path = data["Simulation"]["filename"].split("/")
                 directory = "/".join(split_path[:-1])
@@ -320,16 +325,21 @@ def run_from_json(filename: str = None) -> str:
     """
     if not filename:
         filename = helper_functions.get_filepath_to_json()
-    else:
-        filename = filename + "_simulation.json"
-    data = helper_functions.load_simulation(filename)
-    data["Simulation"]["filename"] = filename.removesuffix("_simulation.json")
+    filename = filename.removesuffix("_simulation.json")
+    data = helper_functions.load_simulation(filename + "_simulation.json")
+    print(filename)
+    data["Simulation"]["filename"] = filename
     if not check_data(data):
         print("The data in the file is not valid for a simulation")
         raise ValueError("The data in the file is not valid for a simulation")
     else:
         print("The data is valid")
+    return data, filename
 
+def run_and_plot(data: dict, filename: str) -> str:
+    """
+    runs the simulation from the data given
+    """
     simulation = Simulation()
     for walker in data["Walkers"]:
         simulation.add_walker(Walker(**walker))
@@ -352,4 +362,10 @@ def run_from_json(filename: str = None) -> str:
     
     return filename.removesuffix("_simulation.json")
 
-
+class SimulationError(Exception):
+    """
+    The base class for all errors in the simulation
+    Their source is the simulation itself
+    """
+    def __init__(self, message: str):
+        super().__init__(message)

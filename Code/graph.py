@@ -70,10 +70,13 @@ def show_walker_way(name:str, movement_log: list[Coordinates], obstacles: Tuple,
             circle.set_facecolor(PORTAL)
         except FileNotFoundError:
                 circle.set_facecolor("purple")
+                print("FILE NOT FOUND")
         except NameError:
             circle.set_facecolor("purple")
+            print("NAME ERROR")
         except ValueError:
             circle.set_facecolor("purple")
+            print("VALUE ERROR")
         endpoints_x.append(portal[2][0])
         endpoints_y.append(portal[2][1])
         ax.add_patch(circle)

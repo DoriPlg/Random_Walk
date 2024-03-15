@@ -8,11 +8,8 @@ WEB PAGES I USED:
 NOTES: ...
 """
 
-from walker import Walker
-from barrier import Barrier
-from portal import Portal
-from mud import Mud
-from simulation import Simulation,run_from_json
+
+from simulation import run_from_json, run_and_plot
 import tkinter as tk
 from walker_gui import SimulationGUI
 import sys
@@ -30,7 +27,8 @@ if __name__ == "__main__":
             print("Invalid JSON path. Please provide a valid file path or run with no arguments to use the GUI.")
             sys.exit(1)
         try:
-            Simulation.run_from_json(json_path)
+            data, path = run_from_json(json_path)
+            run_and_plot(data, path)
             print("Simulation completed successfully. \
 You may view the results in the same directory as the JSON file.")
         except Exception as e:
