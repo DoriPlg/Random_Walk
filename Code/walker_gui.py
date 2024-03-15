@@ -1,12 +1,21 @@
+"""
+FILE : walker_gui.py
+WRITER : Dori_Peleg , dori.plg , 207685306
+EXERCISE : intro2cs final_project 2024
+DESCRIPTION: A calss for barrier objects within a simulation
+STUDENTS I DISCUSSED THE EXERCISE WITH:
+WEB PAGES I USED:
+NOTES: ...
+"""
+
 import os
-from helper_functions import *
-from simulation import *
-from walker import Walker
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from typing import Tuple
 import functools as ft
-import time
+from helper_functions import *
+from simulation import *
+from walker import Walker
 
 Coordinates = Tuple[float,float]
 MOVE_DICT = {Walker.move_dict()[k]: k for k in Walker.move_dict()}
@@ -74,20 +83,33 @@ class SimulationGUI:
         window_height = int(screen_height * 0.8)
         window_position_x = int((screen_width - window_width) / 2)
         window_position_y = int((screen_height - window_height) / 2)
-        self.root.geometry(f"{window_width}x{window_height}+{window_position_x}+{window_position_y}")
-        #self.root.geometry("700x800")  # Set permanent window size
+        self.root.geometry(
+            f"{window_width}x{window_height}+{window_position_x}+{window_position_y}")
 
         self.welcome_label = tk.Label(self.root,
                                       text="Welcome to the Random Walker Simulation App!")
         self.welcome_label.pack(pady=10)
 
         self.load_button = tk.Button(self.root,
-                                     text="Load Simulation from JSON", command=self.load_from_file)
+                                     text="Load Simulation from JSON",
+                                     command=self.load_from_file)
         self.load_button.pack()
 
         self.manual_button = tk.Button(self.root,
-                                       text="Manually Build Simulation", command=self.build_simulation)
+                                       text="Manually Build Simulation",
+                                       command=self.build_simulation)
         self.manual_button.pack()
+
+        # Setting the GUI attributes
+        self.__num_walkers = tk.DoubleVar()
+        self.__num_barriers = tk.DoubleVar()
+        self.__num_portals = tk.DoubleVar()
+        self.__num_mudspots = tk.DoubleVar()
+
+        self.__walkers_data = []
+        self.__barriers_data = []
+        self.__portals_data = []
+        self.__mudspots_data = []
 
         self.bottom_buttons()
 
@@ -140,7 +162,6 @@ class SimulationGUI:
             entry = tk.Entry(input_frame, textvariable=var, width=width)
             if def_values:
                 entry.insert(tk.END,def_values[i])
-                pass
             entry.pack(side=tk.LEFT)
             # Apply validation to walker_center_entry_x and walker_center_entry_y
             entry.config(validate="key", validatecommand=validate)
@@ -211,42 +232,38 @@ class SimulationGUI:
             """
             
             self.clear_frame()
-            self.__num_walkers = tk.DoubleVar()
             self.__num_walkers.set(1)
-            self.__num_barriers = tk.DoubleVar()
             self.__num_barriers.set(0)
-            self.__num_portals = tk.DoubleVar()
             self.__num_portals.set(0)
-            self.__num_mudspots = tk.DoubleVar()
             self.__num_mudspots.set(0)
 
 
             if err_message:
-                self.error_message = tk.Label(self.root,text= err_message, fg="red2")
-                self.error_message.pack()
-            self.num_walkers_label = tk.Label(self.root, text="Number of Walkers:")
-            self.num_walkers_label.pack()
-            self.num_walkers_entry = tk.Entry(self.root, textvariable=self.__num_walkers)
-            self.num_walkers_entry.pack()
+                error_message = tk.Label(self.root,text= err_message, fg="red2")
+                error_message.pack()
+            num_walkers_label = tk.Label(self.root, text="Number of Walkers:")
+            num_walkers_label.pack()
+            num_walkers_entry = tk.Entry(self.root, textvariable=self.__num_walkers)
+            num_walkers_entry.pack()
 
-            self.num_barriers_label = tk.Label(self.root, text="Number of Barriers:")
-            self.num_barriers_label.pack()
-            self.num_barriers_entry = tk.Entry(self.root, textvariable=self.__num_barriers)
-            self.num_barriers_entry.pack()
+            num_barriers_label = tk.Label(self.root, text="Number of Barriers:")
+            num_barriers_label.pack()
+            num_barriers_entry = tk.Entry(self.root, textvariable=self.__num_barriers)
+            num_barriers_entry.pack()
 
-            self.num_portals_label = tk.Label(self.root, text="Number of Portals:")
-            self.num_portals_label.pack()
-            self.num_portals_entry = tk.Entry(self.root, textvariable=self.__num_portals)
-            self.num_portals_entry.pack()
+            num_portals_label = tk.Label(self.root, text="Number of Portals:")
+            num_portals_label.pack()
+            num_portals_entry = tk.Entry(self.root, textvariable=self.__num_portals)
+            num_portals_entry.pack()
 
-            self.num_mudspots_label = tk.Label(self.root, text="Number of Mudspots:")
-            self.num_mudspots_label.pack()
-            self.num_mudspots_entry = tk.Entry(self.root, textvariable=self.__num_mudspots)
-            self.num_mudspots_entry.pack()
+            num_mudspots_label = tk.Label(self.root, text="Number of Mudspots:")
+            num_mudspots_label.pack()
+            num_mudspots_entry = tk.Entry(self.root, textvariable=self.__num_mudspots)
+            num_mudspots_entry.pack()
 
             
-            self.build_button = tk.Button(self.root, text="Build", command=self.check_build_input)
-            self.build_button.pack()
+            build_button = tk.Button(self.root, text="Build", command=self.check_build_input)
+            build_button.pack()
 
             self.bottom_buttons()
 
@@ -262,10 +279,10 @@ class SimulationGUI:
             is_int(self.__num_barriers.get()) and \
             is_int(self.__num_portals.get()) and \
             is_int(self.__num_mudspots.get()):
-                self.__num_walker = int(self.__num_walkers.get())
-                self.__num_barrier = int(self.__num_barriers.get())
-                self.__num_portal = int(self.__num_portals.get())
-                self.__num_mudspot = int(self.__num_mudspots.get())
+                num_walkers = int(self.__num_walkers.get())
+                num_barriers = int(self.__num_barriers.get())
+                num_portals = int(self.__num_portals.get())
+                num_mudspots = int(self.__num_mudspots.get())
             else:
                 self.build_simulation(err_message="All input must be whole numbers!")
                 return False
@@ -273,13 +290,13 @@ class SimulationGUI:
             self.build_simulation(err_message=f"{ex}\nAll input must be numbers!")
             return False
 
-        if self.__num_walker <1 or self.__num_barrier < 0 or\
-            self.__num_portal <0 or self.__num_mudspot <0:
+        if num_walkers <1 or num_barriers < 0 or\
+            num_portals <0 or num_mudspots <0:
             err_msg =""
-            if self.__num_walker <1:
+            if num_walkers <1:
                 err_msg += "Simulation must have at least one walker\n"
-            if self.__num_barrier < 0 or\
-                self.__num_portal <0 or self.__num_mudspot <0:
+            if num_barriers < 0 or\
+                num_portals <0 or num_mudspots <0:
                 err_msg += "Negative number of obstacles impossible"
             self.build_simulation(err_message=err_msg)
             return False
@@ -290,20 +307,15 @@ class SimulationGUI:
         """
         Creates the input interface for walkers.
 
-        This method clears the frame, initializes the data lists for walkers, barriers, portals, and mudspots.
-        It then creates a frame for walker input and iterates over the number of walkers specified.
+        It creates a frame for walker input and iterates over the number of walkers specified.
         For each walker, it creates a frame and adds input fields for walker type and color.
         It also prompts the user for the starting location of the walker.
         The walker data is stored in the __walkers_data list.
 
-        Finally, it adds a "Next" button to proceed to creating barrier input and calls the bottom_buttons method.
+        Finally, it adds a "Next" button to proceed to creating barrier input and
+        calls the bottom_buttons method.
         """
         self.clear_frame()
-
-        self.__walkers_data = []
-        self.__barriers_data = []
-        self.__portals_data = []
-        self.__mudspots_data = []
 
 
         walker_input_frame = tk.Frame(self.root)
@@ -312,7 +324,8 @@ class SimulationGUI:
         walker_types = tuple(MOVE_DICT.keys())
         walker_colors = tuple(COLOR_PALLET.keys())
 
-        for i in range(self.__num_walker):
+        num_walkers = int(self.__num_walkers.get())
+        for i in range(num_walkers):
             walker_frame = tk.Frame(walker_input_frame)
             walker_frame.pack()
 
@@ -347,7 +360,6 @@ class SimulationGUI:
 
         self.bottom_buttons()
 
-
     def create_barrier_input(self) -> None:
         """
         Creates the barrier input interface.
@@ -366,8 +378,8 @@ class SimulationGUI:
 
         barrier_input_frame = tk.Frame(self.root)
         barrier_input_frame.pack()
-
-        for i in range(self.__num_barrier):
+        num_barriers = int(self.__num_barriers.get())
+        for i in range(num_barriers):
             barrier_frame = tk.Frame(barrier_input_frame)
             barrier_frame.pack()
 
@@ -391,7 +403,7 @@ class SimulationGUI:
                 }
             )
 
-        if self.__num_barrier == 0:
+        if num_barriers == 0:
             self.create_portal_input()
             return
 
@@ -399,7 +411,6 @@ class SimulationGUI:
         self.next_button.pack()
 
         self.bottom_buttons()
-
 
     def create_portal_input(self) -> None:
         """
@@ -415,7 +426,8 @@ class SimulationGUI:
         portal_input_frame = tk.Frame(self.root)
         portal_input_frame.pack()
 
-        for i in range(self.__num_portal):
+        num_portals = int(self.__num_portals.get())
+        for i in range(num_portals):
             portal_frame = tk.Frame(portal_input_frame)
             portal_frame.pack()
 
@@ -435,14 +447,13 @@ class SimulationGUI:
                                         "Destinationx": portal_dest_x,
                                         "Destinationy": portal_dest_y})
 
-        if self.__num_portal == 0:
+        if num_portals == 0:
             self.create_mudspots_input()
             return
         self.next_button = tk.Button(self.root, text="Next", command=self.create_mudspots_input)
         self.next_button.pack()
 
         self.bottom_buttons()
-
 
     def create_mudspots_input(self) -> None:
         """
@@ -459,7 +470,8 @@ class SimulationGUI:
         mudspot_input_frame = tk.Frame(self.root)
         mudspot_input_frame.pack()
 
-        for i in range(self.__num_mudspot):
+        num_mudspots = int(self.__num_mudspots.get())
+        for i in range(num_mudspots):
             mudspot_frame = tk.Frame(mudspot_input_frame)
             mudspot_frame.pack()
 
@@ -479,7 +491,7 @@ class SimulationGUI:
                 "Height": height
             })
 
-        if self.__num_mudspot == 0:
+        if num_mudspots == 0:
             self.simulation_variables()
             return
 
@@ -669,41 +681,41 @@ data for different number of iterations)")
             """
             An inner function to shuffle the image.
             """
-            nonlocal current
+            nonlocal current, image, image_label
             if current == "all":
                 current = 0
             else:
                 current += 1  # Increment the value of current
             try:
-                self.image = tk.PhotoImage(file=f"{path}_{current}.png")
-                self.image_label.configure(image=self.image)
+                image = tk.PhotoImage(file=f"{path}_{current}.png")
+                image_label.configure(image=image)
             except tk.TclError:
                 try:
                     current = "all"
-                    self.image = tk.PhotoImage(file=f"{path}_{current}.png")
-                    self.image_label.configure(image=self.image)
+                    image = tk.PhotoImage(file=f"{path}_{current}.png")
+                    image_label.configure(image=image)
                 except tk.TclError:
                     current = 0
-                    self.image = tk.PhotoImage(file=f"{path}_{current}.png")
-                    self.image_label.configure(image=self.image)
+                    image = tk.PhotoImage(file=f"{path}_{current}.png")
+                    image_label.configure(image=image)
 
         #self.clear_frame()
         results_frame = tk.Frame(self.root)
         results_frame.pack()
         
-        self.results_label = tk.Label(results_frame, text="Results")
-        self.results_label.pack()
+        results_label = tk.Label(results_frame, text="Results")
+        results_label.pack()
         try:
             current = 0
-            self.image = tk.PhotoImage(file=f"{path}_{current}.png")
-            self.image_label = tk.Label(results_frame, image=self.image)
-            self.image_label.pack()
+            image = tk.PhotoImage(file=f"{path}_{current}.png")
+            image_label = tk.Label(results_frame, image=image)
+            image_label.pack()
 
-            self.shuffle_button = tk.Button(results_frame, text="Change Image", command=shuffle_image)
-            self.shuffle_button.pack()
+            shuffle_button = tk.Button(results_frame, text="Change Image", command=shuffle_image)
+            shuffle_button.pack()
         except tk.TclError:
-            self.results_label = tk.Label(results_frame, text="No results to show")
-            self.results_label.pack()
+            results_label = tk.Label(results_frame, text="No results to show")
+            results_label.pack()
         finally:
             self.bottom_buttons()
 

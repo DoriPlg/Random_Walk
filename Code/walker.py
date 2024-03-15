@@ -100,7 +100,13 @@ class Walker:
             if inclination in DIRECTIONS:
                 angle += DIRECTIONS[inclination]
             elif inclination == "_axis":
-                angle += self.directional_angle()
+                direction = self.directional_angle()
+                if direction:
+                    # If walker is not on the (0,0) Coordinate
+                    angle += self.directional_angle()
+                else:
+                    # If walker is on the (0,0) point, randomly
+                    angle = 2 * PI * random.random()
             else:
                 raise AttributeError("Somewhere the second part of inclination changed")
             return (self.__location[0] + math.cos(angle),
@@ -108,18 +114,23 @@ class Walker:
 
         return None
 
-    def directional_angle(self, coordinate: Coordinates = (0,0)):
+    def directional_angle(self, coordinate: Coordinates = (0,0)) -> float:
         """
         a function to get the angle from a walker to a given coordinate
+        if the walker is on the coordinate returns None
         :param coordianate: the given coordinate
         """
         x_offset = self.location[0] - coordinate[0]
         y_offset = self.location[1] - coordinate[1]
+        if x_offset == y_offset == 0:
+            # If the walker is precisely at the desired coordinate.
+            return None
         if x_offset > 0:
             return math.tanh(y_offset / x_offset) + PI
         if x_offset < 0:
             return math.tanh(y_offset / x_offset)
         return - math.copysign(PI, y_offset)
+
     def move(self) -> bool:
         """
         Moves the walker one step in it's own way.
