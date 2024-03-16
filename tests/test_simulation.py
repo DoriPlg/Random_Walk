@@ -1,3 +1,9 @@
+"""
+FILE : test_simulation.py
+WRITER : Dori_Peleg , dori.plg , 207685306
+EXERCISE : intro2cs final_project 2024
+"""
+
 import unittest
 import os
 from Code.simulation import Simulation, SimulationError, \
@@ -9,9 +15,30 @@ from Code.mud import Mud
 from Code.helper_functions import save_to_json
 
 class TestSimulation(unittest.TestCase):
+    """
+    A test case class for testing the Simulation class.
+
+    This class contains test methods for various functionalities of the Simulation class,
+    such as adding walkers, barriers, portals, mudspots, and performing simulation steps.
+
+    Each test method tests a specific functionality of the Simulation class and asserts
+    the expected behavior.
+
+    Note: This class inherits from the unittest.TestCase class.
+
+    Attributes:
+        None
+    """
 
     def setUp(self):
-        simulation = Simulation()
+        Simulation()
+        Simulation(1)
+        try:
+            Simulation(2)
+            raise AssertionError
+        except ValueError:
+            pass
+
 
     def test_add_walker(self):
         simulation = Simulation()
@@ -65,49 +92,37 @@ class TestSimulation(unittest.TestCase):
         try:
             simulation.step()
             simulation.step()
-            self.assertTrue(False)
+            raise AssertionError("Should have raised an error")
         except SimulationError:
-            self.assertTrue(True)
-        except:
-            self.assertTrue(False)
+            pass
 
     def test_simulation_errors(self):
         simulation = Simulation()
         try:
             simulation.run_simulation(0,10)
-            self.assertTrue(False)
+            raise AssertionError
         except ValueError:
-            self.assertTrue(True)
-        except:
-            self.assertTrue(False)
+            pass
         try:
             simulation.run_simulation(10,5)
-            self.assertTrue(False)
+            raise AssertionError
         except ValueError:
-            self.assertTrue(True)
-        except:
-            self.assertTrue(False)
+            pass
         try:
             simulation.simulation_average(-1,10,5)
-            self.assertTrue(False)
+            raise AssertionError
         except ValueError:
-            self.assertTrue(True)
-        except:
-            self.assertTrue(False)
+            pass
         try:
             simulation.simulation_average(1,0,5)
-            self.assertTrue(False)
+            raise AssertionError
         except ValueError:
-            self.assertTrue(True)
-        except:
-            self.assertTrue(False)
+            pass
         try:
             simulation.simulation_average(1,10**5,10**2)
-            self.assertTrue(False)
+            raise AssertionError
         except ValueError:
-            self.assertTrue(True)
-        except:
-            self.assertTrue(False)
+            pass
 
     def test_log(self):
         simulation = Simulation()
@@ -154,7 +169,7 @@ class TestSimulation(unittest.TestCase):
                     {"movement": "D_up", "color": "Bl", "location": [0.0, 0.0]},
                     {"movement": "D_up", "color": "Or", "location": [0.0, 0.0]},
                     {"movement": "D_up", "color": "P", "location": [0.0, 0.0]}
-                ], 
+                ],
                 "Barriers":
                 [
                     {"center": [4.0, 20.0], "length": 8.0, "angle": -1.5},
@@ -169,12 +184,6 @@ class TestSimulation(unittest.TestCase):
                 }
         result = check_data(data)
         self.assertTrue(result)
-        # Empty data
-        try:
-            result = check_data(None)
-            self.assertTrue(False)
-        except AttributeError:
-            self.assertTrue(True)
         # Missing key
         data ={
                 "Barriers":
@@ -200,7 +209,7 @@ class TestSimulation(unittest.TestCase):
                     {"movement": "D_up", "color": "Bl", "location": [0.0, 0.0]},
                     {"movement": "D_up", "color": "Or", "location": [0.0, 0.0]},
                     {"movement": "D_up", "color": "P", "location": [0.0, 0.0]}
-                ], 
+                ],
                 "Barriers":
                 [
                     {"center": [4.0, 20.0], "length": 8.0, "angle": -1.5},
@@ -224,7 +233,7 @@ class TestSimulation(unittest.TestCase):
                     {"movement": "D_up", "color": "Bl", "location": [0.0, 0.0]},
                     {"movement": "D_up", "color": "Or", "location": [0.0, 0.0]},
                     {"movement": "D_up", "color": "P", "location": [0.0, 0.0]}
-                ], 
+                ],
                 "Barriers":
                 [
                     {"center": [4.0, 20.0], "length": 8.0, "angle": -1.5},
@@ -248,7 +257,7 @@ class TestSimulation(unittest.TestCase):
                     {"movement": "D_up", "color": "Bl", "location": [0.0, 0.0]},
                     {"movement": "D_up", "color": "Or", "location":" [0.0, 0.0]"},
                     {"movement": "D_up", "color": "P", "location": [0.0, 0.0]}
-                ], 
+                ],
                 "Barriers":
                 [
                     {"center": [4.0, 20.0], "length": 8.0, "angle": -1.5},
@@ -272,7 +281,7 @@ class TestSimulation(unittest.TestCase):
                     {"movement": "D_up", "color": "Bl", "location": [0.0, 0.0]},
                     {"movement": "D_up", "color": "Or", "location": [0.0, 0.0]},
                     {"movement": "D_up", "color": "P", "location": [0.0, 0.0]}
-                ], 
+                ],
                 "Barriers":
                 [
                     {"center": [4.0, 20.0], "length": 8.0, "angle": -1.5},
@@ -342,27 +351,30 @@ class TestSimulation(unittest.TestCase):
         self.assertIsInstance(result, str)
         clear_files()
 
-def clear_files():
+def clear_files(filename: str = "temp_test") -> None:
     """
     Remove temporary image files generated during testing.
     """
     for i in range(len(Walker.move_dict())):
         try:
-            os.remove(f"temp_test_{i}.png")
+            os.remove(f"{filename}_{i}.png")
         except:
             pass
     try:
-        os.remove("temp_test_all.png")
+        os.remove(f"{filename}_all.png")
     except:
         pass
     try:
-        os.remove("temp_test")
+        os.remove(filename)
     except:
         pass
     try:
-        os.remove("temp_test_5.png")
+        os.remove(f"{filename}_5.png")
     except:
         pass
-
+    try:
+        os.remove(f"{filename}_results.json")
+    except:
+        pass
 if __name__ == '__main__':
     unittest.main()

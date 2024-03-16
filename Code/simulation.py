@@ -15,7 +15,7 @@ from Code.walker import Walker, gravitate
 from Code.barrier import Barrier
 from Code.portal import Portal
 from Code.mud import Mud
-import Code.helper_functions as help
+import Code.helper_functions as helper
 import Code.graph as gr
 
 Coordinates = Tuple[float,float]
@@ -29,23 +29,27 @@ class Simulation:
     """
     A class for Simulation objects for random walker simulations.
     :attribute __walkers: a list containg all walkers added to the simulation by order
-    :attribute __location_log: a dictionary where the keys are the indexes of different walkers in __walker
-                                and the values are lists in order of the locations the walker visited.
+    :attribute __location_log: a dictionary where the keys are the indexes of different 
+                                walkers in __walker and the values are lists in order of
+                                the locations the walker visited.
     :attribute __barriers: a list containg all barriers added to the simulation by order
     :attribute __portals: a list containg all portals added to the simulation by order
     :attribute __iteration: counts the iterations of the simulation
     """
 
-    def __init__(self, gravity = None) -> None:
+    def __init__(self, gravity = 0) -> None:
         """
         The constructor for Simulation objects
         """
-        self.__walkers = []
-        self.__location_log = {}
-        self.__barriers = []
-        self.__portals = []
+        self.__walkers: list[Walker] = []
+        self.__location_log: dict[int, list[Coordinates]] = {}
+        self.__barriers: list[Barrier]= []
+        self.__portals: list[Portal] = []
+        self.__mudspots: list[Mud] = []
         self.__iteration = 0
-        self.__mudspots = []
+        gravity_values = (-1,0,1)
+        if gravity not in gravity_values:
+            raise ValueError(f"Gravity can only be {gravity_values}")
         self.__gravity = gravity
 
     def add_walker(self, walker: Walker) -> None:
@@ -88,28 +92,31 @@ class Simulation:
             current_place = walker.location
             self.__location_log[index].append(current_place)
             next_place = walker.next_location()
-            for barrier in self.__barriers:
-                barrier_hit = 0
-                while barrier.intersects(current_place, next_place):
-                    #print(f"hit barrier on {self.__iteration}th iteration")
-                    next_place = walker.next_location()
-                    barrier_hit += 1
-                    if barrier_hit > MAX_BARRIER_HITS:
-                        raise SimulationError(
-                            "\nThe walker is stuck in a barrier, please change the simulation")
-            for mud in self.__mudspots:
-                if mud.point_in_area(current_place):
-                    next_place = (current_place[0] +
-                                  (next_place[0] - current_place[0]) * mud.get_lag(),
-                                  current_place[1] +
-                                  (next_place[1] - current_place[1]) * mud.get_lag())
-            for portal in self.__portals:
-                if portal.inbounds(next_place):
-                    #print(f"passed through portal on {self.__iteration}th iteration")
-                    next_place = portal.endpoint
-            walker.jump(next_place)
-        if self.__gravity:
-            gravitate(self.__walkers, gravity=self.__gravity)
+            if next_place:
+                for barrier in self.__barriers:
+                    barrier_hit = 0
+                    while barrier.intersects(current_place, next_place):
+                        #print(f"hit barrier on {self.__iteration}th iteration")
+                        next_place = walker.next_location()
+                        barrier_hit += 1
+                        if barrier_hit > MAX_BARRIER_HITS:
+                            raise SimulationError(
+                                "\nThe walker is stuck in a barrier, please change the simulation")
+                for mud in self.__mudspots:
+                    if mud.point_in_area(current_place):
+                        next_place = (current_place[0] +
+                                    (next_place[0] - current_place[0]) * mud.get_lag(),
+                                    current_place[1] +
+                                    (next_place[1] - current_place[1]) * mud.get_lag())
+                for portal in self.__portals:
+                    if portal.inbounds(next_place):
+                        #print(f"passed through portal on {self.__iteration}th iteration")
+                        next_place = portal.endpoint
+                walker.jump(next_place)
+            else:
+                raise AttributeError(
+                    "The walker has no next location, due to having bad type of movement")
+        gravitate(self.__walkers, gravity=self.__gravity)
 
         self.__iteration += 1
         return self.__iteration
@@ -144,7 +151,7 @@ class Simulation:
 
         # "Zero"s the variables
         stunt_double = deepcopy(self)
-        info_dict = {}
+        info_dict: dict[int, dict[str, object]] = {}
         for index, _ in enumerate(self.__walkers):
             info_dict[index] = {"crosses": 0, "escape": None}
         step = 0
@@ -167,12 +174,12 @@ class Simulation:
                 (locations[-1][0] ** 2 + locations[-1][1] ** 2) ** (1/2)
             x_values = [x[0] for x in locations]
             info_dict[index]["distance_axis"] = abs(locations[-1][0])
-            info_dict[index]["crosses"] = help.passes_0(x_values)
+            info_dict[index]["crosses"] = helper.passes_0(x_values)
             info_dict[index]["location_list"] = locations
 
         return info_dict
 
-    def simulation_average(self, iterations: int, n: int, max_depth: int) -> None:
+    def simulation_average(self, iterations: int, n: int, max_depth: int) -> dict:
         """
         runs multiple simulations and saves a json with their average outcome for:
         {
@@ -198,12 +205,12 @@ class Simulation:
         if max_depth < n:
             raise ValueError("The max depth of the simulation cannot be less than the desired one")
         # Prepares dictionaries for the data
-        data_for_all_walkers = {}
-        distance_0 = {}
-        escape = {}
-        distance_x_axis = {}
-        distance_y_axis = {}
-        crosses = {}
+        data_for_all_walkers: dict[int, dict[str, float]] = {}
+        distance_0: dict[int, list[float]] = {}
+        escape: dict[int, list[int]] = {}
+        distance_x_axis: dict[int, list[float]] = {}
+        distance_y_axis: dict[int, list[float]] = {}
+        crosses: dict[int, list[int]] = {}
 
         # "Zero"s the values for each walker
         for index, _ in enumerate(self.__walkers):
@@ -238,7 +245,7 @@ class Simulation:
         return data_for_all_walkers
 
     def graph_simulation(self, iterations: int, n: int,
-                          max_depth: int, jump: str, file_name: str) -> None:
+                          max_depth: int, jump: int, file_name: str) -> None:
         """
         Perform a graph simulation.
 
@@ -246,7 +253,7 @@ class Simulation:
         - iterations (int): The number of iterations to perform.
         - n (int): The maximum value for the range.
         - max_depth (int): The maximum depth for the simulation.
-        - jump (str): The step size for the range.
+        - jump (int): The step size for the range.
         - file_name (str): The name of the file to save the graph.
 
         Returns:
@@ -256,6 +263,7 @@ class Simulation:
         data_for_graph = {}
         for index in range(jump, n, jump):
             data_for_graph[index] = self.simulation_average(iterations, index, max_depth)
+        helper.save_to_json(data_for_graph, f"{file_name}_results.json")
         gr.show_walker_graph(data_for_graph, file_name)
 
     def plot_simulation(self, n: int, file_name: str = f"{DESTINATION_PATH}walkerplot") -> None:
@@ -263,13 +271,13 @@ class Simulation:
         Runs the simulation independently of the simulation_average method.
         Saves to the destination folder graphs of the locations visited by the walker
         :param n: the N for which the values will be calculated
-        :param file_name: the first part of the filename for the graph, *.png will be added automaticaly. 
-                            an index discerning which walker is shown will be added
-                            defaults to 'walkerplot'
+        :param file_name: the first part of the filename for the graph, *.png will
+                            be added automaticaly. an index discerning which walker is 
+                            shown will be added defaults to 'walkerplot'
         """
         simulation_results = self.run_simulation(n,n)
-        locations_dict = {index: simulation_results[index]["location_list"]
-                           for index in simulation_results}
+        locations_dict = {item[0]: item[1]["location_list"]
+                           for item in simulation_results.items()}
         barriers = [barrier.points for barrier in self.__barriers]
         portals = [(portal.center, portal.radius, portal.endpoint) \
                     for portal in self.__portals]
@@ -277,11 +285,13 @@ class Simulation:
         color_list = [walker.color for walker in self.__walkers]
         obstacles = (barriers, portals, mudspots)
         for index, locations in locations_dict.items():
-            graph_name = f"Graph number {index + 1}, showing a walker with {self.__walkers[index].movement} type movement"
+            graph_name = f"Graph number {index + 1},\
+                  showing a walker with {self.__walkers[index].movement} type movement"
             gr.show_walker_way(graph_name,locations, obstacles,
                                    f"{file_name}_{index}", color_list[index])
         graph_name = f"Graph number {len(color_list) + 1}, showing all walkers in unision"
-        gr.walkers_unision(graph_name, locations_dict, color_list=color_list,obstacles=obstacles, file_to_save=file_name+"_all")
+        gr.walkers_unision(graph_name, locations_dict,
+                           color_list=color_list,obstacles=obstacles, file_to_save=file_name+"_all")
 
 def check_data(data: dict) -> bool:
     """
@@ -290,11 +300,11 @@ def check_data(data: dict) -> bool:
     """
     keys = ['Walkers', 'Barriers', 'Portals', 'Mudspots', 'Simulation']
     try:
-       [key for key in data.keys()]
-    except AttributeError:
-        raise AttributeError("Empty data was given for the simulation")
+        [key for key in data.keys()]
+    except AttributeError as exc:
+        raise AttributeError("Empty data was given for the simulation") from exc
     except:
-        return False 
+        return False
     if [key for key in data.keys()] == keys:
         if data["Simulation"]["type"] in ("plot", "graph"):
             try:
@@ -311,14 +321,13 @@ def check_data(data: dict) -> bool:
                     int(data["Simulation"]["iterations"])
                     int(data["Simulation"]["max_depth"])
                     int(data["Simulation"]["jumps"])
-                try:
-                    if isinstance(data["Simulation"]["gravity"], bool):
-                        pass
-                except:
-                    if "gravity" in data["Simulation"]:
-                        raise ValueError("Something wrong with the gravity")
+                print(data)
+                if "gravity" in data["Simulation"]:
+                    if isinstance(data["Simulation"]["gravity"],int):
+                        Simulation(data["Simulation"]["gravity"])
                     else:
-                        pass
+                        raise ValueError("Something wrong with the gravity type")
+
                 #check if the filename leads to a valid path
                 split_path = data["Simulation"]["filename"].split("/")
                 directory = "/".join(split_path[:-1])
@@ -326,11 +335,11 @@ def check_data(data: dict) -> bool:
                     directory = "."
                 if os.path.exists(directory):
                     return True
-            except:
-                return False
+            except Exception as e:
+                print(e)
     return False
 
-def run_from_json(filename: str = None) -> str:
+def run_from_json(filename: str|None = None) -> Tuple[dict, str]:
     """
     loads a simulation from a json file and runs the desired simulation
     :param filename: the path to the json
@@ -338,9 +347,9 @@ def run_from_json(filename: str = None) -> str:
     returns the base path to the file saved
     """
     if not filename:
-        filename = help.get_filepath_to_json()
+        filename = helper.get_filepath_to_json()
     filename = filename.removesuffix("_simulation.json")
-    data = help.load_simulation(filename + "_simulation.json")
+    data = helper.load_simulation(filename + "_simulation.json")
     data["Simulation"]["filename"] = filename
     if not check_data(data):
         print("The data in the file is not valid for a simulation")
@@ -353,8 +362,8 @@ def run_and_plot(data: dict, filename: str) -> str:
     """
     runs the simulation from the data given
     """
-    if "graph" in data["Simulation"]:
-        simulation = Simulation(data["Simulation"]["graph"])
+    if "gravity" in data["Simulation"]:
+        simulation = Simulation(data["Simulation"]["gravity"])
     else:
         simulation = Simulation()
     for walker in data["Walkers"]:
@@ -375,7 +384,7 @@ def run_and_plot(data: dict, filename: str) -> str:
         jump = data["Simulation"]["jumps"]
         file_name = data["Simulation"]["filename"]
         simulation.graph_simulation(iterations, n, max_depth, jump, file_name)
-    
+
     return filename.removesuffix("_simulation.json")
 
 class SimulationError(Exception):
@@ -383,5 +392,5 @@ class SimulationError(Exception):
     The base class for all errors in the simulation
     Their source is the simulation itself
     """
-    def __init__(self, message: str):
+    def __init__(self, message: str) -> None:
         super().__init__(message)

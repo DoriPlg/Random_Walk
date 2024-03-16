@@ -38,6 +38,7 @@ def load_simulation(file_path) -> dict:
         with open(file_path, 'r', encoding='utf-8') as file:
             simulation_data = json.load(file)
         return simulation_data
+    return {}
 
 def passes_0(lst: list[float]) -> int:
     """

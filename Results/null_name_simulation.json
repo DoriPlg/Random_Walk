@@ -1,0 +1,1 @@
+{"Walkers": [{"movement": "D_down", "color": "R", "location": [0.0, 2.0]}, {"movement": "D_up", "color": "R", "location": [0.0, -2.0]}], "Barriers": [], "Portals": [], "Mudspots": [], "Simulation": {"type": "plot", "n": 128, "gravity": -1, "filename": "/home/dori/Documents/UNI/Intro/final_project/Results/null_name"}}

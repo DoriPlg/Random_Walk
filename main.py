@@ -21,6 +21,9 @@ if __name__ == "__main__":
         root = tk.Tk()
         app = SimulationGUI(root)
         root.mainloop()
+    elif sys.argv[1] == "--help":
+        with open("help.txt", "r") as f:
+            print(f.read())
     elif len(sys.argv) == 2:
         json_path = sys.argv[1]
         if not os.path.isfile(json_path):

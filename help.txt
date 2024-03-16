@@ -1,0 +1,33 @@
+Random Walker Simulation!
+
+Usage: 
+[python main.py]  to open the GUI and start the simulation.
+[python main.py <path>] to run the simulation from a specific JSON file.
+
+Description:
+The Random Walker Simulation program allows you to simulate the movement of random walkers in a two-dimensional space. The walkers move randomly in each step, and their positions are updated accordingly.
+
+Command Line Arguments:
+- <path> (optional): Specifies the path to a JSON file containing the initial configuration for the simulation. If not provided, the program will open a GUI.
+
+JSON File Format:
+The JSON file should have the following structure:
+{
+  "Walkers":[{"movement": str, "color": str, "location": (float,float)}],
+  "Barriers": [{"center": (float,float), "length": float, "angle": float}],
+  "Portals": [{"center": (float,float), "endpoint": (float,float), "radius": float}],
+  "Mudspots": [{"bottom_left": (float,float), "width": float, "height": float}],
+  "Simulation": {"type": "graph", "gravity": int, "n": int, "iterations": int, "max_depth": int, "jumps": int, "filename": str} || {"type": "plot", "gravity": int, "n": int, "jumps": int, "filename": str}
+}
+NOTE DIFFERENCE  between two types of simulations
+
+
+Example Usage:
+1. To open the GUI and start the simulation:
+    python main.py
+
+2. To run the simulation from a specific JSON file:
+    python main.py /path/to/config.json
+
+Note: Make sure you have Python and all the requirements installed on your system before running the program.
+

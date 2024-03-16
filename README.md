@@ -1,6 +1,15 @@
 # Random_Walk
 An application for creating differrent kinds of random walk simulations.
 
+Expansions:
+
+    Has an extensive GUI allowing users to build a simulation manually or upload one from a *.json file - and view results.
+    Allows for possitive or negative gravity between walkers.
+    Has a class which generates graphs detailing the path a walker went through.
+    Mudspots, rectangles where the walkers are "slowed down".
+    Tests written >90% coverage (w/o GUI)
+    Typing recieves no issues for "mypy ."
+
 Classes:
 
     Simulation:
@@ -15,9 +24,7 @@ Classes:
     Portal:
     An object that teleports the walker to a certain place.
 
-Features:
-
-    Can aggragate the information from multiple simulations into an average result.
-    Has a function for running an expirement and saving its result.
+    Mudspot:
+    A patch where the walker is slower.
 
 This is my final project in the Introduction to Computer Science course at HUJI.

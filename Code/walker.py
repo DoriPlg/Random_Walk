@@ -12,19 +12,19 @@ from typing import Tuple
 import math
 import random
 
-Coordinates = Tuple[float,float]
+Coordinates = Tuple[float, float]
 
 PI = math.pi
 MOVEMENTS = {
-                    'A': "Random direction, step size 1 unit",
-                    'B': "Random direction, step size chosen equally between [0.5,1.5]",
-                    'C': "Random direction chosen equally between (Up,Down,Right,Left), step size 1 unit",
-                    'D_up': "Direction chosen at Random but favoring up, step site 1 unit",
-                    'D_down': "Direction chosen at Random but favoring down, step site 1 unit",
-                    'D_right': "Direction chosen at Random but favoring right, step site 1 unit",
-                    'D_left': "Direction chosen at Random but favoring left, step site 1 unit",
-                    'D_axis': "Direction chosen at Random but favoring axis, step site 1 unit"
-                    }
+            'A': "Random direction, step size 1 unit",
+            'B': "Random direction, step size chosen equally between [0.5,1.5]",
+            'C': "Random direction chosen equally between (Up,Down,Right,Left), step size 1 unit",
+            'D_up': "Direction chosen at Random but favoring up, step site 1 unit",
+            'D_down': "Direction chosen at Random but favoring down, step site 1 unit",
+            'D_right': "Direction chosen at Random but favoring right, step site 1 unit",
+            'D_left': "Direction chosen at Random but favoring left, step site 1 unit",
+            'D_axis': "Direction chosen at Random but favoring axis, step site 1 unit"
+            }
 COLORS = {'R': "red", 'G': "green", 'Y': "yellow", 'Bl': "blue", 'C': "cyan", 'Or': "orange",
           'Br': "brown", 'P': "purple", 'Ol': "olive"}
 
@@ -103,7 +103,7 @@ class Walker:
                 direction = self.directional_angle()
                 if direction:
                     # If walker is not on the (0,0) Coordinate
-                    angle += self.directional_angle()
+                    angle += direction
                 else:
                     # If walker is on the (0,0) point, randomly
                     angle = 2 * PI * random.random()
@@ -112,9 +112,9 @@ class Walker:
             return (self.__location[0] + math.cos(angle),
                     self.__location[1] + math.sin(angle))
 
-        return None
+        raise AttributeError("Somewhere the movement type changed")
 
-    def directional_angle(self, coordinate: Coordinates = (0,0)) -> float:
+    def directional_angle(self, coordinate: Coordinates = (0,0)) -> float|None:
         """
         a function to get the angle from a walker to a given coordinate
         if the walker is on the coordinate returns None
@@ -137,7 +137,11 @@ class Walker:
         When needed, angles are in radians
         Returns True if successful, False if not.
         """
-        return self.jump(self.next_location())
+        try:
+            next_spot = self.next_location()
+        except AttributeError:
+            return False
+        return self.jump(next_spot)
 
     def jump(self, location: Coordinates) -> bool:
         """
@@ -185,21 +189,22 @@ class Walker:
         """
         return MOVEMENTS
 
-def gravitate(walkers: list[Walker], degree: int = 5, gravity: bool = True) -> None:
+def gravitate(walkers: list[Walker], degree: int = 10, gravity: int = 1) -> None:
     """
     Additional feature for walkers that attract or push each other
     
     :param walkers: A list of Walker objects
-    :param degree: The degree of attraction or repulsion between walkers, the higher the weaker. (default: 5)
+    :param degree: The degree of attraction or repulsion between walkers,
+                    the higher the weaker. (default: 5)
     :param gravity: A boolean indicating whether to apply gravity or not (default: True)
     :return: None
     """
-    if len(walkers) <= 1:
+    if len(walkers) <= 1 or gravity == 0:
         return
     nonrelative_locations = {}
     for walker in walkers:
         # direction as in (x, y) relative to walker
-        current_direction = (0,0)
+        current_direction = (0.0,0.0)
         for other in walkers:
             if other is walker:
                 continue
@@ -208,16 +213,12 @@ def gravitate(walkers: list[Walker], degree: int = 5, gravity: bool = True) -> N
             current_direction = (current_direction[0]+x_difference,
                                  current_direction[1]+y_difference)
         # Adapt the direction to the desired gravitational power and number of walkers
-        ratio = degree * len(walkers)
-        current_direction = (current_direction[0]/(ratio),
-                             current_direction[1]/(ratio))
-        
+        ratio = float(degree * len(walkers) * gravity)
+        current_direction = (float(current_direction[0])/(ratio),
+                             float(current_direction[1])/(ratio))
+
         # Get location not relative to walker
         nonrelative_locations[walker] = (walker.location[0] + current_direction[0],
                              walker.location[1] + current_direction[1])
     for walker in walkers:
         walker.jump(nonrelative_locations[walker])
-        
-
-
-

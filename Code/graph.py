@@ -71,8 +71,8 @@ def show_walker_way(name:str, movement_log: list[Coordinates], obstacles: Tuple,
     # fig.show()
     fig.savefig(file_to_save+".png")
 
-def walkers_unision(graph_name, data, color_list: list = None,
-                    obstacles: tuple = None , file_to_save: str = f"{DESTINATION_PATH}_plot") -> None:
+def walkers_unision(graph_name, data, color_list: list|None = None,
+                    obstacles: tuple|None = None , file_to_save: str = f"{DESTINATION_PATH}_plot") -> None:
     """
     A function that plots on a graph the data picked up by the walker.
     :param graph_name: the title of the graph

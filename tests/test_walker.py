@@ -1,22 +1,53 @@
+"""
+FILE : test_walker.py
+WRITER : Dori_Peleg , dori.plg , 207685306
+EXERCISE : intro2cs final_project 2024
+"""
+
 import unittest
 import Code.walker as wk
 from Code.walker import gravitate
 
 class TestWalker(unittest.TestCase):
+    """
+    Test cases for the Walker class.
+    """
+
     def test_init(self):
-        # Test default values
+        """
+        Test the initialization of the Walker class.
+
+        This test method checks if the Walker class is initialized correctly with
+        both default and custom values.
+
+        Test default values:
+        - Creates a Walker object with movement 'A' and checks if the movement attribute is
+        set correctly.
+        - Checks if the location attribute is set to (0, 0) as the default value.
+        - Checks if the color attribute is set to 'blue' as the default value.
+
+        Test custom values:
+        - Creates a Walker object with movement 'C', location (3, 4), and color 'R'.
+        - Checks if the movement attribute is set to 'C' as the custom value.
+        - Checks if the location attribute is set to (3, 4) as the custom value.
+        - Checks if the color attribute is set to 'red' as the custom value.
+        """
         walker = wk.Walker('A')
         self.assertEqual(walker.movement, 'A')
         self.assertEqual(walker.location, (0, 0))
         self.assertEqual(walker.color, 'blue')
 
-        # Test custom values
         walker = wk.Walker('C', (3, 4), 'R')
         self.assertEqual(walker.movement, 'C')
         self.assertEqual(walker.location, (3, 4))
         self.assertEqual(walker.color, 'red')
 
     def test_next_location(self):
+        """
+        Test the next_location method of the Walker class.
+
+        This test case checks if the next_location method returns a tuple of two floats.
+        """
         walker = wk.Walker('A')
         next_loc = walker.next_location()
         self.assertIsInstance(next_loc, tuple)
@@ -25,6 +56,23 @@ class TestWalker(unittest.TestCase):
         self.assertIsInstance(next_loc[1], float)
 
     def test_directional_angle(self):
+        """
+        Test the `directional_angle` method of the Walker class.
+
+        This test case checks the behavior of the `directional_angle` method in different scenarios.
+        It verifies that the method returns the expected results and handles different
+        input cases correctly.
+
+        Test 1:
+        - Create a Walker object with the initial position 'A'.
+        - Call the `directional_angle` method.
+        - Assert that the returned angle is None.
+
+        Test 2:
+        - Create a Walker object with the initial position 'C', position (3, 4), and direction 'R'.
+        - Call the `directional_angle` method with the target position (5, 5).
+        - Assert that the returned angle is of type float.
+        """
         walker = wk.Walker('A')
         angle = walker.directional_angle()
         self.assertIsNone(angle)
@@ -35,6 +83,11 @@ class TestWalker(unittest.TestCase):
 
 
     def test_move(self):
+        """
+        Test the move method of the Walker class.
+
+        This test case checks if the move method updates the location attribute of the Walker object
+        """
         walker = wk.Walker('A')
         initial_loc = walker.location
         moved = walker.move()
@@ -42,6 +95,11 @@ class TestWalker(unittest.TestCase):
         self.assertNotEqual(walker.location, initial_loc)
 
     def test_jump(self):
+        """
+        Test the jump method of the Walker class.
+
+        This test case checks if the jump method updates the location attribute of the Walker object
+        """
         walker = wk.Walker('A')
         new_loc = (5, 5)
         jumped = walker.jump(new_loc)
@@ -49,16 +107,34 @@ class TestWalker(unittest.TestCase):
         self.assertEqual(walker.location, new_loc)
 
     def test_color_pallet(self):
+        """
+        Test the color_pallet method of the Walker class.
+
+        This test case checks if the color_pallet method returns a dictionary and the
+        dictionary is not empty.
+        """
         color_pallet = wk.Walker.color_pallet()
         self.assertIsInstance(color_pallet, dict)
         self.assertGreater(len(color_pallet), 0)
 
     def test_move_dict(self):
+        """
+        Test the move_dict method of the Walker class.
+
+        This test case checks if the move_dict method returns a dictionary and the
+        dictionary is not empty.
+        """
         move_dict = wk.Walker.move_dict()
         self.assertIsInstance(move_dict, dict)
         self.assertGreater(len(move_dict), 0)
 
     def test_gravitate(self):
+        """
+        Test the gravitate function.
+
+        This test case checks if the gravitate function updates the location attribute of
+        the Walker objects in the list.
+        """
         walker_list = []
         walker1 = wk.Walker("A", location=(10,10))
         walker_list.append(walker1)
@@ -80,4 +156,3 @@ class TestWalker(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    

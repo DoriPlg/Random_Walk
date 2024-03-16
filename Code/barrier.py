@@ -49,15 +49,15 @@ class Barrier:
             return False
         if line_function == "vertical":
             # line vertical, relies only on it's x value and y span
-            intersection_y = barrier_function[0] * point_a[0] + barrier_function[1]
+            intersection_y = float(barrier_function[0]) * point_a[0] + float(barrier_function[1])
             return min(point_a[1],point_b[1]) <= intersection_y \
                  <= max(point_a[1],point_b[1])
         elif barrier_function == "vertical":
-            intersection_y = line_function[0] * self.__point1[0] + line_function[1]
+            intersection_y = float(line_function[0]) * self.__point1[0] + float(line_function[1])
             return min(self.__point1[1],self.__point2[1]) <= intersection_y \
                  <= max(self.__point1[1],self.__point2[1])
-        intersection_x = ((barrier_function[1] - line_function[1]) /
-                           (line_function[0] - barrier_function[0]))
+        intersection_x = ((float(barrier_function[1]) - float(line_function[1])) /
+                           (float(line_function[0]) - float(barrier_function[0])))
         return min(self.__point1[0],self.__point2[0]) <= intersection_x <= max(self.__point1[0],self.__point2[0])
 
     @property
