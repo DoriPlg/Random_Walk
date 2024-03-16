@@ -755,7 +755,7 @@ data for different number of iterations)")
         loading_screen.title("Loading")
         loading_screen.geometry("400x300")
         loading_label = tk.Label(loading_screen,
-                                 ext="Running simulation\nThis may take a while...")
+                                 text="Running simulation\nThis may take a while...")
         loading_label.pack()
         loading_screen.update()
         try:

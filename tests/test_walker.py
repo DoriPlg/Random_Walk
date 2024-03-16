@@ -5,6 +5,7 @@ EXERCISE : intro2cs final_project 2024
 """
 
 import unittest
+import math
 import Code.walker as wk
 from Code.walker import gravitate
 
@@ -73,13 +74,23 @@ class TestWalker(unittest.TestCase):
         - Call the `directional_angle` method with the target position (5, 5).
         - Assert that the returned angle is of type float.
         """
+        # Test 1: walker is on the same point as the given coordinate
         walker = wk.Walker('A')
         angle = walker.directional_angle()
         self.assertIsNone(angle)
 
-        walker = wk.Walker('C', (3, 4), 'R')
-        angle = walker.directional_angle((5, 5))
-        self.assertIsInstance(angle, float)
+        # Test 2: walker is not on the same point as the given coordinate
+        walker = wk.Walker('C', (0, 0), 'R')
+        angle = walker.directional_angle((3, 4))
+        self.assertEqual(angle, math.tanh(4/3))
+
+        # Test 3: walker is not on the same point as the given coordinate, same x
+        angle = walker.directional_angle((0, 5))
+        self.assertEqual(angle, math.radians(90))
+        angle = walker.directional_angle((0, -5))
+        self.assertEqual(angle, math.radians(-90))
+
+
 
 
     def test_move(self):
@@ -135,23 +146,38 @@ class TestWalker(unittest.TestCase):
         This test case checks if the gravitate function updates the location attribute of
         the Walker objects in the list.
         """
+        # Test case 1: Test the gravitate function with a list of 2 walkers
+        # Positive gravity
+        walker_list1 = []
+        walker_list2 = []
+        walker_list1.append(wk.Walker("A", location=(10,10)))
+        walker_list2.append(wk.Walker("A", location=(10,10)))
+        walker_list1.append(wk.Walker("A", location=(-10,10)))
+        walker_list2.append(wk.Walker("A", location=(-10,10)))
+        gravitate(walker_list1,100,1)
+        gravitate(walker_list2,1,1)
+        self.assertTrue(walker_list1[0].location != (10,10))
+        self.assertTrue(walker_list1[0].location[0] < walker_list2[0].location[0])
+
+        # Neqative gravity
+        walker_list1 = []
+        walker_list2 = []
+        walker_list1.append(wk.Walker("A", location=(10,10)))
+        walker_list2.append(wk.Walker("A", location=(10,10)))
+        walker_list1.append(wk.Walker("A", location=(-10,10)))
+        walker_list2.append(wk.Walker("A", location=(-10,10)))
+        gravitate(walker_list1,100, -1)
+        gravitate(walker_list2,1, -1)
+        self.assertTrue(walker_list1[0].location != (10,10))
+        self.assertTrue(walker_list1[0].location[0] > walker_list2[0].location[0])
+
         walker_list = []
-        walker1 = wk.Walker("A", location=(10,10))
-        walker_list.append(walker1)
-        walker2 = wk.Walker("A", location=(-10,10))
-        walker_list.append(walker2)
-        gravitate(walker_list,1)
-        self.assertEqual(walker_list[0].location, (0,10))
-        self.assertEqual(walker_list[1].location, (0,10))
-        walker_list = []
-        walker1 = wk.Walker("A", location=(10,10))
-        walker_list.append(walker1)
-        walker2 = wk.Walker("A", location=(-10,10))
-        walker_list.append(walker2)
-        walker3 = wk.Walker("A")
-        walker_list.append(walker3)
-        gravitate(walker_list,2)
-        self.assertTrue(3 < walker_list[2].location[1] < 4)
+        walker_list.append(wk.Walker("A", location=(10,10)))
+        walker_list.append(wk.Walker("A", location=(-10,10)))
+        walker_list.append(wk.Walker("A"))
+        gravitate(walker_list,10**3,1)
+        print(walker_list[2].location)
+        self.assertTrue(4 < walker_list[2].location[1] < 7)
 
 
 if __name__ == '__main__':

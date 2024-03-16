@@ -129,7 +129,7 @@ class Walker:
             return math.tanh(y_offset / x_offset) + PI
         if x_offset < 0:
             return math.tanh(y_offset / x_offset)
-        return - math.copysign(PI, y_offset)
+        return - math.copysign(PI/2, y_offset)
 
     def move(self) -> bool:
         """
@@ -189,13 +189,13 @@ class Walker:
         """
         return MOVEMENTS
 
-def gravitate(walkers: list[Walker], degree: int = 10, gravity: int = 1) -> None:
+def gravitate(walkers: list[Walker], degree: int = 10, gravity: int = 0) -> None:
     """
     Additional feature for walkers that attract or push each other
     
     :param walkers: A list of Walker objects
     :param degree: The degree of attraction or repulsion between walkers,
-                    the higher the weaker. (default: 5)
+                    the higher the stronger. (default: 10)
     :param gravity: A boolean indicating whether to apply gravity or not (default: True)
     :return: None
     """
@@ -213,12 +213,19 @@ def gravitate(walkers: list[Walker], degree: int = 10, gravity: int = 1) -> None
             current_direction = (current_direction[0]+x_difference,
                                  current_direction[1]+y_difference)
         # Adapt the direction to the desired gravitational power and number of walkers
-        ratio = float(degree * len(walkers) * gravity)
-        current_direction = (float(current_direction[0])/(ratio),
-                             float(current_direction[1])/(ratio))
+        ratio = float(degree * len(walkers) * (gravity))
+        distance_squared = current_direction[0]**2 + current_direction[1]**2
+        angle = walker.directional_angle(
+            (walker.location[0] + current_direction[0],walker.location[1] + current_direction[1]))
+
+        # To avoid too strong attraction (wormholes and such)
+        atrraction = min((ratio) / (distance_squared), 5)
 
         # Get location not relative to walker
-        nonrelative_locations[walker] = (walker.location[0] + current_direction[0],
-                             walker.location[1] + current_direction[1])
+        if angle:
+            nonrelative_locations[walker] = (walker.location[0] + math.cos(angle) * atrraction,
+                             walker.location[1] + math.sin(angle) * atrraction)
+        else:
+            nonrelative_locations[walker] = walker.location
     for walker in walkers:
         walker.jump(nonrelative_locations[walker])

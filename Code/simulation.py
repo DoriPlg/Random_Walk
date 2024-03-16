@@ -321,7 +321,7 @@ def check_data(data: dict) -> bool:
                     int(data["Simulation"]["iterations"])
                     int(data["Simulation"]["max_depth"])
                     int(data["Simulation"]["jumps"])
-                print(data)
+
                 if "gravity" in data["Simulation"]:
                     if isinstance(data["Simulation"]["gravity"],int):
                         Simulation(data["Simulation"]["gravity"])
