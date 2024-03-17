@@ -195,7 +195,7 @@ def gravitate(walkers: list[Walker], degree: int = 10, gravity: int = 0) -> None
     
     :param walkers: A list of Walker objects
     :param degree: The degree of attraction or repulsion between walkers,
-                    the higher the stronger. (default: 10)
+                    the higher the stronger. (default: 5)
     :param gravity: A boolean indicating whether to apply gravity or not (default: True)
     :return: None
     """
@@ -213,13 +213,13 @@ def gravitate(walkers: list[Walker], degree: int = 10, gravity: int = 0) -> None
             current_direction = (current_direction[0]+x_difference,
                                  current_direction[1]+y_difference)
         # Adapt the direction to the desired gravitational power and number of walkers
-        ratio = float(degree * len(walkers) * (gravity))
+        ratio = float(degree * len(walkers)**2 * (gravity))
         distance_squared = current_direction[0]**2 + current_direction[1]**2
         angle = walker.directional_angle(
             (walker.location[0] + current_direction[0],walker.location[1] + current_direction[1]))
 
         # To avoid too strong attraction (wormholes and such)
-        atrraction = min((ratio) / (distance_squared), 5)
+        atrraction = min((ratio) / (distance_squared), 3)
 
         # Get location not relative to walker
         if angle:
