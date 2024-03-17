@@ -189,7 +189,7 @@ class Walker:
         """
         return MOVEMENTS
 
-def gravitate(walkers: list[Walker], degree: int = 10, gravity: int = 0) -> None:
+def gravitate(walkers: list[Walker], degree: int = 1, gravity: int = 0) -> None:
     """
     Additional feature for walkers that attract or push each other
     

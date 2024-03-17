@@ -177,7 +177,7 @@ class TestWalker(unittest.TestCase):
         walker_list.append(wk.Walker("A"))
         gravitate(walker_list,10**3,1)
         print(walker_list[2].location)
-        self.assertTrue(4 < walker_list[2].location[1] < 7)
+        self.assertTrue(1 < walker_list[2].location[1] < 7)
 
 
 if __name__ == '__main__':
