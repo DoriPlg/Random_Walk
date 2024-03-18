@@ -128,7 +128,7 @@ class Simulation:
         """
         return self.__location_log
 
-    def run_simulation(self,n: int, max_depth: int = 10**3) -> dict:
+    def run_simulation(self,n: int, steps:int, max_depth: int = 10**3) -> dict:
         """
         runs a single simulation and returns a dictionary where we have for each walker:
         {
@@ -151,35 +151,41 @@ class Simulation:
 
         # "Zero"s the variables
         stunt_double = deepcopy(self)
-        info_dict: dict[int, dict[str, object]] = {}
+        info_dict: dict[int,dict[int, dict[str, object]]] = {}
+        escape: dict[int, int|None] = {}
         for index, _ in enumerate(self.__walkers):
-            info_dict[index] = {"crosses": 0, "escape": None}
+            info_dict[index] = {1: {"escape": None}}
+            escape[index] = None
         step = 0
         # Runs through the steps, checking when ESCAPE_RAD is escaped
         while (step < max_depth + 1 and
-                None in [info_dict[index]["escape"] for index,_ in enumerate(self.__walkers)])\
+                None in [info_dict[index][max(info_dict[index].keys())]["escape"]\
+                          for index,_ in enumerate(self.__walkers)])\
               or step < n + 1:
             step = stunt_double.step()
             for index, _ in enumerate(self.__walkers):
                 if stunt_double.log[index][-1][0] ** 2 + \
-                      stunt_double.log[index][-1][1] ** 2 > ESCAPE_RAD ** 2 \
-                    and info_dict[index]["escape"] is None:
-                    info_dict[index]["escape"] = step
+                        stunt_double.log[index][-1][1] ** 2 > ESCAPE_RAD ** 2 \
+                        and escape[index] is None:
+                    escape[index] = step
+                if step in range(1, n+1, steps):
+                    info_dict[index][step] = {"escape": escape[index]}
 
         # Runs through the locations the simulation passed through and gets the desired answers
         for index, _ in enumerate(self.__walkers):
             self.__location_log[index].append(self.__walkers[index].location)
             locations = list(stunt_double.log[index][:n+1])
-            info_dict[index]["distance_0"] = \
-                (locations[-1][0] ** 2 + locations[-1][1] ** 2) ** (1/2)
-            x_values = [x[0] for x in locations]
-            info_dict[index]["distance_axis"] = abs(locations[-1][0])
-            info_dict[index]["crosses"] = helper.passes_0(x_values)
-            info_dict[index]["location_list"] = locations
+            for i in range(1, n + 1, steps):
+                info_dict[index][i]["distance_0"] = \
+                    (locations[:i][-1][0] ** 2 + locations[:i][-1][1] ** 2) ** (1/2)
+                x_values = [x[0] for x in locations[:i]]
+                info_dict[index][i]["distance_axis"] = abs(locations[:i][-1][0])
+                info_dict[index][i]["crosses"] = helper.passes_0(x_values)
+                info_dict[index][i]["location_list"] = locations[:i]
 
         return info_dict
 
-    def simulation_average(self, iterations: int, n: int, max_depth: int) -> dict:
+    def simulation_average(self, iterations: int, n: int, step: int, max_depth: int) -> dict:
         """
         runs multiple simulations and saves a json with their average outcome for:
         {
@@ -205,47 +211,56 @@ class Simulation:
         if max_depth < n:
             raise ValueError("The max depth of the simulation cannot be less than the desired one")
         # Prepares dictionaries for the data
-        data_for_all_walkers: dict[int, dict[str, float]] = {}
-        distance_0: dict[int, list[float]] = {}
-        escape: dict[int, list[int]] = {}
-        distance_x_axis: dict[int, list[float]] = {}
-        distance_y_axis: dict[int, list[float]] = {}
-        crosses: dict[int, list[int]] = {}
+        data_for_all_walkers: dict[int,dict[int, dict[str, float]]] = {}
+        distance_0: dict[int, dict[int, list[float]]] = {}
+        escape: dict[int, dict[int, list[int]]] = {}
+        distance_x_axis: dict[int, dict[int, list[float]]] = {}
+        distance_y_axis: dict[int, dict[int, list[float]]] = {}
+        crosses: dict[int, dict[int, list[int]]] = {}
 
         # "Zero"s the values for each walker
         for index, _ in enumerate(self.__walkers):
-            distance_0[index] =[]
-            escape[index] = []
-            distance_x_axis[index] = []
-            distance_y_axis[index] = []
-            crosses[index] = []
+            distance_0[index] = {}
+            escape[index] = {}
+            distance_x_axis[index] = {}
+            distance_y_axis[index] = {}
+            crosses[index] = {}
+            for i in range(1, n + 1, step):
+                distance_0[index][i] = []
+                escape[index][i] = []
+                distance_x_axis[index][i] = []
+                distance_y_axis[index][i] = []
+                crosses[index][i] = []
 
         # Preforms the desired iterations of the simulation
         for _ in range(iterations):
-            simulation_results = self.run_simulation(n,max_depth)
+            simulation_results = self.run_simulation(n,step,max_depth)
             for index, _ in enumerate(self.__walkers):
-                distance_0[index].append(simulation_results[index]["distance_0"])
-                escape[index].append(simulation_results[index]["escape"])
-                distance_y_axis[index].append(simulation_results[index]["distance_axis"])
-                crosses[index].append(simulation_results[index]["crosses"])
+                for i in range(1, n + 1, step):
+                    distance_0[index][i].append(simulation_results[index][i]["distance_0"])
+                    escape[index][i].append(simulation_results[index][i]["escape"])
+                    distance_y_axis[index][i].append(simulation_results[index][i]["distance_axis"])
+                    crosses[index][i].append(simulation_results[index][i]["crosses"])
 
         # Compresses the data to averages for each walker
         for index, _ in enumerate(self.__walkers):
-            dict_to_save = {
-                            "distance_0": sum(distance_0[index])/iterations,
-                            "escape": sum(number for number in escape[index]\
-                                 if number is not None)/
-                            iterations,
-                            "distance_axis": sum(distance_y_axis[index])/iterations,
-                            "crosses": sum(crosses[index])/iterations
-                            }
-            data_for_all_walkers[index] = dict_to_save
+            data_for_all_walkers[index] = {}
+            for i in range(1, n + 1, step):
+                dict_to_save = {
+                                "distance_0": sum(distance_0[index][i])/iterations,
+                                "escape": sum(number for number in escape[index][i]\
+                                    if number is not None)/
+                                iterations,
+                                "distance_axis": sum(distance_y_axis[index][i])/iterations,
+                                "crosses": sum(crosses[index][i])/iterations
+                                }
+                data_for_all_walkers[index][i] = dict_to_save
 
         # Returns the data constructed
         return data_for_all_walkers
 
     def graph_simulation(self, iterations: int, n: int,
-                          max_depth: int, jump: int, file_name: str) -> None:
+                          max_depth: int, step: int, file_name: str) -> None:
         """
         Perform a graph simulation.
 
@@ -253,16 +268,14 @@ class Simulation:
         - iterations (int): The number of iterations to perform.
         - n (int): The maximum value for the range.
         - max_depth (int): The maximum depth for the simulation.
-        - jump (int): The step size for the range.
+        - step (int): The step size for the range.
         - file_name (str): The name of the file to save the graph.
 
         Returns:
         None
         """
 
-        data_for_graph = {}
-        for index in range(jump, n, jump):
-            data_for_graph[index] = self.simulation_average(iterations, index, max_depth)
+        data_for_graph = self.simulation_average(iterations, n, step, max_depth)
         helper.save_to_json(data_for_graph, f"{file_name}_results.json")
         gr.show_walker_graph(data_for_graph, file_name)
 
@@ -275,8 +288,8 @@ class Simulation:
                             be added automaticaly. an index discerning which walker is 
                             shown will be added defaults to 'walkerplot'
         """
-        simulation_results = self.run_simulation(n,n)
-        locations_dict = {item[0]: item[1]["location_list"]
+        simulation_results = self.run_simulation(n,n-1,n)
+        locations_dict = {item[0]: item[1][n]["location_list"]
                            for item in simulation_results.items()}
         barriers = [barrier.points for barrier in self.__barriers]
         portals = [(portal.center, portal.radius, portal.endpoint) \
@@ -320,7 +333,7 @@ def check_data(data: dict) -> bool:
                 if data["Simulation"]["type"] == "graph":
                     int(data["Simulation"]["iterations"])
                     int(data["Simulation"]["max_depth"])
-                    int(data["Simulation"]["jumps"])
+                    int(data["Simulation"]["steps"])
 
                 if "gravity" in data["Simulation"]:
                     if isinstance(data["Simulation"]["gravity"],int):
@@ -336,7 +349,7 @@ def check_data(data: dict) -> bool:
                 if os.path.exists(directory):
                     return True
             except Exception as e:
-                print(e)
+                print("Exception", e)
     return False
 
 def run_from_json(filename: str|None = None) -> Tuple[dict, str]:
@@ -381,9 +394,9 @@ def run_and_plot(data: dict, filename: str) -> str:
         iterations = data["Simulation"]["iterations"]
         n = data["Simulation"]["n"]
         max_depth = data["Simulation"]["max_depth"]
-        jump = data["Simulation"]["jumps"]
+        step = data["Simulation"]["steps"]
         file_name = data["Simulation"]["filename"]
-        simulation.graph_simulation(iterations, n, max_depth, jump, file_name)
+        simulation.graph_simulation(iterations, n, max_depth, step, file_name)
 
     return filename.removesuffix("_simulation.json")
 

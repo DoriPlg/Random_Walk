@@ -99,27 +99,27 @@ class TestSimulation(unittest.TestCase):
     def test_simulation_errors(self):
         simulation = Simulation()
         try:
-            simulation.run_simulation(0,10)
+            simulation.run_simulation(0,2,10)
             raise AssertionError
         except ValueError:
             pass
         try:
-            simulation.run_simulation(10,5)
+            simulation.run_simulation(10,1,5)
             raise AssertionError
         except ValueError:
             pass
         try:
-            simulation.simulation_average(-1,10,5)
+            simulation.simulation_average(-1,10,1,5)
             raise AssertionError
         except ValueError:
             pass
         try:
-            simulation.simulation_average(1,0,5)
+            simulation.simulation_average(1,0,1,5)
             raise AssertionError
         except ValueError:
             pass
         try:
-            simulation.simulation_average(1,10**5,10**2)
+            simulation.simulation_average(1,10**5,2,10**2)
             raise AssertionError
         except ValueError:
             pass
@@ -139,7 +139,7 @@ class TestSimulation(unittest.TestCase):
         for key in Walker.move_dict():
             walker = Walker(key)
             simulation.add_walker(walker)
-        result = simulation.run_simulation(10)
+        result = simulation.run_simulation(10,2)
         self.assertIsInstance(result, dict)
         self.assertEqual(len(result), len(Walker.move_dict()))
 
@@ -148,7 +148,7 @@ class TestSimulation(unittest.TestCase):
         for key in Walker.move_dict():
             walker = Walker(key)
             simulation.add_walker(walker)
-        simulation.simulation_average(10, 100, 1000)
+        simulation.simulation_average(10, 100,1, 1000)
         # Nothing to assert
 
     def test_graph_simulation(self):

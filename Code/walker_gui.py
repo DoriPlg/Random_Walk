@@ -517,7 +517,7 @@ class SimulationGUI:
         This method clears the frame, creates a new frame for simulation input, and adds buttons
         and input fields for selecting simulation options. The user can toggle between plotting
         simulation and graphing simulation, and provide input values such as number of steps, number
-        of iterations, maximum depth, and jump interval.
+        of iterations, maximum depth, and step interval.
 
         The selected simulation options are stored in the `__simulation_data` dictionary and the
         selected directory path and simulation name are stored in the `__simulation_path`
@@ -575,7 +575,7 @@ data for different number of iterations)")
                 simulation_input_frame, def_values=[1000],
                 message="How many maximum steps do you wish to plot for?", width= 5)[0]
 
-            jumps=self.single_int_user_input(self,
+            steps=self.single_int_user_input(self,
                 simulation_input_frame, def_values=[20],
                 message="How many every how many steps do you want a point?", width= 5)[0]
 
@@ -589,7 +589,7 @@ data for different number of iterations)")
                                         "iterations": iterations,
                                         "max_depth": max_depth,
                                         "n": n_iterations,
-                                        "jumps": jumps}
+                                        "steps": steps}
 
 
         gravity = tk.StringVar(value=list(self.__gravity_dictionary.keys())[0])

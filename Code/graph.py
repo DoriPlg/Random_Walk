@@ -132,9 +132,9 @@ def show_walker_graph(data, file_to_save: str = f"{DESTINATION_PATH}_graph") -> 
     :param file_to_save: the desired filepath in which to save the path taken by the walker
     :param color: the color to trace the course
     """
-    x = [int(k) for k in data]
-    walkers = list(data[x[0]].keys())
-    for index, graph_type in enumerate(data[x[0]][walkers[0]]):
+    x = [int(k) for k in data[0]]
+    walkers = list(data.keys())
+    for index, graph_type in enumerate(data[walkers[0]][x[0]]):
         fig = plt.figure()
         plt.xlabel("Amount of steps")
         if graph_type == "distance_axis":
@@ -147,8 +147,8 @@ def show_walker_graph(data, file_to_save: str = f"{DESTINATION_PATH}_graph") -> 
             y_label = "Distance from the origin"
         plt.ylabel(y_label)
         plt.title(f"Graph of {graph_type}")
-        for walker in data[x[0]]:
-            to_plot = [data[i][walker][graph_type] for i in x]
+        for walker in data:
+            to_plot = [data[walker][i][graph_type] for i in x]
             plt.plot(x, to_plot, label=f"Walker {walker}")
         plt.legend(loc="upper left")
         # fig.show()
