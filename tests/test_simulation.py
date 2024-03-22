@@ -320,7 +320,7 @@ class TestSimulation(unittest.TestCase):
                 "Simulation": {"type": "plot", "n": 1000, "filename": "temp_test"}
                 }
         save_to_json(data, "temp_test_simulation.json")
-        results = run_from_json("temp_test")
+        results = run_from_json("temp_test_simulation.json")
         self.assertIsInstance(results[0], dict)
         os.remove("temp_test_simulation.json")
 

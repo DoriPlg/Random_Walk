@@ -11,6 +11,7 @@ Command Line Arguments:
 - <path> (optional): Specifies the path to a JSON file containing the initial configuration for the simulation. If not provided, the program will open a GUI.
 
 JSON File Format:
+JSON should be saved as <file_name>_simulation.json - WILL NOT RUN OTHERWISE
 The JSON file should have the following structure:
 {
   "Walkers":[{"movement": str, "color": str, "location": (float,float)}],

@@ -189,7 +189,7 @@ class Walker:
         """
         return MOVEMENTS
 
-def gravitate(walkers: list[Walker], degree: int = 1, gravity: int = 0) -> None:
+def gravitate(walkers: list[Walker], degree: int = 2, gravity: int = 0) -> None:
     """
     Additional feature for walkers that attract or push each other
     
@@ -202,30 +202,32 @@ def gravitate(walkers: list[Walker], degree: int = 1, gravity: int = 0) -> None:
     if len(walkers) <= 1 or gravity == 0:
         return
     nonrelative_locations = {}
+    ratio = float(degree * len(walkers) * (gravity))
     for walker in walkers:
+        bearing = (0, 0)
         # direction as in (x, y) relative to walker
-        current_direction = (0.0,0.0)
         for other in walkers:
             if other is walker:
                 continue
             x_difference = other.location[0] - walker.location[0]
             y_difference = other.location[1] - walker.location[1]
-            current_direction = (current_direction[0]+x_difference,
-                                 current_direction[1]+y_difference)
-        # Adapt the direction to the desired gravitational power and number of walkers
-        ratio = float(degree * len(walkers)**2 * (gravity))
-        distance_squared = current_direction[0]**2 + current_direction[1]**2
-        angle = walker.directional_angle(
-            (walker.location[0] + current_direction[0],walker.location[1] + current_direction[1]))
+            current_direction = (x_difference, y_difference)
+            distance_squared = current_direction[0]**2 + current_direction[1]**2
+            angle = walker.directional_angle(
+                (walker.location[0] + current_direction[0],
+                 walker.location[1] + current_direction[1]))
 
-        # To avoid too strong attraction (wormholes and such)
-        atrraction = min((ratio) / (distance_squared), 3)
+            # To avoid too strong attraction (wormholes and such)
+            atrraction = min((ratio) / (distance_squared), 3)
+
+            if angle:
+                bearing = (bearing[0] + math.cos(angle) * atrraction,
+                            bearing[1] + math.sin(angle) * atrraction)
 
         # Get location not relative to walker
-        if angle:
-            nonrelative_locations[walker] = (walker.location[0] + math.cos(angle) * atrraction,
-                             walker.location[1] + math.sin(angle) * atrraction)
-        else:
-            nonrelative_locations[walker] = walker.location
+        nonrelative_locations[walker] = (walker.location[0] + bearing[0],
+                                        bearing[1] + walker.location[1])
+
+
     for walker in walkers:
         walker.jump(nonrelative_locations[walker])

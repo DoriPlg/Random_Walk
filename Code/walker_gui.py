@@ -684,7 +684,8 @@ data for different number of iterations)")
 
         if path == "/":
             path = os.path.realpath(__file__).removesuffix("walker_gui.py")+"null_name"
-        save_to_json(simulation_data,f"{path}_simulation.json")
+        path += "_simulation.json"
+        save_to_json(simulation_data,path)
         try:
             self.run_simulation(path)
         except ValueError:

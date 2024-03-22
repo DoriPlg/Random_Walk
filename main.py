@@ -35,6 +35,6 @@ if __name__ == "__main__":
             print("Simulation completed successfully. \
 You may view the results in the same directory as the JSON file.")
         except Exception as e:
-            print(f"An error occurred while running the simulation: {e}")
+            print(f"An error occurred while running the simulation:\n{e}")
     else:
         print("Invalid number of arguments. Please provide either no arguments or a single JSON path.")
