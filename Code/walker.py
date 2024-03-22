@@ -204,7 +204,7 @@ def gravitate(walkers: list[Walker], degree: int = 2, gravity: int = 0) -> None:
     nonrelative_locations = {}
     ratio = float(degree * len(walkers) * (gravity))
     for walker in walkers:
-        bearing = (0, 0)
+        bearing: tuple[float,float] = (0, 0)
         # direction as in (x, y) relative to walker
         for other in walkers:
             if other is walker:
