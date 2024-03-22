@@ -9,13 +9,14 @@ NOTES: ...
 """
 
 
-from Code.simulation import run_from_json, run_and_plot
+from Code.simulation import run_from_json, run_and_plot, Simulation_3D
+from Code.walker_3d import Walker3D as w3d  # For testing purposes
 import tkinter as tk
 from Code.walker_gui import SimulationGUI
 import sys
 import os
 
-if __name__ == "__main__":
+if __name__ == "__min__":
 
     if len(sys.argv) == 1:
         root = tk.Tk()
@@ -38,3 +39,11 @@ You may view the results in the same directory as the JSON file.")
             print(f"An error occurred while running the simulation:\n{e}")
     else:
         print("Invalid number of arguments. Please provide either no arguments or a single JSON path.")
+
+
+if __name__ == "__main__":
+    simu = Simulation_3D()
+    simu.add_walker(w3d((0,0,0)))
+    simu.add_walker(w3d((0,0,0)))
+    simu.run_simulation(100)
+    simu.mappit()

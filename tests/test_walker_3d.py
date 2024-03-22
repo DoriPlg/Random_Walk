@@ -16,6 +16,7 @@ class TestWalker3D(unittest.TestCase):
         walker.jump()
         new_position = walker.position
         self.assertNotEqual(new_position, position)
+        self.assertEqual(walker.get_distance(position), 1.0)
 
     def test_get_distance(self):
         # Test the get_distance method of Walker3D

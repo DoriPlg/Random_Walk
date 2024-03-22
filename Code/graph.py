@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
 Coordinates = Tuple[float,float]
+Triordinates = Tuple[float, float, float]
 
 DESTINATION_PATH = "./Results/"
 
@@ -151,3 +152,25 @@ def show_walker_graph(data, file_to_save: str = f"{DESTINATION_PATH}_graph") -> 
         plt.legend(loc="upper left")
         # fig.show()
         fig.savefig(file_to_save+f"_{index}.png")
+
+def map_3d(locations: list[list[Triordinates]]) -> None:
+    """
+    A function that plots on a 3D graph the data picked up by the walker.
+    :param locations: a list containing the locations of the walkers
+    """
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+
+    for walker in locations:
+        x = [i[0] for i in walker]
+        y = [i[1] for i in walker]
+        z = [i[2] for i in walker]
+        ax.plot(x, y, z)
+
+    plt.show()
+    fig.show()
+    #input()
+    #fig.savefig(f"{DESTINATION_PATH}3d_plot.png")

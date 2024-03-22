@@ -15,6 +15,7 @@ from Code.walker import Walker, gravitate
 from Code.barrier import Barrier
 from Code.portal import Portal
 from Code.mud import Mud
+from Code.walker_3d import Walker3D as w3d
 import Code.helper_functions as helper
 import Code.graph as gr
 
@@ -408,3 +409,81 @@ class SimulationError(Exception):
     """
     def __init__(self, message: str) -> None:
         super().__init__(message)
+
+class Simulation_3D:
+    """
+    A class for Simulation objects for random walker simulations in 3D.
+    :attribute __walkers: a list containg all walkers added to the simulation by order
+    :attribute __location_log: a dictionary where the keys are the indexes of different 
+                                walkers in __walker and the values are lists in order of
+                                the locations the walker visited.
+    :attribute __barriers: a list containg all barriers added to the simulation by order
+    :attribute __portals: a list containg all portals added to the simulation by order
+    :attribute __iteration: counts the iterations of the simulation
+    """
+
+    def __init__(self, gravity = 0) -> None:
+        """
+        The constructor for Simulation objects
+        """
+        self.__walkers: list[w3d] = []
+        #self.__barriers: list[Barrier]= []
+        #self.__portals: list[Portal] = []
+        #self.__mudspots: list[Mud] = []
+        self.__iteration = 0
+        #gravity_values = (-1,0,1)
+        #if gravity not in gravity_values:
+        #    raise ValueError(f"Gravity can only be {gravity_values}")
+        #self.__gravity = gravity
+
+    def add_walker(self, walker: w3d) -> None:
+        """
+        Adds a walker to the simulation
+        Once a walker is added it can't be terminated!
+        :param walker: the Walker to add
+        """
+        self.__walkers.append(walker)
+
+    #def add_portal(self, portal: Portal) ->None:
+    #    """"
+    #    Adds a portal to the simulation
+    #    :param portal: The portal to add
+    #    """
+    #    self.__portals.append(portal)
+#
+    #def add_barrier(self, barrier: Barrier) ->None:
+    #    """"
+    #    Adds a barrier to the simulation
+    #    :param barrier: The barrier to add
+    #    """
+    #    self.__barriers.append(barrier)
+#
+    #def add_mud(self, mud: Mud) -> None:
+    #    """
+    #    Adds mud to the simulation
+    #    :param mus: The mud to add
+    #    """
+    #    self.__mudspots.append(mud)
+#
+    def step(self) -> int:
+        """
+        Preforms one step of the entire simulation.
+        Returns the number of the step
+        """
+        for index, walker in enumerate(self.__walkers):
+            walker.jump()
+        self.__iteration += 1
+        return self.__iteration
+
+    def run_simulation(self,n: int) -> None:
+        """
+        runs the simulation for n steps
+        """
+        for _ in range(n):
+            self.step()
+
+    def mappit(self) -> None:
+        """
+        maps the locations of the walkers
+        """
+        gr.map_3d([walker.log for walker in self.__walkers])

@@ -19,13 +19,19 @@ PI = math.pi
 class Walker3D:
     def __init__(self, position: Triordinates):
         self.__position = position
+        self.__log = []
 
     @property
     def position(self) -> Triordinates:
         return self.__position
+    
+    @property
+    def log(self) -> list:
+        return self.__log
 
     def jump(self):
         x, y, z = self.position
+        self.__log.append(self.position)
         dx, dy, dz = random_vector()
         self.__position = (x + dx, y + dy, z + dz)
 
