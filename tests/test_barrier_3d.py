@@ -1,6 +1,6 @@
 import unittest
 import math
-from Code.barrier_3d import Barrier3D
+from Code.td_barrier import Barrier3D
 
 class TestBarrier3D(unittest.TestCase):
     def test_init(self):
