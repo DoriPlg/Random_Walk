@@ -164,11 +164,11 @@ class TestSimulation(unittest.TestCase):
         data ={
                 "Walkers": 
                 [
-                    {"movement": "D_up", "color": "R", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "G", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "Bl", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "Or", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "P", "location": [0.0, 0.0]}
+                    {"movement": "D_up", "color": "red", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "green", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "blue", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "orange", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "purple", "location": [0.0, 0.0]}
                 ],
                 "Barriers":
                 [
@@ -204,11 +204,11 @@ class TestSimulation(unittest.TestCase):
         data ={
                 "Walkers": 
                 [
-                    {"movemet": "D_up", "color": "R", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "G", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "Bl", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "Or", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "P", "location": [0.0, 0.0]}
+                    {"movemet": "D_up", "color": "red", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "green", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "blue", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "orange", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "purple", "location": [0.0, 0.0]}
                 ],
                 "Barriers":
                 [
@@ -229,10 +229,10 @@ class TestSimulation(unittest.TestCase):
                 "Walkers": 
                 [
                     {"movement": "D_up", "color": "Rzaza", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "G", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "Bl", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "Or", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "P", "location": [0.0, 0.0]}
+                    {"movement": "D_up", "color": "green", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "blue", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "orange", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "purple", "location": [0.0, 0.0]}
                 ],
                 "Barriers":
                 [
@@ -252,11 +252,11 @@ class TestSimulation(unittest.TestCase):
         data ={
                 "Walkers": 
                 [
-                    {"movement": "D_up", "color": "R", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "G", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "Bl", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "Or", "location":" [0.0, 0.0]"},
-                    {"movement": "D_up", "color": "P", "location": [0.0, 0.0]}
+                    {"movement": "D_up", "color": "red", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "green", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "blue", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "orange", "location":" [0.0, 0.0]"},
+                    {"movement": "D_up", "color": "purple", "location": [0.0, 0.0]}
                 ],
                 "Barriers":
                 [
@@ -276,11 +276,11 @@ class TestSimulation(unittest.TestCase):
         data ={
                 "Walkers": 
                 [
-                    {"movement": "D_up", "color": "R", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "G", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "Bl", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "Or", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "P", "location": [0.0, 0.0]}
+                    {"movement": "D_up", "color": "red", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "green", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "blue", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "orange", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "purple", "location": [0.0, 0.0]}
                 ],
                 "Barriers":
                 [
@@ -301,11 +301,11 @@ class TestSimulation(unittest.TestCase):
         data ={
                 "Walkers": 
                 [
-                    {"movement": "D_up", "color": "R", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "G", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "Bl", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "Or", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "P", "location": [0.0, 0.0]}
+                    {"movement": "D_up", "color": "red", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "green", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "blue", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "orange", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "purple", "location": [0.0, 0.0]}
                 ], 
                 "Barriers":
                 [
@@ -329,11 +329,11 @@ class TestSimulation(unittest.TestCase):
         data ={
                 "Walkers": 
                 [
-                    {"movement": "D_up", "color": "R", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "G", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "Bl", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "Or", "location": [0.0, 0.0]},
-                    {"movement": "D_up", "color": "P", "location": [0.0, 0.0]}
+                    {"movement": "D_up", "color": "red", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "green", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "blue", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "orange", "location": [0.0, 0.0]},
+                    {"movement": "D_up", "color": "purple", "location": [0.0, 0.0]}
                 ], 
                 "Barriers":
                 [

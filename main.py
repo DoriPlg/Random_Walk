@@ -16,7 +16,7 @@ from Code.walker_gui import SimulationGUI
 import sys
 import os
 
-if __name__ == "__min__":
+if __name__ == "__main__":
 
     if len(sys.argv) == 1:
         root = tk.Tk()

@@ -13,7 +13,7 @@ import math
 import random
 
 Triordinates = Tuple[float, float, float]
-
+COLORS = ["red", "green", "yellow", "blue", "cyan", "orange","brown", "purple","olive"]
 PI = math.pi
 
 class Walker3D:

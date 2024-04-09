@@ -17,7 +17,7 @@ from Code.simulation import SimulationError, run_and_plot, run_from_json
 from Code.walker import Walker
 
 MOVE_DICT = {Walker.move_dict()[k]: k for k in Walker.move_dict()}
-COLOR_PALLET = {Walker.color_pallet()[k]: k for k in Walker.color_pallet()}
+COLOR_PALLET = Walker.color_pallet()
 
 
 
@@ -327,7 +327,7 @@ class SimulationGUI:
         walker_input_frame.pack()
 
         walker_types = tuple(MOVE_DICT.keys())
-        walker_colors = tuple(COLOR_PALLET.keys())
+        walker_colors = tuple(COLOR_PALLET)
 
         num_walkers = int(self.__num_walkers.get())
         for i in range(num_walkers):
@@ -646,7 +646,7 @@ data for different number of iterations)")
         for walker in self.__walkers_data:
             location = [walker["Locationx"].get(), walker["Locationy"].get()]
             simulation_data["Walkers"].append({"movement": MOVE_DICT[walker["Type"].get()],
-                                                "color": COLOR_PALLET[walker["Color"].get()],
+                                                "color": walker["Color"].get(),
                                                 "location": location})
 
         for barrier in self.__barriers_data:

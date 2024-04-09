@@ -36,9 +36,9 @@ class TestWalker(unittest.TestCase):
         walker = wk.Walker('A')
         self.assertEqual(walker.movement, 'A')
         self.assertEqual(walker.location, (0, 0))
-        self.assertEqual(walker.color, 'blue')
+        self.assertEqual(walker.color, 'black')
 
-        walker = wk.Walker('C', (3, 4), 'R')
+        walker = wk.Walker('C', (3, 4), 'red')
         self.assertEqual(walker.movement, 'C')
         self.assertEqual(walker.location, (3, 4))
         self.assertEqual(walker.color, 'red')
@@ -80,7 +80,7 @@ class TestWalker(unittest.TestCase):
         self.assertIsNone(angle)
 
         # Test 2: walker is not on the same point as the given coordinate
-        walker = wk.Walker('C', (0, 0), 'R')
+        walker = wk.Walker('C', (0, 0), 'red')
         angle = walker.directional_angle((3, 4))
         self.assertEqual(angle, math.tanh(4/3))
 
@@ -125,7 +125,7 @@ class TestWalker(unittest.TestCase):
         dictionary is not empty.
         """
         color_pallet = wk.Walker.color_pallet()
-        self.assertIsInstance(color_pallet, dict)
+        self.assertIsInstance(color_pallet, list)
         self.assertGreater(len(color_pallet), 0)
 
     def test_move_dict(self):

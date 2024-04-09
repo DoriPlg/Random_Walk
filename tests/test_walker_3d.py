@@ -4,22 +4,22 @@ from Code.walker_3d import Walker3D
 
 class TestWalker3D(unittest.TestCase):
     def test_position(self):
-        # Test the position property of Walker3D
+        # Test the position property of Walker
         position = (1.0, 2.0, 3.0)
         walker = Walker3D(position)
         self.assertEqual(walker.position, position)
 
     def test_jump(self):
-        # Test the jump method of Walker3D
+        # Test the jump method of Walker
         position = (0.0, 0.0, 0.0)
         walker = Walker3D(position)
         walker.jump()
         new_position = walker.position
         self.assertNotEqual(new_position, position)
-        self.assertEqual(walker.get_distance(position), 1.0)
+        self.assertAlmostEqual(walker.get_distance(position), 1.0)
 
     def test_get_distance(self):
-        # Test the get_distance method of Walker3D
+        # Test the get_distance method of Walker
         position = (0.0, 0.0, 0.0)
         walker = Walker3D(position)
         location = (1.0, 2.0, 3.0)

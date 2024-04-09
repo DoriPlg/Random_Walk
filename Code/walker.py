@@ -25,15 +25,14 @@ MOVEMENTS = {
             'D_left': "Direction chosen at Random but favoring left, step site 1 unit",
             'D_axis': "Direction chosen at Random but favoring axis, step site 1 unit"
             }
-COLORS = {'R': "red", 'G': "green", 'Y': "yellow", 'Bl': "blue", 'C': "cyan", 'Or': "orange",
-          'Br': "brown", 'P': "purple", 'Ol': "olive"}
+COLORS = ["red", "green", "yellow", "blue", "cyan", "orange","brown", "purple","olive","black"]
 
 class Walker:
     """
     A class for Walker objects in a random walker simulation
     """
 
-    def __init__(self, movement: str, location: Coordinates = (0,0), color: str = 'Bl') -> None:
+    def __init__(self, movement: str, location: Coordinates = (0,0), color: str = 'black') -> None:
         """
         A constructor for a Walker object.
         :param movement:a string representing the walkers movement type from:
@@ -51,8 +50,8 @@ class Walker:
         :param location:a tuple representing the starting place for the Walker,
                         defualts to (0,0) for (x,y)
         :param color:   a charcter representing the walker's color, from:
-                        {'R': "red", 'G': "green", 'Y': "yellow", 'Bl': "blue", 'C': "cyan",
-                        'Or': "orange", 'Br': "brown", 'P': "Purple", 'Ol': "olive"},
+                        ["red", "green", "yellow", "blue", "cyan",
+                          "orange","brown", "purple","olive"],
                         defaults to black.
         """
         self.__location = location
@@ -63,7 +62,7 @@ class Walker:
         if color in COLORS:
             self.__color = color
         else:
-            raise ValueError(f"Color can only be of {COLORS.keys()}")
+            raise ValueError(f"Color can only be of {COLORS}")
 
     def next_location(self) -> Coordinates:
         """
@@ -173,12 +172,12 @@ class Walker:
         """
         returns a walkers color, as a full name
         """
-        return COLORS[self.__color]
+        return self.__color
 
     @staticmethod
-    def color_pallet() -> dict:
+    def color_pallet() -> list[str]:
         """
-        For UI reasons, returns the dictionary describing the walker colors
+        For UI reasons, returns the list describing the walker colors
         """
         return COLORS
 

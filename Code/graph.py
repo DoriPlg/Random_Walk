@@ -153,7 +153,7 @@ def show_walker_graph(data, file_to_save: str = f"{DESTINATION_PATH}_graph") -> 
         # fig.show()
         fig.savefig(file_to_save+f"_{index}.png")
 
-def map_3d(locations: list[list[Triordinates]]) -> None:
+def map_3d(walker_locations: list[list[Triordinates]]) -> None:
     """
     A function that plots on a 3D graph the data picked up by the walker.
     :param locations: a list containing the locations of the walkers
@@ -164,13 +164,13 @@ def map_3d(locations: list[list[Triordinates]]) -> None:
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
 
-    for walker in locations:
+    for walker in walker_locations:
         x = [i[0] for i in walker]
         y = [i[1] for i in walker]
         z = [i[2] for i in walker]
         ax.plot(x, y, z)
+        ax.scatter(x[1:], y[1:], z[1:])
 
     plt.show()
     fig.show()
-    #input()
-    #fig.savefig(f"{DESTINATION_PATH}3d_plot.png")
+    fig.savefig(f"{DESTINATION_PATH}3d_plot.png")
