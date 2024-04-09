@@ -15,7 +15,10 @@ from Code.walker import Walker, gravitate
 from Code.barrier import Barrier
 from Code.portal import Portal
 from Code.mud import Mud
-from Code.walker_3d import Walker3D as w3d
+from Code.td_walker import Walker3D as w3d
+from Code.td_barrier import Barrier3D as b3d
+from Code.td_portal import Portal3D as p3d
+from Code.td_mud import MudPatch3D as m3d
 import Code.helper_functions as helper
 import Code.graph as gr
 
@@ -427,9 +430,9 @@ class Simulation_3D:
         The constructor for Simulation objects
         """
         self.__walkers: list[w3d] = []
-        #self.__barriers: list[Barrier]= []
-        #self.__portals: list[Portal] = []
-        #self.__mudspots: list[Mud] = []
+        self.__barriers: list[Barrier]= []
+        self.__portals: list[Portal] = []
+        self.__mudspots: list[Mud] = []
         self.__iteration = 0
         #gravity_values = (-1,0,1)
         #if gravity not in gravity_values:
@@ -444,27 +447,27 @@ class Simulation_3D:
         """
         self.__walkers.append(walker)
 
-    #def add_portal(self, portal: Portal) ->None:
-    #    """"
-    #    Adds a portal to the simulation
-    #    :param portal: The portal to add
-    #    """
-    #    self.__portals.append(portal)
-#
-    #def add_barrier(self, barrier: Barrier) ->None:
-    #    """"
-    #    Adds a barrier to the simulation
-    #    :param barrier: The barrier to add
-    #    """
-    #    self.__barriers.append(barrier)
-#
-    #def add_mud(self, mud: Mud) -> None:
-    #    """
-    #    Adds mud to the simulation
-    #    :param mus: The mud to add
-    #    """
-    #    self.__mudspots.append(mud)
-#
+    def add_portal(self, portal: p3d) ->None:
+        """"
+        Adds a portal to the simulation
+        :param portal: The portal to add
+        """
+        self.__portals.append(portal)
+
+    def add_barrier(self, barrier: b3d) ->None:
+        """"
+        Adds a barrier to the simulation
+        :param barrier: The barrier to add
+        """
+        self.__barriers.append(barrier)
+
+    def add_mud(self, mud: m3d) -> None:
+        """
+        Adds mud to the simulation
+        :param mus: The mud to add
+        """
+        self.__mudspots.append(mud)
+
     def step(self) -> int:
         """
         Preforms one step of the entire simulation.

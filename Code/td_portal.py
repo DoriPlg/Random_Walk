@@ -12,7 +12,7 @@ from typing import Tuple
 
 Triordinates = Tuple[float, float, float]
 
-class Portal:
+class Portal3D:
     """
     A class for Portal objects in a random walker simulation.
     A portal will send a walker that has walked into it's circular zone to it's endpoint.

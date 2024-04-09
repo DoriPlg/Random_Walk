@@ -1,6 +1,6 @@
 import unittest
 import math
-from Code.walker_3d import Walker3D
+from Code.td_walker import Walker3D
 
 class TestWalker3D(unittest.TestCase):
     def test_position(self):
