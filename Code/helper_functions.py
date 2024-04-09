@@ -11,6 +11,9 @@ NOTES: ...
 import json
 from tkinter import filedialog
 
+Trioordinates = tuple[float,float,float]
+
+
 def save_to_json(data, filename) -> None:
     """
     Save data to a JSON file.
@@ -88,3 +91,11 @@ def is_float(x) -> bool:
         return True
     except:
         return False
+
+def subtract_vectors(a: Trioordinates, b: Trioordinates) -> Trioordinates:
+    """
+    A function that subtracts two vectors from each other
+    :param a: the first vector
+    :param b: the second vector
+    """
+    return (a[0] - b[0], a[1] - b[1], a[2] - b[2])
