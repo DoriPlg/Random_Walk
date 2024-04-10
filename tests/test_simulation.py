@@ -6,13 +6,13 @@ EXERCISE : intro2cs final_project 2024
 
 import unittest
 import os
-from Code.simulation import Simulation, SimulationError, \
+from Code.simulation import Simulation, \
     check_data, run_from_json, run_and_plot
 from Code.walker import Walker
 from Code.portal import Portal
 from Code.barrier import Barrier
 from Code.mud import Mud
-from Code.helper_functions import save_to_json
+from Code.helper_functions import SimulationError, save_to_json
 
 class TestSimulation(unittest.TestCase):
     """

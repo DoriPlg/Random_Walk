@@ -13,7 +13,7 @@ class TestWalker3D(unittest.TestCase):
         # Test the jump method of Walker
         position = (0.0, 0.0, 0.0)
         walker = Walker3D(position)
-        walker.jump()
+        walker.jump(walker.next_location())
         new_position = walker.position
         self.assertNotEqual(new_position, position)
         self.assertAlmostEqual(walker.get_distance(position), 1.0)
