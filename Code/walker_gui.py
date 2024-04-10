@@ -12,8 +12,8 @@ import os
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import functools as ft
-from Code.helper_functions import is_intable,is_int,is_float,save_to_json
-from Code.simulation import SimulationError, run_and_plot, run_from_json
+from Code.helper_functions import SimulationError, is_intable,is_int,is_float,save_to_json
+from Code.simulation import run_and_plot, run_from_json
 from Code.walker import Walker
 
 MOVE_DICT = {Walker.move_dict()[k]: k for k in Walker.move_dict()}

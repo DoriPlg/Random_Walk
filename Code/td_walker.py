@@ -29,11 +29,14 @@ class Walker3D:
     def log(self) -> list:
         return self.__log
 
-    def jump(self):
+    def next_location(self) -> Triordinates:
         x, y, z = self.position
-        self.__log.append(self.position)
         dx, dy, dz = random_vector()
-        self.__position = (x + dx, y + dy, z + dz)
+        return x + dx, y + dy, z + dz
+
+    def jump(self, location: Triordinates):
+        self.__log.append(self.position)
+        self.__position = (location)
 
     def get_distance(self, location: Triordinates) -> float:
         x1, y1, z1 = self.position

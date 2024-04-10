@@ -11,6 +11,8 @@ NOTES: ...
 from typing import Tuple
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+import numpy as np
 
 Coordinates = Tuple[float,float]
 Triordinates = Tuple[float, float, float]
@@ -153,7 +155,10 @@ def show_walker_graph(data, file_to_save: str = f"{DESTINATION_PATH}_graph") -> 
         # fig.show()
         fig.savefig(file_to_save+f"_{index}.png")
 
-def map_3d(walker_locations: list[list[Triordinates]]) -> None:
+def map_3d(walker_locations: list[list[Triordinates]],
+           barriers: list[tuple[Triordinates,Triordinates,Triordinates,Triordinates]],
+           portals: list[tuple[Triordinates,float]],
+           mudspots: list[tuple[Triordinates,float,float,float]]) -> None:
     """
     A function that plots on a 3D graph the data picked up by the walker.
     :param locations: a list containing the locations of the walkers
@@ -170,6 +175,49 @@ def map_3d(walker_locations: list[list[Triordinates]]) -> None:
         z = [i[2] for i in walker]
         ax.plot(x, y, z)
         ax.scatter(x[1:], y[1:], z[1:])
+
+    for barrier in barriers:
+        
+        # Create a polygon from the points and add it to the plot
+        polygon = Poly3DCollection([np.array([barrier[0], barrier[1], barrier[2], barrier[3]])], color="black",alpha=0.5)
+        ax.add_collection3d(polygon)
+    
+    for portal in portals:
+        # Show portal as a 3D sphere
+        portal_center = portal[0]
+        portal_radius = portal[1]
+
+        u = np.linspace(0, 2 * np.pi, 100)
+        v = np.linspace(0, np.pi, 100)
+        x = portal_center[0] + portal_radius * np.outer(np.cos(u), np.sin(v))
+        y = portal_center[1] + portal_radius * np.outer(np.sin(u), np.sin(v))
+        z = portal_center[2] + portal_radius * np.outer(np.ones(np.size(u)), np.cos(v))
+
+        ax.plot_surface(x, y, z, color='purple', alpha=0.5)
+
+    for mud in mudspots:
+        # Show mud as a 3D rectangle
+        bottom_left = mud[0]
+        width = mud[1]
+        height = mud[2]
+        depth = mud[3]
+
+        mud_cube = (bottom_left,
+                    (bottom_left[0] + width, bottom_left[1], bottom_left[2]),
+                    (bottom_left[0], bottom_left[1] + height, bottom_left[2]),
+                    (bottom_left[0] + width, bottom_left[1] + height, bottom_left[2]),
+                    (bottom_left[0], bottom_left[1], bottom_left[2] + depth),
+                    (bottom_left[0] + width, bottom_left[1], bottom_left[2] + depth),
+                    (bottom_left[0], bottom_left[1] + height, bottom_left[2] + depth),
+                    (bottom_left[0] + width, bottom_left[1] + height, bottom_left[2] + depth))
+        verts = [[mud_cube[0], mud_cube[1], mud_cube[5], mud_cube[4]],
+                 [mud_cube[2], mud_cube[3], mud_cube[7], mud_cube[6]],
+                 [mud_cube[0], mud_cube[1], mud_cube[3], mud_cube[2]],
+                 [mud_cube[4], mud_cube[5], mud_cube[7], mud_cube[6]],
+                 [mud_cube[0], mud_cube[4], mud_cube[6], mud_cube[2]],
+                 [mud_cube[1], mud_cube[5], mud_cube[7], mud_cube[3]]]
+        rectangle = Poly3DCollection(verts, facecolors="brown", alpha=0.5)
+        ax.add_collection3d(rectangle)
 
     plt.show()
     fig.show()

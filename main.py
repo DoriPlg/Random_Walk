@@ -9,14 +9,18 @@ NOTES: ...
 """
 
 
-from Code.simulation import run_from_json, run_and_plot, Simulation_3D
-from Code.walker_3d import Walker3D as w3d  # For testing purposes
+from Code.simulation import run_from_json, run_and_plot
+from Code.td_simulation import Simulation_3D
+from Code.td_walker import Walker3D as w3d  # For testing purposes
+from Code.td_portal import Portal3D as p3d  # For testing purposes
+from Code.td_barrier import Barrier3D as b3d  # For testing purposes
+from Code.td_mud import MudPatch3D as m3d  # For testing purposes
 import tkinter as tk
 from Code.walker_gui import SimulationGUI
 import sys
 import os
 
-if __name__ == "__main__":
+if __name__ == "__min__":
 
     if len(sys.argv) == 1:
         root = tk.Tk()
@@ -45,5 +49,8 @@ if __name__ == "__main__":
     simu = Simulation_3D()
     simu.add_walker(w3d((0,0,0)))
     simu.add_walker(w3d((0,0,0)))
-    simu.run_simulation(100)
+    simu.add_barrier(b3d((1,10,10),(1,10,-10),(1,-10,10)))
+    simu.add_portal(p3d((-5,2,2),3))
+    simu.add_mud(m3d((-5,-5,-5),10,10,10))
+    simu.run_simulation(500)
     simu.mappit()

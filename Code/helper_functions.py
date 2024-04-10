@@ -92,6 +92,14 @@ def is_float(x) -> bool:
     except:
         return False
 
+class SimulationError(Exception):
+    """
+    The base class for all errors in the simulation
+    Their source is the simulation itself
+    """
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+
 def subtract_vectors(a: Trioordinates, b: Trioordinates) -> Trioordinates:
     """
     A function that subtracts two vectors from each other
