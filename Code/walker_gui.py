@@ -554,7 +554,7 @@ class SimulationGUI:
                     self.simulation_variables()
                 else:
                     self.__plotting_simulation = True
-                    self.simulation_variables(2)
+                    self.simulation_variables(dimension=2)
             simulation_type = tk.Button(simulation_input_frame,
                                         text="Toggle the type of simulation you would prefer",
                                             command=switch_simulation)
