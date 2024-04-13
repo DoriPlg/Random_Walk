@@ -334,40 +334,56 @@ class SimulationGUI:
         walker_input_frame = tk.Frame(self.root)
         walker_input_frame.pack()
 
-        walker_types = tuple(MOVE_DICT.keys())
-        walker_colors = tuple(COLOR_PALLET)
+        if dimension == 2:
+            walker_types = tuple(MOVE_DICT.keys())
+            walker_colors = tuple(COLOR_PALLET)
 
-        num_walkers = int(self.__num_walkers.get())
-        for i in range(num_walkers):
-            walker_frame = tk.Frame(walker_input_frame)
-            walker_frame.pack()
+            num_walkers = int(self.__num_walkers.get())
+            for i in range(num_walkers):
+                walker_frame = tk.Frame(walker_input_frame)
+                walker_frame.pack()
 
-            walker_type_label = tk.Label(walker_frame, text=f"Input for Walker {i+1}: Type:")
-            walker_type_label.pack(side=tk.LEFT)
-            walker_type_var = tk.StringVar()
-            walker_type_var.set(walker_types[0])  # Set default value
-            walker_type_optionmenu = tk.OptionMenu(walker_frame, walker_type_var, *walker_types)
-            walker_type_optionmenu.config(width=20)
-            walker_type_optionmenu.pack(side=tk.LEFT)
+                walker_type_label = tk.Label(walker_frame, text=f"Input for Walker {i+1}: Type:")
+                walker_type_label.pack(side=tk.LEFT)
+                walker_type_var = tk.StringVar()
+                walker_type_var.set(walker_types[0])  # Set default value
+                walker_type_optionmenu = tk.OptionMenu(walker_frame, walker_type_var, *walker_types)
+                walker_type_optionmenu.config(width=20)
+                walker_type_optionmenu.pack(side=tk.LEFT)
 
-            walker_color_label = tk.Label(walker_frame, text="Color:")
-            walker_color_label.pack(side=tk.LEFT)
-            walker_color_var = tk.StringVar()
-            walker_color_var.set(walker_colors[0])  # Set default value
-            walker_color_optionmenu = tk.OptionMenu(walker_frame, walker_color_var, *walker_colors)
-            walker_color_optionmenu.config(width=5)
-            walker_color_optionmenu.pack(side=tk.LEFT)
+                walker_color_label = tk.Label(walker_frame, text="Color:")
+                walker_color_label.pack(side=tk.LEFT)
+                walker_color_var = tk.StringVar()
+                walker_color_var.set(walker_colors[0])  # Set default value
+                walker_color_optionmenu = tk.OptionMenu(walker_frame, walker_color_var, *walker_colors)
+                walker_color_optionmenu.config(width=5)
+                walker_color_optionmenu.pack(side=tk.LEFT)
 
-            walker_center_x,walker_center_y=\
-                self.double_float_user_input(self,walker_frame,def_values=[0,0],
-                                             message="Starting location (x,y):",width=5)
+                walker_center_x,walker_center_y=\
+                    self.double_float_user_input(self,walker_frame,def_values=[0,0],
+                                                message="Starting location (x,y):",width=5)
 
-            self.__walkers_data.append({
-                "Type": walker_type_var, 
-                "Color": walker_color_var,
-                "Locationx": walker_center_x,
-                "Locationy": walker_center_y,
-                 })
+                self.__walkers_data.append({
+                    "Type": walker_type_var, 
+                    "Color": walker_color_var,
+                    "Locationx": walker_center_x,
+                    "Locationy": walker_center_y,
+                    })
+        elif dimension == 3:
+            num_walkers = int(self.__num_walkers.get())
+            for i in range(num_walkers):
+                walker_frame = tk.Frame(walker_input_frame)
+                walker_frame.pack()
+
+                walker_center_x, walker_center_y, walker_center_z =\
+                    self.triple_float_user_input(self, walker_frame, def_values=[0, 0, 0],
+                                                 message="Starting location (x,y,z):", width=5)
+                
+                self.__walkers_data.append({
+                    "Locationx": walker_center_x,
+                    "Locationy": walker_center_y,
+                    "Locationz": walker_center_z
+                })
         next_button = tk.Button(self.root, text="Next",
                                 command=ft.partial(self.create_barrier_input,dimension=dimension))
         next_button.pack()
@@ -392,31 +408,60 @@ class SimulationGUI:
 
         barrier_input_frame = tk.Frame(self.root)
         barrier_input_frame.pack()
+
         num_barriers = int(self.__num_barriers.get())
         for i in range(num_barriers):
             barrier_frame = tk.Frame(barrier_input_frame)
             barrier_frame.pack()
 
-            barrier_center_x, barrier_center_y = self.double_float_user_input(
-                self, barrier_frame, def_values=[0, 0],
-                message=f"Input for Barrier {i+1}: Center Location (x, y):", width=5
-            )
-            barrier_length = self.single_float_user_input(
-                self, barrier_frame, def_values=[1], message="Length"
-            )[0]
+            if dimension == 2:
+                barrier_center_x, barrier_center_y = self.double_float_user_input(
+                    self, barrier_frame, def_values=[0, 0],
+                    message=f"Input for Barrier {i+1}: Center Location (x, y):", width=5
+                )
+                barrier_length = self.single_float_user_input(
+                    self, barrier_frame, def_values=[1], message="Length"
+                )[0]
 
-            barrier_angle = self.single_float_user_input(
-                self, barrier_frame, def_values=[0], message="Angle:"
-            )[0]
+                barrier_angle = self.single_float_user_input(
+                    self, barrier_frame, def_values=[0], message="Angle:"
+                )[0]
 
-            self.__barriers_data.append(
-                {
-                    "Locationx": barrier_center_x,
-                    "Locationy": barrier_center_y,
-                    "Length": barrier_length,
-                    "Angle": barrier_angle,
-                }
-            )
+                self.__barriers_data.append(
+                    {
+                        "Locationx": barrier_center_x,
+                        "Locationy": barrier_center_y,
+                        "Length": barrier_length,
+                        "Angle": barrier_angle,
+                    })
+            elif dimension == 3:
+                instrustions =\
+                    "Barrieres are defined by three points projected to a parallelogram,\
+with the second two points serving as the corners between a diagonal. The fourth corner will be projected from the first corner."
+                message = tk.Label(barrier_input_frame, text=instrustions)
+                message.pack(side=tk.TOP)
+
+                barrier_corner_x, barrier_corner_y, barrier_corner_z =\
+                    self.triple_float_user_input(self, barrier_frame, def_values=[0, 0, 0],
+                                                    message="First corner (x,y,z):", width=5)
+                barrier_point1_x, barrier_point1_y, barrier_point1_z =\
+                    self.triple_float_user_input(self, barrier_frame, def_values=[1, 0, 0],
+                                                    message="Second corner (x,y,z):", width=5)
+                barrier_point2_x, barrier_point2_y, barrier_point2_z =\
+                    self.triple_float_user_input(self, barrier_frame, def_values=[0, 1, 0],
+                                                    message="Third corner (x,y,z):", width=5)
+                
+                self.__barriers_data.append({
+                    "Cornerx": barrier_corner_x,
+                    "Cornery": barrier_corner_y,
+                    "Cornerz": barrier_corner_z,
+                    "Point1x": barrier_point1_x,
+                    "Point1y": barrier_point1_y,
+                    "Point1z": barrier_point1_z,
+                    "Point2x": barrier_point2_x,
+                    "Point2y": barrier_point2_y,
+                    "Point2z": barrier_point2_z
+                })
 
         if num_barriers == 0:
             self.create_portal_input(dimension=dimension)
