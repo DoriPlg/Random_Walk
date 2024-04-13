@@ -94,10 +94,15 @@ class SimulationGUI:
                                      command=self.load_from_file)
         self.load_button.pack()
 
-        self.manual_button = tk.Button(self.root,
-                                       text="Manually Build Simulation",
-                                       command=self.build_simulation)
-        self.manual_button.pack()
+        self.manual_button_2d = tk.Button(self.root,
+                                       text="Manually Build 2D Simulation",
+                                       command=self.build_2D_simulation)
+        self.manual_button_2d.pack()
+        
+        self.manual_button_3d = tk.Button(self.root,
+                                       text="Manually Build 3D Simulation, plotting only",
+                                       command=self.build_3D_simulation)
+        self.manual_button_3d.pack()
 
         # Setting the GUI attributes
         self.__num_walkers = tk.DoubleVar()
@@ -125,7 +130,7 @@ class SimulationGUI:
         try:
             self.run_simulation()
         except ValueError:
-            self.build_simulation(err_message="Invalid input, please enter manually")
+            self.build_simulation(2,err_message="Invalid input, please enter manually")
         except AttributeError:
             self.clear_frame()
             SimulationGUI(root=self.root)
@@ -174,6 +179,7 @@ class SimulationGUI:
     single_int_user_input = ft.partial(user_input,var_type=tk.IntVar,n_inputs=1)
     single_float_user_input = ft.partial(user_input,var_type=tk.DoubleVar,n_inputs=1)
     double_float_user_input = ft.partial(user_input,var_type=tk.DoubleVar,n_inputs=2)
+    triple_float_user_input = ft.partial(user_input,var_type=tk.DoubleVar,n_inputs=3)
 
 
     def bottom_buttons(self) -> None:
@@ -228,7 +234,7 @@ class SimulationGUI:
         button_frame.pack(side=tk.BOTTOM, pady=5)
 
 
-    def build_simulation(self, err_message: str|None = None) ->None:
+    def build_simulation(self, dimension: int, err_message: str|None = None) ->None:
         """
         Builds the simulation GUI by creating and packing the necessary widgets.
         
@@ -271,8 +277,10 @@ class SimulationGUI:
         build_button.pack()
 
         self.bottom_buttons()
+    build_2D_simulation = ft.partial(build_simulation,dimension=2)
+    build_3D_simulation = ft.partial(build_simulation,dimension=3)
 
-    def check_build_input(self) -> bool:
+    def check_build_input(self,dimension: int) -> bool:
         """
         Checks the input values for building the simulation.
 
@@ -289,10 +297,10 @@ class SimulationGUI:
                 num_portals = int(self.__num_portals.get())
                 num_mudspots = int(self.__num_mudspots.get())
             else:
-                self.build_simulation(err_message="All input must be whole numbers!")
+                self.build_simulation(dimension, err_message="All input must be whole numbers!")
                 return False
         except Exception as ex:
-            self.build_simulation(err_message=f"{ex}\nAll input must be numbers!")
+            self.build_simulation(dimension, err_message=f"{ex}\nAll input must be numbers!")
             return False
 
         if num_walkers <1 or num_barriers < 0 or\
@@ -303,12 +311,12 @@ class SimulationGUI:
             if num_barriers < 0 or\
                 num_portals <0 or num_mudspots <0:
                 err_msg += "Negative number of obstacles impossible"
-            self.build_simulation(err_message=err_msg)
+            self.build_simulation(dimension, err_message=err_msg)
             return False
-        self.create_walker_input()
+        self.create_walker_input(dimension)
         return True
 
-    def create_walker_input(self) -> None:
+    def create_walker_input(self, dimension: int) -> None:
         """
         Creates the input interface for walkers.
 
@@ -360,12 +368,13 @@ class SimulationGUI:
                 "Locationx": walker_center_x,
                 "Locationy": walker_center_y,
                  })
-        next_button = tk.Button(self.root, text="Next", command=self.create_barrier_input)
+        next_button = tk.Button(self.root, text="Next",
+                                command=ft.partial(self.create_barrier_input,dimension=dimension))
         next_button.pack()
 
         self.bottom_buttons()
 
-    def create_barrier_input(self) -> None:
+    def create_barrier_input(self, dimension: int) -> None:
         """
         Creates the barrier input interface.
 
@@ -410,15 +419,16 @@ class SimulationGUI:
             )
 
         if num_barriers == 0:
-            self.create_portal_input()
+            self.create_portal_input(dimension=dimension)
             return
 
-        next_button = tk.Button(self.root, text="Next", command=self.create_portal_input)
+        next_button = tk.Button(self.root, text="Next",
+                                command=ft.partial(self.create_portal_input,dimension=dimension))
         next_button.pack()
 
         self.bottom_buttons()
 
-    def create_portal_input(self) -> None:
+    def create_portal_input(self, dimension: int) -> None:
         """
         Creates the input interface for the portals.
         Clears the frame and creates a new frame for portal input.
@@ -456,14 +466,15 @@ class SimulationGUI:
                                         "Destinationy": portal_dest_y})
 
         if num_portals == 0:
-            self.create_mudspots_input()
+            self.create_mudspots_input(dimension=dimension)
             return
-        next_button = tk.Button(self.root, text="Next", command=self.create_mudspots_input)
+        next_button = tk.Button(self.root, text="Next",
+                                command=ft.partial(self.create_mudspots_input,dimension=dimension))
         next_button.pack()
 
         self.bottom_buttons()
 
-    def create_mudspots_input(self) -> None:
+    def create_mudspots_input(self, dimension: int) -> None:
         """
         Creates the input interface for specifying mudspots.
 
@@ -500,17 +511,18 @@ class SimulationGUI:
             })
 
         if num_mudspots == 0:
-            self.simulation_variables()
+            self.simulation_variables(dimension=dimension)
             return
 
-        next_button = tk.Button(self.root, text="Next", command=self.simulation_variables)
+        next_button = tk.Button(self.root, text="Next",
+                                command=ft.partial(self.simulation_variables,dimension=dimension))
         next_button.pack()
         self.bottom_buttons()
 
 
     __gravity_dictionary = {"No gravity": 0, "Possitive gravity": 1, "Negative gravity": -1}
     __plotting_simulation = True
-    def simulation_variables(self) -> None:
+    def simulation_variables(self, dimension: int) -> None:
         """
         Sets up the simulation variables and user interface for selecting simulation options.
 
@@ -533,22 +545,23 @@ class SimulationGUI:
         simulation_input_frame = tk.Frame(self.root)
         simulation_input_frame.pack()
 
-        def switch_simulation() -> None:
 
-            if self.__plotting_simulation:
-                self.__plotting_simulation = False
-                self.simulation_variables()
-            else:
-                self.__plotting_simulation = True
-                self.simulation_variables()
+        if dimension == 2:
+            def switch_simulation() -> None:
 
-        simulation_type = tk.Button(simulation_input_frame,
-                                    text="Toggle the type of simulation you would prefer",
-                                        command=switch_simulation)
-        simulation_type.pack()
+                if self.__plotting_simulation:
+                    self.__plotting_simulation = False
+                    self.simulation_variables()
+                else:
+                    self.__plotting_simulation = True
+                    self.simulation_variables(2)
+            simulation_type = tk.Button(simulation_input_frame,
+                                        text="Toggle the type of simulation you would prefer",
+                                            command=switch_simulation)
+            simulation_type.pack()
 
         # The parts differing between the two types of simulations
-        if self.__plotting_simulation:
+        if self.__plotting_simulation or dimension == 3:
             title =\
                 tk.Label(self.root,
                 text="\nPlotting simulation (will show graphs tracing each walker)")
@@ -589,7 +602,8 @@ data for different number of iterations)")
                                         "iterations": iterations,
                                         "max_depth": max_depth,
                                         "n": n_iterations,
-                                        "steps": steps}
+                                        "steps": steps,
+                                        "dimension": dimension}
 
 
         gravity = tk.StringVar(value=list(self.__gravity_dictionary.keys())[0])
@@ -676,9 +690,11 @@ data for different number of iterations)")
             filename = "null_name"
         path = directory + "/" + filename
         simulation_data["Simulation"] =\
-            {item[0]: item[1].get() for item in self.__simulation_variables.items()}
+            {item[0]: item[1].get() for item in self.__simulation_variables.items()\
+              if item[0] != "dimension"}
         simulation_data["Simulation"]["gravity"] =\
             self.__gravity_dictionary[simulation_data["Simulation"]["gravity"]]
+        simulation_data["Simulation"]["dimension"] = self.__simulation_variables["dimension"]
 
         simulation_data["Simulation"]["filename"] = path
 
@@ -689,7 +705,7 @@ data for different number of iterations)")
         try:
             self.run_simulation(path)
         except ValueError:
-            self.build_simulation(err_message="Invalid input, please re-enter")
+            self.build_simulation(simulation_data["Simulation"]["dimension"], err_message="Invalid input, please re-enter")
         except AttributeError:
             self.clear_frame()
             SimulationGUI(self.root)
