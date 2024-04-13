@@ -19,7 +19,7 @@ PI = math.pi
 class Walker3D:
     def __init__(self, position: Triordinates):
         self.__position = position
-        self.__log = []
+        self.__log: list[Triordinates] = []
 
     @property
     def position(self) -> Triordinates:

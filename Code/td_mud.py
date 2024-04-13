@@ -46,7 +46,7 @@ class MudPatch3D:
                 self.__bottom_left[2] <= point[2] <= (self.__bottom_left[2] + self.__depth))
 
     @property
-    def properties(self) -> Tuple[Triordinates, float, float]:
+    def properties(self) -> Tuple[Triordinates, float, float, float]:
         """
         gets a tuple of the properties of the patch
         (bottom_left, width, height, depth)

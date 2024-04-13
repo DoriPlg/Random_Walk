@@ -11,7 +11,8 @@ NOTES: ...
 from typing import Tuple
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection # type: ignore
+from mpl_toolkits.mplot3d import Axes3D # type: ignore
 import numpy as np
 
 Coordinates = Tuple[float,float]
@@ -164,24 +165,26 @@ def map_3d(walker_locations: list[list[Triordinates]],
     :param locations: a list containing the locations of the walkers
     """
     fig = plt.figure()
+    ax: Axes3D
     ax = fig.add_subplot(111, projection='3d')
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
 
     for walker in walker_locations:
-        x = [i[0] for i in walker]
-        y = [i[1] for i in walker]
-        z = [i[2] for i in walker]
-        ax.plot(x, y, z)
-        ax.scatter(x[1:], y[1:], z[1:])
+        w_x = [i[0] for i in walker]
+        w_y = [i[1] for i in walker]
+        w_z = [i[2] for i in walker]
+        ax.plot(w_x, w_y, w_z)
+        ax.scatter(w_x[1:], w_y[1:], w_z[1:])
 
     for barrier in barriers:
-        
+
         # Create a polygon from the points and add it to the plot
-        polygon = Poly3DCollection([np.array([barrier[0], barrier[1], barrier[2], barrier[3]])], color="black",alpha=0.5)
+        polygon = Poly3DCollection([np.array([barrier[0],
+                                              barrier[1],
+                                              barrier[2],
+                                              barrier[3]])],
+                                               color="black",alpha=0.5)
         ax.add_collection3d(polygon)
-    
+
     for portal in portals:
         # Show portal as a 3D sphere
         portal_center = portal[0]
@@ -189,11 +192,15 @@ def map_3d(walker_locations: list[list[Triordinates]],
 
         u = np.linspace(0, 2 * np.pi, 100)
         v = np.linspace(0, np.pi, 100)
-        x = portal_center[0] + portal_radius * np.outer(np.cos(u), np.sin(v))
-        y = portal_center[1] + portal_radius * np.outer(np.sin(u), np.sin(v))
-        z = portal_center[2] + portal_radius * np.outer(np.ones(np.size(u)), np.cos(v))
 
-        ax.plot_surface(x, y, z, color='purple', alpha=0.5)
+        p_x: np.ndarray
+        p_y: np.ndarray
+        p_z: np.ndarray
+        p_x = portal_center[0] + portal_radius * np.outer(np.cos(u), np.sin(v))
+        p_y = portal_center[1] + portal_radius * np.outer(np.sin(u), np.sin(v))
+        p_z = portal_center[2] + portal_radius * np.outer(np.ones(np.size(u)), np.cos(v))
+
+        ax.plot_surface(p_x, p_y, p_z, color='purple', alpha=0.5)
 
     for mud in mudspots:
         # Show mud as a 3D rectangle
@@ -218,6 +225,10 @@ def map_3d(walker_locations: list[list[Triordinates]],
                  [mud_cube[1], mud_cube[5], mud_cube[7], mud_cube[3]]]
         rectangle = Poly3DCollection(verts, facecolors="brown", alpha=0.5)
         ax.add_collection3d(rectangle)
+
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
 
     plt.show()
     fig.show()

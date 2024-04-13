@@ -77,7 +77,7 @@ class Barrier3D:
 
 
     @property
-    def points(self) -> tuple[Trioordinates,Trioordinates]:
+    def points(self) -> tuple[Trioordinates,Trioordinates, Trioordinates, Trioordinates]:
         """
         returns the points between which a barrier is strung
         """
