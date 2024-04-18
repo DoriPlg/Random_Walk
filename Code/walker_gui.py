@@ -686,8 +686,8 @@ data for different number of iterations)")
                                         "iterations": iterations,
                                         "max_depth": max_depth,
                                         "n": n_iterations,
-                                        "steps": steps,
-                                        "dimension": dimension}
+                                        "steps": steps
+            }
 
 
         gravity = tk.StringVar(value=list(self.__gravity_dictionary.keys())[0])
@@ -696,7 +696,7 @@ data for different number of iterations)")
         gravity_checkbox.config(width=20)
         gravity_checkbox.pack()
         self.__simulation_variables["gravity"] = gravity
-        self.__simulation_variables["dimension"] = dimension
+        self.__simulation_variables["dimension"] = tk.IntVar(value=dimension)
 
 
         if dimension == 2:
@@ -768,41 +768,38 @@ data for different number of iterations)")
                 simulation_data["Mudspots"].append({"bottom_left": location,
                                                     "width": mudspot["Width"].get(),
                                                     "height": mudspot["Height"].get()})
-
         elif dimension == 3:
             for walker in self.__walkers_data:
-                location = (walker["Locationx"].get(), walker["Locationy"].get(), walker["Locationz"].get())
-                simulation_data["Walkers"].append({"position": location})
+                location_t = (walker["Locationx"].get(), walker["Locationy"].get(), walker["Locationz"].get())
+                simulation_data["Walkers"].append({"position": location_t})
 
             for barrier in self.__barriers_data:
-                corner = (barrier["Cornerx"].get(), barrier["Cornery"].get(), barrier["Cornerz"].get())
-                point1 = (barrier["Point1x"].get(), barrier["Point1y"].get(), barrier["Point1z"].get())
-                point2 = (barrier["Point2x"].get(), barrier["Point2y"].get(), barrier["Point2z"].get())
-                simulation_data["Barriers"].append({"corner": corner,
-                                                    "point_1": point1,
-                                                    "point_2": point2})
+                corner_t = (barrier["Cornerx"].get(), barrier["Cornery"].get(), barrier["Cornerz"].get())
+                point1_t = (barrier["Point1x"].get(), barrier["Point1y"].get(), barrier["Point1z"].get())
+                point2_t = (barrier["Point2x"].get(), barrier["Point2y"].get(), barrier["Point2z"].get())
+                simulation_data["Barriers"].append({"corner": corner_t,
+                                                    "point_1": point1_t,
+                                                    "point_2": point2_t})
 
             for portal in self.__portals_data:
-                center_location = (portal["Centerx"].get(), portal["Centery"].get(), portal["Centerz"].get())
-                dest_location = (portal["Destinationx"].get(), portal["Destinationy"].get(), portal["Destinationz"].get())
-                simulation_data["Portals"].append({"center": center_location,
-                                                    "endpoint": dest_location,
+                center_location_t = (portal["Centerx"].get(), portal["Centery"].get(), portal["Centerz"].get())
+                dest_location_t = (portal["Destinationx"].get(), portal["Destinationy"].get(), portal["Destinationz"].get())
+                simulation_data["Portals"].append({"center": center_location_t,
+                                                    "endpoint": dest_location_t,
                                                     "radius": portal["Radius"].get()})
 
             for mudspot in self.__mudspots_data:
-                location = (mudspot["Locationx"].get(), mudspot["Locationy"].get(), mudspot["Locationz"].get())
-                simulation_data["Mudspots"].append({"bottom_left": location,
+                location_t = (mudspot["Locationx"].get(), mudspot["Locationy"].get(), mudspot["Locationz"].get())
+                simulation_data["Mudspots"].append({"bottom_left": location_t,
                                                     "width": mudspot["Width"].get(),
                                                     "height": mudspot["Height"].get(),
                                                     "depth": mudspot["Depth"].get()})
 
         simulation_data["Simulation"] =\
-            {item[0]: item[1].get() for item in self.__simulation_variables.items()\
-              if item[0] != "dimension"}
-        
+            {item[0]: item[1].get() for item in self.__simulation_variables.items()}
+
         simulation_data["Simulation"]["gravity"] =\
             self.__gravity_dictionary[simulation_data["Simulation"]["gravity"]]
-        simulation_data["Simulation"]["dimension"] = self.__simulation_variables["dimension"]
 
         if dimension == 2:
             directory = self.__simulation_path["Directory"].get()
@@ -888,7 +885,8 @@ data for different number of iterations)")
         Returns:
             None
         """
-        print(path,"!")
+        if path is None:
+            path = ""
         data,path = run_from_json(path+SIMU_SUFIX)
         loading_screen = tk.Toplevel(self.root)
         loading_screen.title("Loading")
