@@ -560,22 +560,40 @@ with the second two points serving as the corners between a diagonal. The fourth
             mudspot_frame = tk.Frame(mudspot_input_frame)
             mudspot_frame.pack()
 
-            bottom_left_x, bottom_left_y = self.double_float_user_input(
-                self, mudspot_frame, def_values=[0, 0],
-                message=f"Input for Mudspot{i+1} Bottom-left corner (x,y):"
-            )
-            width, height = self.double_float_user_input(
-                self, mudspot_frame, def_values=[1, 1],
-                message="Width and Height of the patch:"
-            )
+            if dimension == 2:
+                bottom_left_x, bottom_left_y = self.double_float_user_input(
+                    self, mudspot_frame, def_values=[0, 0],
+                    message=f"Input for Mudspot{i+1} Bottom-left corner (x,y):"
+                )
+                width, height = self.double_float_user_input(
+                    self, mudspot_frame, def_values=[1, 1],
+                    message="Width and Height of the patch:"
+                )
 
-            self.__mudspots_data.append({
-                "Locationx": bottom_left_x,
-                "Locationy": bottom_left_y,
-                "Width": width,
-                "Height": height
-            })
+                self.__mudspots_data.append({
+                    "Locationx": bottom_left_x,
+                    "Locationy": bottom_left_y,
+                    "Width": width,
+                    "Height": height
+                })
+            elif dimension == 3:
+                bottom_left_x, bottom_left_y, bottom_left_z =\
+                    self.triple_float_user_input(self, mudspot_frame, def_values=[0, 0, 0],
+                                                 message=f"Input for Mudspot{i+1} Bottom-left corner (x,y,z):",
+                                                 width=5)
+                width, height, depth = self.triple_float_user_input(
+                    self, mudspot_frame, def_values=[1, 1, 1],
+                    message="Width, Height and Depth of the patch:"
+                )
 
+                self.__mudspots_data.append({
+                    "Locationx": bottom_left_x,
+                    "Locationy": bottom_left_y,
+                    "Locationz": bottom_left_z,
+                    "Width": width,
+                    "Height": height,
+                    "Depth": depth
+                })
         if num_mudspots == 0:
             self.simulation_variables(dimension=dimension)
             return
