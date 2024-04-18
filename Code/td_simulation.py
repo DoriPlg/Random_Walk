@@ -114,3 +114,30 @@ class Simulation_3D:
                   [barrier.points for barrier in self.__barriers],
                   [(portal.center, portal.radius) for portal in self.__portals],
                   [mud.properties for mud in self.__mudspots])
+
+
+def load_simulation_from_dict(data: dict) -> Simulation_3D:
+    """
+    Loads a simulation from a dictionary
+    :param data: the data to load the simulation from
+    :return: the loaded simulation
+    """
+    sim = Simulation_3D()
+    for walker in data["Walkers"]:
+        sim.add_walker(w3d(**walker))
+    for barrier in data["Barriers"]:
+        sim.add_barrier(b3d(**barrier))
+    for portal in data["Portals"]:
+        sim.add_portal(p3d(**portal))
+    for mud in data["Mudspots"]:
+        sim.add_mud(m3d(**mud))
+    return sim
+
+def run_from_dict(data: dict) -> None:
+    """
+    Loads a simulation from a dictionary and shows it
+    :param data: the data to load the simulation from
+    """
+    simulation = load_simulation_from_dict(data)
+    simulation.run_simulation(data["Simulation"]["n"])
+    simulation.mappit()

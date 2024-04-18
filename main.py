@@ -20,7 +20,7 @@ from Code.walker_gui import SimulationGUI
 import sys
 import os
 
-if __name__ == "__min__":
+if __name__ == "__main__":
 
     if len(sys.argv) == 1:
         root = tk.Tk()
@@ -45,7 +45,7 @@ You may view the results in the same directory as the JSON file.")
         print("Invalid number of arguments. Please provide either no arguments or a single JSON path.")
 
 
-if __name__ == "__main__":
+if __name__ == "__min__":
     simu = Simulation_3D()
     simu.add_walker(w3d((0,0,0)))
     simu.add_walker(w3d((0,0,0)))

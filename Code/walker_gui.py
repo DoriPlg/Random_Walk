@@ -14,6 +14,7 @@ from tkinter import filedialog, messagebox
 import functools as ft
 from Code.helper_functions import SimulationError, is_intable,is_int,is_float,save_to_json
 from Code.simulation import run_and_plot, run_from_json
+from Code.td_simulation import run_from_dict
 from Code.walker import Walker
 
 MOVE_DICT = {Walker.move_dict()[k]: k for k in Walker.move_dict()}
@@ -96,12 +97,12 @@ class SimulationGUI:
 
         self.manual_button_2d = tk.Button(self.root,
                                        text="Manually Build 2D Simulation",
-                                       command=self.build_2D_simulation)
+                                       command=ft.partial(self.build_simulation,dimension=2))
         self.manual_button_2d.pack()
         
         self.manual_button_3d = tk.Button(self.root,
                                        text="Manually Build 3D Simulation, plotting only",
-                                       command=self.build_3D_simulation)
+                                       command=ft.partial(self.build_simulation,dimension=3))
         self.manual_button_3d.pack()
 
         # Setting the GUI attributes
@@ -273,12 +274,10 @@ class SimulationGUI:
         num_mudspots_entry.pack()
 
 
-        build_button = tk.Button(self.root, text="Build", command=self.check_build_input)
+        build_button = tk.Button(self.root, text="Build", command=ft.partial(self.check_build_input,dimension=dimension))
         build_button.pack()
 
         self.bottom_buttons()
-    build_2D_simulation = ft.partial(build_simulation,dimension=2)
-    build_3D_simulation = ft.partial(build_simulation,dimension=3)
 
     def check_build_input(self,dimension: int) -> bool:
         """
@@ -635,7 +634,7 @@ with the second two points serving as the corners between a diagonal. The fourth
 
                 if self.__plotting_simulation:
                     self.__plotting_simulation = False
-                    self.simulation_variables()
+                    self.simulation_variables(dimension=dimension)
                 else:
                     self.__plotting_simulation = True
                     self.simulation_variables(dimension=2)
@@ -696,98 +695,135 @@ data for different number of iterations)")
         gravity_checkbox.config(width=20)
         gravity_checkbox.pack()
         self.__simulation_variables["gravity"] = gravity
+        self.__simulation_variables["dimension"] = dimension
 
 
-        # The parts common to both types of simulations - the directory path and simulation name
-        directory_path_var = tk.StringVar()
-        def browse_directory() -> None:
-            """
-            Allows the user to browse for a directory to save the simulation data.
-            """
-            nonlocal directory_path_var
-            file_path = filedialog.askdirectory()
-            if file_path:
-                directory_path_var.set(file_path)
-        dir_path_label = tk.Label(self.root, text="Directory Path:")
-        dir_path_label.pack(pady=10)
-        directory_path_entry = tk.Entry(self.root,
-                                        textvariable=directory_path_var,
-                                        state="readonly", width=50)
-        directory_path_entry.pack()
-        browse_button = tk.Button(self.root,
-                                        text="Choose where the simulation data will be saved",
-                                        command=browse_directory)
-        browse_button.pack(pady=10)
-# Errors to correct: filename without directory defulation
-        file_path_label = tk.Label(self.root, text="Simulation name:")
-        file_path_label.pack(pady=10)
-        file_path_var = tk.StringVar()
-        file_path_entry = tk.Entry(self.root,
-                                        textvariable=file_path_var, width=20)
-        file_path_entry.pack()
+        if dimension == 2:
+            directory_path_var = tk.StringVar()
+            def browse_directory() -> None:
+                """
+                Allows the user to browse for a directory to save the simulation data.
+                """
+                nonlocal directory_path_var
+                file_path = filedialog.askdirectory()
+                if file_path:
+                    directory_path_var.set(file_path)
+            dir_path_label = tk.Label(self.root, text="Directory Path:")
+            dir_path_label.pack(pady=10)
+            directory_path_entry = tk.Entry(self.root,
+                                            textvariable=directory_path_var,
+                                            state="readonly", width=50)
+            directory_path_entry.pack()
+            browse_button = tk.Button(self.root,
+                                            text="Choose where the simulation data will be saved",
+                                            command=browse_directory)
+            browse_button.pack(pady=10)
+    # Errors to correct: filename without directory defulation
+            file_path_label = tk.Label(self.root, text="Simulation name:")
+            file_path_label.pack(pady=10)
+            file_path_var = tk.StringVar()
+            file_path_entry = tk.Entry(self.root,
+                                            textvariable=file_path_var, width=20)
+            file_path_entry.pack()
 
 
-        self.__simulation_path = {"Directory": directory_path_var,
+            self.__simulation_path = {"Directory": directory_path_var,
                                     "Filename":file_path_var}
-        run_button = tk.Button(self.root, text="Run simulation", command=self.parse_simulation_data)
+        run_button = tk.Button(self.root, text="Run simulation",
+                                command=ft.partial(self.parse_simulation_data,dimension=dimension))
         run_button.pack()
         self.bottom_buttons()
 
-    def parse_simulation_data(self) ->None:
+    def parse_simulation_data(self, dimension: int) -> None:
         """
         Runs the simulation with the user input data.
         Returns: None
         """
         self.clear_frame()
-        simulation_data: dict = {"Walkers": [], "Barriers": [], "Portals": [], "Mudspots": []}
+        simulation_data: dict = {"Walkers": [], "Barriers": [], "Portals": [], "Mudspots": [], "Simulation": {}}
 
-        for walker in self.__walkers_data:
-            location = [walker["Locationx"].get(), walker["Locationy"].get()]
-            simulation_data["Walkers"].append({"movement": MOVE_DICT[walker["Type"].get()],
-                                                "color": walker["Color"].get(),
-                                                "location": location})
+        if dimension == 2:
+            for walker in self.__walkers_data:
+                location = [walker["Locationx"].get(), walker["Locationy"].get()]
+                simulation_data["Walkers"].append({"movement": MOVE_DICT[walker["Type"].get()],
+                                                    "color": walker["Color"].get(),
+                                                    "location": location})
 
-        for barrier in self.__barriers_data:
-            location = [barrier["Locationx"].get(), barrier["Locationy"].get()]
-            simulation_data["Barriers"].append({"center": location,
-                                                 "length": barrier["Length"].get(),
-                                                 "angle": barrier["Angle"].get()})
+            for barrier in self.__barriers_data:
+                location = [barrier["Locationx"].get(), barrier["Locationy"].get()]
+                simulation_data["Barriers"].append({"center": location,
+                                                    "length": barrier["Length"].get(),
+                                                    "angle": barrier["Angle"].get()})
 
-        for portal in self.__portals_data:
-            center_location = [portal["Centerx"].get(), portal["Centery"].get()]
-            dest_location = [portal["Destinationx"].get(), portal["Destinationy"].get()]
-            simulation_data["Portals"].append({"center": center_location,
-                                                 "endpoint": dest_location,
-                                                 "radius": portal["Radius"].get()})
+            for portal in self.__portals_data:
+                center_location = [portal["Centerx"].get(), portal["Centery"].get()]
+                dest_location = [portal["Destinationx"].get(), portal["Destinationy"].get()]
+                simulation_data["Portals"].append({"center": center_location,
+                                                    "endpoint": dest_location,
+                                                    "radius": portal["Radius"].get()})
 
-        for mudspot in self.__mudspots_data:
-            location = [mudspot["Locationx"].get(), mudspot["Locationy"].get()]
-            simulation_data["Mudspots"].append({"bottom_left": location,
-                                                 "width": mudspot["Width"].get(),
-                                                 "height": mudspot["Height"].get()})
+            for mudspot in self.__mudspots_data:
+                location = [mudspot["Locationx"].get(), mudspot["Locationy"].get()]
+                simulation_data["Mudspots"].append({"bottom_left": location,
+                                                    "width": mudspot["Width"].get(),
+                                                    "height": mudspot["Height"].get()})
 
-        directory = self.__simulation_path["Directory"].get()
-        filename = self.__simulation_path["Filename"].get()
-        if directory == "":
-            directory = os.path.realpath(__file__).removesuffix("/walker_gui.py")
-        if filename == "":
-            filename = "null_name"
-        path = directory + "/" + filename
+        elif dimension == 3:
+            for walker in self.__walkers_data:
+                location = (walker["Locationx"].get(), walker["Locationy"].get(), walker["Locationz"].get())
+                simulation_data["Walkers"].append({"position": location})
+
+            for barrier in self.__barriers_data:
+                corner = (barrier["Cornerx"].get(), barrier["Cornery"].get(), barrier["Cornerz"].get())
+                point1 = (barrier["Point1x"].get(), barrier["Point1y"].get(), barrier["Point1z"].get())
+                point2 = (barrier["Point2x"].get(), barrier["Point2y"].get(), barrier["Point2z"].get())
+                simulation_data["Barriers"].append({"corner": corner,
+                                                    "point_1": point1,
+                                                    "point_2": point2})
+
+            for portal in self.__portals_data:
+                center_location = (portal["Centerx"].get(), portal["Centery"].get(), portal["Centerz"].get())
+                dest_location = (portal["Destinationx"].get(), portal["Destinationy"].get(), portal["Destinationz"].get())
+                simulation_data["Portals"].append({"center": center_location,
+                                                    "endpoint": dest_location,
+                                                    "radius": portal["Radius"].get()})
+
+            for mudspot in self.__mudspots_data:
+                location = (mudspot["Locationx"].get(), mudspot["Locationy"].get(), mudspot["Locationz"].get())
+                simulation_data["Mudspots"].append({"bottom_left": location,
+                                                    "width": mudspot["Width"].get(),
+                                                    "height": mudspot["Height"].get(),
+                                                    "depth": mudspot["Depth"].get()})
+
         simulation_data["Simulation"] =\
             {item[0]: item[1].get() for item in self.__simulation_variables.items()\
               if item[0] != "dimension"}
+        
         simulation_data["Simulation"]["gravity"] =\
             self.__gravity_dictionary[simulation_data["Simulation"]["gravity"]]
         simulation_data["Simulation"]["dimension"] = self.__simulation_variables["dimension"]
 
-        simulation_data["Simulation"]["filename"] = path
+        if dimension == 2:
+            directory = self.__simulation_path["Directory"].get()
+            filename = self.__simulation_path["Filename"].get()
+            if directory == "":
+                directory = os.path.realpath(__file__).removesuffix("/walker_gui.py")
+            if filename == "":
+                filename = "null_name"
+            path = directory + "/" + filename
 
-        if path == "/":
-            path = os.path.realpath(__file__).removesuffix("walker_gui.py")+"null_name"
-        path += "_simulation.json"
-        save_to_json(simulation_data,path)
+            simulation_data["Simulation"]["filename"] = path
+
+            if path == "/":
+                path = os.path.realpath(__file__).removesuffix("walker_gui.py")+"null_name"
+            path += "_simulation.json"
+            save_to_json(simulation_data,path)
+
         try:
-            self.run_simulation(path)
+            if dimension == 2:
+                self.run_simulation(path)
+            elif dimension == 3:
+                self.simulation_3d(simulation_data)
         except ValueError:
             self.build_simulation(simulation_data["Simulation"]["dimension"], err_message="Invalid input, please re-enter")
         except AttributeError:
@@ -836,6 +872,7 @@ data for different number of iterations)")
             shuffle_button = tk.Button(results_frame, text="Change Image", command=shuffle_image)
             shuffle_button.pack()
         except tk.TclError:
+            print(path)
             results_label = tk.Label(results_frame, text="No results to show")
             results_label.pack()
         finally:
@@ -867,3 +904,25 @@ data for different number of iterations)")
         loading_screen.destroy()
         self.clear_frame()
         self.show_results(path)
+
+    def simulation_3d(self, data: dict) -> None:
+        """
+        Runs the 3D simulation with the user input data.
+
+        Args:
+            simulation_data (dict): A dictionary containing the simulation data.
+
+        Returns:
+            None
+        """
+        try:
+            run_from_dict(data)
+        except SimulationError as e:
+            messagebox.showerror("Error",
+                                  f"There was a fundemental problem with the simulation: {e}")
+        except tk.TclError:
+            pass
+        finally:
+            self.clear_frame()
+            self.bottom_buttons()
+        
