@@ -492,24 +492,45 @@ with the second two points serving as the corners between a diagonal. The fourth
             portal_frame = tk.Frame(portal_input_frame)
             portal_frame.pack()
 
-            portal_center_x, portal_center_y = \
-                self.double_float_user_input(self, portal_frame, def_values=[0, 0],
-                                    message=f"Input for Portal {i+1}: Center Location (x,y):",
-                                    width=5)
-            portal_radius = \
-                self.single_float_user_input(self, portal_frame, def_values=[1],
-                                             message="Portal radius:")[0]
+            if dimension == 2:
+                portal_center_x, portal_center_y = \
+                    self.double_float_user_input(self, portal_frame, def_values=[0, 0],
+                                        message=f"Input for Portal {i+1}: Center Location (x,y):",
+                                        width=5)
+                portal_radius = \
+                    self.single_float_user_input(self, portal_frame, def_values=[1],
+                                                message="Portal radius:")[0]
 
-            portal_dest_x, portal_dest_y = \
-                self.double_float_user_input(self, portal_frame, def_values=[0, 0],
-                                             message="Destination (x,y):", width=5)
+                portal_dest_x, portal_dest_y = \
+                    self.double_float_user_input(self, portal_frame, def_values=[0, 0],
+                                                message="Destination (x,y):", width=5)
 
-            self.__portals_data.append({"Centerx": portal_center_x,
-                                        "Centery": portal_center_y,
-                                        "Radius": portal_radius,
-                                        "Destinationx": portal_dest_x,
-                                        "Destinationy": portal_dest_y})
+                self.__portals_data.append({"Centerx": portal_center_x,
+                                            "Centery": portal_center_y,
+                                            "Radius": portal_radius,
+                                            "Destinationx": portal_dest_x,
+                                            "Destinationy": portal_dest_y})
+            elif dimension == 3:
+                portal_center_x, portal_center_y, portal_center_z =\
+                    self.triple_float_user_input(self, portal_frame, def_values=[0, 0, 0],
+                                                 message=f"Input for Portal {i+1}: Center Location (x,y,z):",
+                                                 width=5)
+                portal_radius = self.single_float_user_input(
+                    self, portal_frame, def_values=[1], message="Portal radius:"
+                )[0]
+                portal_dest_x, portal_dest_y, portal_dest_z =\
+                    self.triple_float_user_input(self, portal_frame, def_values=[0, 0, 0],
+                                                 message="Destination (x,y,z):", width=5)
 
+                self.__portals_data.append({
+                    "Centerx": portal_center_x,
+                    "Centery": portal_center_y,
+                    "Centerz": portal_center_z,
+                    "Radius": portal_radius,
+                    "Destinationx": portal_dest_x,
+                    "Destinationy": portal_dest_y,
+                    "Destinationz": portal_dest_z
+                })
         if num_portals == 0:
             self.create_mudspots_input(dimension=dimension)
             return
