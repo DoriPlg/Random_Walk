@@ -364,7 +364,8 @@ def run_from_json(filename: str|None = None) -> Tuple[dict, str]:
     if not filename.endswith('_simulation.json'):
         raise ValueError("Simulation filename must end with '_simulation.json'")
     data = helper.load_simulation(filename)
-    data["Simulation"]["filename"] = filename.removesuffix("_simulation.json")
+    filename = filename.removesuffix("_simulation.json")
+    data["Simulation"]["filename"] = filename
     if not check_data(data):
         print("The data in the file is not valid for a simulation")
         raise ValueError("The data in the file is not valid for a simulation")

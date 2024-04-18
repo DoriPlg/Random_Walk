@@ -19,6 +19,7 @@ from Code.walker import Walker
 
 MOVE_DICT = {Walker.move_dict()[k]: k for k in Walker.move_dict()}
 COLOR_PALLET = Walker.color_pallet()
+SIMU_SUFIX = "_simulation.json"
 
 
 
@@ -816,8 +817,7 @@ data for different number of iterations)")
 
             if path == "/":
                 path = os.path.realpath(__file__).removesuffix("walker_gui.py")+"null_name"
-            path += "_simulation.json"
-            save_to_json(simulation_data,path)
+            save_to_json(simulation_data,path+SIMU_SUFIX)
 
         try:
             if dimension == 2:
@@ -883,12 +883,13 @@ data for different number of iterations)")
         Runs the simulation with the user input data.
 
         Args:
-            simulation_data (dict): A dictionary containing the simulation data.
+            path (str): A string containing the path to a simulation json.
 
         Returns:
             None
         """
-        data,path = run_from_json(path)
+        print(path,"!")
+        data,path = run_from_json(path+SIMU_SUFIX)
         loading_screen = tk.Toplevel(self.root)
         loading_screen.title("Loading")
         loading_screen.geometry("400x300")
@@ -897,7 +898,7 @@ data for different number of iterations)")
         loading_label.pack()
         loading_screen.update()
         try:
-            run_and_plot(data, path)
+            run_and_plot(data, path+SIMU_SUFIX)
         except SimulationError as e:
             messagebox.showerror("Error",
                                   f"There was a fundemental problem with the simulation: {e}")
