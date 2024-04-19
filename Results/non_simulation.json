@@ -1,1 +1,0 @@
-{"Walkers": [{"movement": "A", "color": "red", "location": [0.0, 0.0]}], "Barriers": [], "Portals": [], "Mudspots": [], "Simulation": {"type": "plot", "n": 200, "gravity": 0, "dimension": 2, "filename": "/home/dori/Documents/UNI/Intro/final_project/Results/non"}}

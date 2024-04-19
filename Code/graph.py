@@ -51,6 +51,8 @@ def show_walker_way(name:str, movement_log: list[Coordinates], obstacles: Tuple,
     plt.title(name)
 
     ax.scatter(x[1:], y[1:], color=color)
+    ax. scatter(x[0], y[0], color='black', marker='x')
+    ax.scatter(x[-1], y[-1], color='black', marker='*')
     ax.plot(x, y, color=color)
     for barrier in barriers:
         ax.plot([barrier[0][0],barrier[1][0]],[barrier[0][1],barrier[1][1]], color='black')
@@ -174,6 +176,8 @@ def map_3d(walker_locations: list[list[Triordinates]],
         w_z = [i[2] for i in walker]
         ax.plot(w_x, w_y, w_z)
         ax.scatter(w_x[1:], w_y[1:], w_z[1:])
+        ax.scatter(w_x[0], w_y[0], w_z[0], color='black', marker='x')
+        ax.scatter(w_x[-1], w_y[-1], w_z[-1], color='black', marker='*')
 
     for barrier in barriers:
 
@@ -226,6 +230,7 @@ def map_3d(walker_locations: list[list[Triordinates]],
         rectangle = Poly3DCollection(verts, facecolors="brown", alpha=0.5)
         ax.add_collection3d(rectangle)
 
+    ax.scatter(0, 0, 0, color='black', marker='x')
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
