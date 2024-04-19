@@ -21,7 +21,11 @@ Triordinates = Tuple[float, float, float]
 DESTINATION_PATH = "./Results/"
 
 
-def show_walker_way(name:str, movement_log: list[Coordinates], obstacles: Tuple,
+def show_walker_way(name:str, movement_log: list[Coordinates], 
+                    obstacles: Tuple[
+                        tuple[tuple[float,float],tuple[float,float]],
+                        tuple[tuple[float,float],float,tuple[float,float]],
+                        tuple[tuple[float,float],float,float]],
                     file_to_save: str = f"{DESTINATION_PATH}scatterplot", color: str = "black") -> None:
     """
     A function that plots on a graph the path a waker went through.
