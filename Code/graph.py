@@ -22,10 +22,7 @@ DESTINATION_PATH = "./Results/"
 
 
 def show_walker_way(name:str, movement_log: list[Coordinates], 
-                    obstacles: Tuple[
-                        tuple[tuple[float,float],tuple[float,float]],
-                        tuple[tuple[float,float],float,tuple[float,float]],
-                        tuple[tuple[float,float],float,float]],
+                    obstacles: Tuple,
                     file_to_save: str = f"{DESTINATION_PATH}scatterplot", color: str = "black") -> None:
     """
     A function that plots on a graph the path a waker went through.
@@ -133,7 +130,7 @@ def walkers_unision(graph_name, data, color_list: list|None = None,
     ax.scatter(0, 0, color='black', marker='x')
     fig.savefig(file_to_save+".png")
 
-def show_walker_graph(data, file_to_save: str = f"{DESTINATION_PATH}_graph") -> None:
+def show_walker_graph(data: dict[int,dict[int, dict[str, float]]], file_to_save: str = f"{DESTINATION_PATH}_graph") -> None:
     """
     A function that plots on a graph the data picked up by the walker.
     :param data: a dictionary containing the data to be plotted
@@ -239,6 +236,4 @@ def map_3d(walker_locations: list[list[Triordinates]],
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
 
-    plt.show()
     fig.show()
-    fig.savefig(f"{DESTINATION_PATH}3d_plot.png")

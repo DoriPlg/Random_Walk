@@ -1,6 +1,7 @@
 import unittest
 import os
 import tkinter as tk
+from matplotlib import pyplot as plt
 from Code.graph import *
 
 
@@ -11,7 +12,7 @@ class TestGraph(unittest.TestCase):
 
     def test_show_walker_way(self):
         movement_log = [(0, 0), (1, 1), (2, 2)]
-        obstacles = ((0, 0), (1, 1),())
+        obstacles = ((((0, 0), (1, 1))), (((2, 2),1.5,(3, 3))), (((4, 4), 2.5, 5)))
         file_to_save = "./Results/temp"
         color = "black"
         self.assertIsNone(show_walker_way("Walker 1", movement_log, obstacles, file_to_save, color))
@@ -25,7 +26,11 @@ class TestGraph(unittest.TestCase):
         self.assertIsNone(walkers_unision(graph_name, data, color_list, obstacles, file_to_save))
 
     def test_show_walker_graph(self):
-        data = [(0, 0), (1, 1), (2, 2)]
+        data = {
+            0:{
+            0:{"escape":10, "distance":20},
+            10:{"escape":10, "distance":20},
+            20:{"escape":10, "distance":20}}}
         file_to_save = "./Results/temp"
         self.assertIsNone(show_walker_graph(data, file_to_save))
 
@@ -44,5 +49,7 @@ if __name__ == '__main__':
     unittest.main()
     if os.path.exists("./Results/temp"):
         os.remove("./Results/temp")
+        os.remove("./Results/temp_0.png")
+        os.remove("./Results/temp_1.png")
     else:
         print("File does not exist.")
