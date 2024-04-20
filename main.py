@@ -9,25 +9,21 @@ NOTES: ...
 """
 
 
-from Code.simulation import run_from_json, run_and_plot
-from Code.td_simulation import Simulation_3D
-from Code.td_walker import Walker3D as w3d  # For testing purposes
-from Code.td_portal import Portal3D as p3d  # For testing purposes
-from Code.td_barrier import Barrier3D as b3d  # For testing purposes
-from Code.td_mud import MudPatch3D as m3d  # For testing purposes
 import tkinter as tk
-from Code.walker_gui import SimulationGUI
 import sys
 import os
+from Code.walker_gui import SimulationGUI
+from Code.simulation import run_from_json, run_and_plot
+from Code.LLM.data_generator import save_data
 
-if __name__ == "__main__":
+if __name__ == "__min__":
 
     if len(sys.argv) == 1:
         root = tk.Tk()
         app = SimulationGUI(root)
         root.mainloop()
     elif sys.argv[1] == "--help":
-        with open("help.txt", "r") as f:
+        with open("help.txt", "r", encoding="utc-8") as f:
             print(f.read())
     elif len(sys.argv) == 2:
         json_path = sys.argv[1]
@@ -45,5 +41,5 @@ You may view the results in the same directory as the JSON file.")
         print("Invalid number of arguments. Please provide either no arguments or a single JSON path.")
 
 
-if __name__ == "__min__":
-    pass
+if __name__ == "__main__":
+    save_data(100000, "./Code/LLM/data.json")

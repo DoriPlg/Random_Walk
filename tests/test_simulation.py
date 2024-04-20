@@ -350,8 +350,8 @@ class TestSimulation(unittest.TestCase):
                 ], 
                 "Barriers":
                 [
-                    {"center": [4.0, 20.0], "length": 8.0, "angle": -1.5},
-                    {"center": [-4.0, 20.0], "length": 8.0, "angle": 1.5}
+                    {"center": [6.0, 20.0], "length": 8.0, "angle": -1.5},
+                    {"center": [-6.0, 20.0], "length": 8.0, "angle": 1.5}
                 ],
                 "Portals":
                 [
