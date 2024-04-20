@@ -56,3 +56,43 @@ def random_vector() -> Triordinates:
     z = random.uniform(-1, 1)
     length = math.sqrt(x ** 2 + y ** 2 + z ** 2)
     return x / length, y / length, z / length
+
+def gravitate(walkers: list[Walker3D], degree: int = 2, gravity: int = 0) -> None:
+    """
+    A function that applies gravity to a list of walkers in 3D space.
+    :param walkers: a list of Walker3D objects
+    :param degree: an integer representing the degree of gravity, defaults to 2
+    :param gravity: an integer representing the direction of gravity, defaults to 0
+    """
+    if len(walkers) <= 1 or gravity == 0:
+        return
+    nonrelative_locations = {}
+    ratio  = float(degree * len(walkers) * (gravity))
+    for walker in walkers:
+        bearing: tuple[float] = (0, 0,0)
+        for other_walker in walkers:
+            if other_walker is walker:
+                continue
+            x_difference = other_walker.position[0] - walker.position[0]
+            y_difference = other_walker.position[1] - walker.position[1]
+            z_difference = other_walker.position[2] - walker.position[2]
+            distance_squared = x_difference ** 2 + y_difference ** 2 + z_difference ** 2
+
+            #to avoid too strong attraction (wormholes and such)
+            if distance_squared == 0:
+                continue
+            attraction = min((ratio) / (distance_squared), 3)
+
+            direction = (x_difference / math.sqrt(distance_squared),
+                         y_difference / math.sqrt(distance_squared),
+                         z_difference / math.sqrt(distance_squared))
+            bearing = (direction[0] * attraction,
+                        direction[1] * attraction,
+                        direction[2] * attraction)
+
+        nonrelative_locations[walker] = (walker.position[0] + bearing[0],
+                                         walker.position[1] + bearing[1],
+                                         walker.position[2] + bearing[2])
+
+    for walker in walkers:
+        walker.jump(nonrelative_locations[walker])

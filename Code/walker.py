@@ -211,12 +211,14 @@ def gravitate(walkers: list[Walker], degree: int = 2, gravity: int = 0) -> None:
             x_difference = other.location[0] - walker.location[0]
             y_difference = other.location[1] - walker.location[1]
             current_direction = (x_difference, y_difference)
-            distance_squared = current_direction[0]**2 + current_direction[1]**2
+            distance_squared = x_difference**2 + y_difference**2
             angle = walker.directional_angle(
                 (walker.location[0] + current_direction[0],
                  walker.location[1] + current_direction[1]))
 
             # To avoid too strong attraction (wormholes and such)
+            if distance_squared == 0:
+                continue
             atrraction = min((ratio) / (distance_squared), 3)
 
             if angle:
