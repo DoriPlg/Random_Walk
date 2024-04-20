@@ -26,7 +26,3 @@ class TestWalker3D(unittest.TestCase):
         distance = walker.get_distance(location)
         expected_distance = math.sqrt(14)
         self.assertAlmostEqual(distance, expected_distance)
-
-if __name__ == '__main__':
-    unittest.main()
-

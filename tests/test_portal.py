@@ -23,5 +23,3 @@ class TestPortal(unittest.TestCase):
         portal = Portal((0, 0), 5, (10, 10))
         self.assertEqual(portal.radius, 5)
 
-if __name__ == '__main__':
-    unittest.main()

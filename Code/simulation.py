@@ -312,12 +312,12 @@ def check_data(data: dict) -> bool:
     :param data: the data to check
     """
     keys = ['Walkers', 'Barriers', 'Portals', 'Mudspots', 'Simulation']
-    try:
-        [key for key in data.keys()]
-    except AttributeError as exc:
-        raise AttributeError("Empty data was given for the simulation") from exc
-    except:
-        return False
+
+    if not isinstance(data, dict):
+        raise TypeError("Data must be a dictionary")
+    elif len(data) == 0:
+        raise AttributeError("Empty data was given for the simulation")
+
     if [key for key in data.keys()] == keys:
         if data["Simulation"]["type"] in ("plot", "graph"):
             try:

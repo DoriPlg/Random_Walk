@@ -85,5 +85,3 @@ class TestHelperFunctions(unittest.TestCase):
         self.assertFalse(is_float("abc"))
         self.assertFalse(is_float([1, 2, 3]))
 
-if __name__ == '__main__':
-    unittest.main()

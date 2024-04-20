@@ -43,8 +43,3 @@ class TestBarrier3D(unittest.TestCase):
         point_a = (1, 2, 1)
         point_b = (1, 1, 1)
         self.assertFalse(barrier.intersects(point_a, point_b))
-       
-
-if __name__ == '__main__':
-    unittest.main()
-    

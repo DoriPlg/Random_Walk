@@ -21,8 +21,8 @@ Triordinates = Tuple[float, float, float]
 DESTINATION_PATH = "./Results/"
 
 
-def show_walker_way(name:str, movement_log: list[Coordinates], 
-                    obstacles: Tuple,
+def show_walker_way(name:str, movement_log: list[Coordinates],
+                    obstacles: Tuple[list, list, list]|None = None,
                     file_to_save: str = f"{DESTINATION_PATH}scatterplot", color: str = "black") -> None:
     """
     A function that plots on a graph the path a waker went through.
@@ -42,9 +42,14 @@ def show_walker_way(name:str, movement_log: list[Coordinates],
     x = [i[0] for i in movement_log]
     y = [i[1] for i in movement_log]
 
-    barriers = obstacles[0]
-    portals = obstacles[1]
-    muds = obstacles[2]
+    if obstacles:
+        barriers = obstacles[0]
+        portals = obstacles[1]
+        muds = obstacles[2]
+    else:
+        barriers = []
+        portals = []
+        muds = []
 
     fig = plt.figure()
     ax = plt.axes()
@@ -76,8 +81,10 @@ def show_walker_way(name:str, movement_log: list[Coordinates],
     # fig.show()
     fig.savefig(file_to_save+".png")
 
-def walkers_unision(graph_name, data, color_list: list|None = None,
-                    obstacles: tuple|None = None , file_to_save: str = f"{DESTINATION_PATH}_plot") -> None:
+def walkers_unision(graph_name: str, data: dict[int, list[Coordinates]],
+                    color_list: list|None = None,
+                    obstacles: tuple[list,list, list]|None = None,
+                    file_to_save: str = f"{DESTINATION_PATH}_plot") -> None:
     """
     A function that plots on a graph the data picked up by the walker.
     :param graph_name: the title of the graph

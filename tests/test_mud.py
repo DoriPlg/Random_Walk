@@ -17,5 +17,3 @@ class TestMud(unittest.TestCase):
     def test_get_lag(self):
         self.assertEqual(Mud.get_lag(), 0.6)
 
-if __name__ == '__main__':
-    unittest.main()
