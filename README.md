@@ -7,7 +7,7 @@ Expansions:
     Allows for possitive or negative gravity between walkers.
     Has a class which generates graphs detailing the path a walker went through.
     Mudspots, rectangles where the walkers are "slowed down".
-    Tests written >90% coverage (w/o GUI)
+    Tests written >95% coverage (w/o GUI)
     Typing recieves no issues for "mypy ."
 
 Classes:

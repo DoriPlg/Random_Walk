@@ -1,5 +1,6 @@
 
 from Code.td_walker import Walker3D as w3d
+from Code.td_walker import gravitate
 from Code.td_barrier import Barrier3D as b3d
 from Code.td_portal import Portal3D as p3d
 from Code.td_mud import MudPatch3D as m3d
@@ -21,7 +22,7 @@ class Simulation_3D:
     :attribute __iteration: counts the iterations of the simulation
     """
 
-    def __init__(self) -> None:
+    def __init__(self, gravity: int = 0) -> None:
         """
         The constructor for Simulation objects
         """
@@ -30,6 +31,10 @@ class Simulation_3D:
         self.__portals: list[p3d] = []
         self.__mudspots: list[m3d] = []
         self.__iteration = 0
+        gravity_values = (-1, 0, 1)
+        if gravity not in gravity_values:
+            raise ValueError("The gravity value must be -1, 0 or 1")
+        self.__gravity = gravity
 
     def add_walker(self, walker: w3d) -> None:
         """
@@ -66,7 +71,7 @@ class Simulation_3D:
         Returns the number of the step preformed.
         """
         MAX_BARRIER_HITS = 10**3
-        for index, walker in enumerate(self.__walkers):
+        for _, walker in enumerate(self.__walkers):
             current_place = walker.position
             next_place = walker.next_location()
             if next_place:
@@ -95,6 +100,7 @@ class Simulation_3D:
             else:
                 raise AttributeError(
                     "The walker has no next location, due to having bad type of movement")
+        gravitate(self.__walkers, gravity=self.__gravity)
         self.__iteration += 1
         return self.__iteration
 
@@ -122,7 +128,7 @@ def load_simulation_from_dict(data: dict) -> Simulation_3D:
     :param data: the data to load the simulation from
     :return: the loaded simulation
     """
-    sim = Simulation_3D()
+    sim = Simulation_3D(gravity=data["Simulation"]["gravity"])
     for walker in data["Walkers"]:
         sim.add_walker(w3d(**walker))
     for barrier in data["Barriers"]:

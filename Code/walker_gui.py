@@ -914,6 +914,13 @@ data for different number of iterations)")
         Returns:
             None
         """
+        loading_screen = tk.Toplevel(self.root)
+        loading_screen.title("Loading")
+        loading_screen.geometry("400x300")
+        loading_label = tk.Label(loading_screen,
+                                 text="Running simulation\nThis may take a while...")
+        loading_label.pack()
+        loading_screen.update()
         try:
             run_from_dict(data)
         except SimulationError as e:
@@ -922,6 +929,7 @@ data for different number of iterations)")
         except tk.TclError:
             pass
         finally:
+            loading_screen.destroy()
             self.clear_frame()
             self.bottom_buttons()
         
