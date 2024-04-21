@@ -16,14 +16,14 @@ Coordinates = Tuple[float, float]
 
 PI = math.pi
 MOVEMENTS = {
-            'A': "Random direction, step size 1 unit",
-            'B': "Random direction, step size chosen equally between [0.5,1.5]",
-            'C': "Random direction chosen equally between (Up,Down,Right,Left), step size 1 unit",
-            'D_up': "Direction chosen at Random but favoring up, step site 1 unit",
-            'D_down': "Direction chosen at Random but favoring down, step site 1 unit",
-            'D_right': "Direction chosen at Random but favoring right, step site 1 unit",
-            'D_left': "Direction chosen at Random but favoring left, step site 1 unit",
-            'D_axis': "Direction chosen at Random but favoring axis, step site 1 unit"
+            'A': "random direction, step size 1 unit",
+            'B': "random direction, step size chosen equally between [0.5,1.5]",
+            'C': "random direction chosen equally between (Up,Down,Right,Left), step size 1 unit",
+            'D_up': "direction chosen at random but favoring up, step size 1 unit",
+            'D_down': "direction chosen at random but favoring down, step size 1 unit",
+            'D_right': "direction chosen at random but favoring right, step size 1 unit",
+            'D_left': "direction chosen at random but favoring left, step size 1 unit",
+            'D_axis': "direction chosen at random but favoring axis, step size 1 unit"
             }
 COLORS = ["red", "green", "yellow", "blue", "cyan", "orange","brown", "purple","olive","black"]
 
