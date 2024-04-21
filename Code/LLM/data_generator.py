@@ -3,7 +3,7 @@ import math
 import string
 import shelve
 import inflect
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM # type: ignore
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from Code.walker import COLORS, MOVEMENTS
 
 def data_for_simulation(
@@ -85,7 +85,7 @@ def create_description(data: dict) -> str:
     for key, value in data.items():
         if key == "Simulation":
             continue
-        description += f" {len(value)} {key},"
+        description += f" {len(value)} {key}, "
         for index, item in enumerate(value):
             if key == "Walkers":
                 description += f"The {p.ordinal(index + 1)} {key[:-1]} \
@@ -137,4 +137,12 @@ def paraphrase_sentence(sentence: str) -> str:
     )
     output = tokenizer.decode(output[0], skip_special_tokens=True, clean_up_tokenization_spaces=True)
     return output
+
+def print_data(path: str) -> None:
+    """
+    This function prints the data from the file.
+    """
+    with shelve.open(path) as shelve_file:
+        for key, item in shelve_file.items():
+            print(f"{key}:\n{item}\n")
 

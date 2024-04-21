@@ -17,7 +17,6 @@ from Code.simulation import run_from_json, run_and_plot
 from Code.LLM.data_generator import *
 
 if __name__ == "__min__":
-
     if len(sys.argv) == 1:
         root = tk.Tk()
         app = SimulationGUI(root)
@@ -41,9 +40,8 @@ You may view the results in the same directory as the JSON file.")
         print("Invalid number of arguments. Please provide either no arguments or a single JSON path.")
 
 
-if __name__ == "__main__":
-    save_data(10, "./Code/LLM/data.dat")
+if __name__ == "__min__":
+    save_data(1000, "./Code/LLM/data.dat")
 
 if __name__ == "__min__":
-    description = create_description(generate_data()[0])
-    print(description, "\n\n\n", paraphrase(description))
+    print_data("./Code/LLM/data.dat")
