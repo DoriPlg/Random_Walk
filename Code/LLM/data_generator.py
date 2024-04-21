@@ -78,5 +78,5 @@ def create_description(data: dict) -> str:
     """
     This function creates a description for the simulation.
     """
-    pipe = pipeline(task="text-classification", model="roberta-large-mnli")
-    return (pipe("I have 3 apples and 4 bananas"))
+    pipe = pipeline(task="text-generation", model="gpt2")
+    return (pipe("I have 3 walkers, 2 barriers, 1 portal, and 1 mudspot.")[0])
