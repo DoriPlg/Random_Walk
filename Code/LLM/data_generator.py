@@ -1,7 +1,8 @@
 import random
 import math
 import string
-from Code.helper_functions import save_to_json
+import shelve
+from transformers import pipeline # type: ignore
 from Code.walker import COLORS, MOVEMENTS
 
 def data_for_simulation(
@@ -38,35 +39,44 @@ def simulation_variables() -> tuple[dict,dict]:
     buffer = random.randint(1, 100)
     n = random.randint(1, 1000)
     steps = random.randint(3, 14)
+    gravity = random.choice([1, 0, -1])
     graphing_data = {"type": "graph",
                     "iterations": iterations,
                     "max_depth": n+buffer,
                     "n": n,
-                    "steps": n/14,
+                    "steps": n/steps,
                     "filename": f"./{filename}"}
     plottings_data = {"type": "plot",
                       "n": n,
+                      "gravity": gravity,
                       "filename": f"./{filename}"}
     return graphing_data, plottings_data
 
-def generate_data(size) -> dict:
+def generate_data() -> tuple[dict, dict]:
     """
     This function generates data for the simulation.
     """
-    great_big_data = {}
-    for i in range(0,size,2):
-        graphing_data, plottings_data = simulation_variables()
-        data = data_for_simulation(random.randint(1, 7), random.randint(1, 7),
-                                   random.randint(1, 7), random.randint(1, 7))
-        great_big_data[i] = data
-        great_big_data[i]["Simulation"] = graphing_data
-        great_big_data[i+1] = data
-        great_big_data[i+1]["Simulation"] = plottings_data
-    return great_big_data
+    graphing_data, plottings_data = simulation_variables()
+    data = data_for_simulation(random.randint(1, 7), random.randint(1, 7),
+                                random.randint(1, 7), random.randint(1, 7))
+    graphing = data
+    graphing["Simulation"] = graphing_data
+    plotting = data
+    plotting["Simulation"] = plottings_data
+    return (graphing, plotting)
 
 def save_data(size: int, filename: str = "data.json") -> None:
     """
     This function saves the data to a JSON file.
     """
-    save_to_json(generate_data(size=size), filename)
+    for i in range(0,size,2):
+        with shelve.open(filename) as shelve_file:
+            shelve_file[str(i)], shelve_file[str(i+1)] = generate_data()
+            shelve_file.sync()
 
+def create_description(data: dict) -> str:
+    """
+    This function creates a description for the simulation.
+    """
+    pipe = pipeline(task="text-classification", model="roberta-large-mnli")
+    return (pipe("I have 3 apples and 4 bananas"))

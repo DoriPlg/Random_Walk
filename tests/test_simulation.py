@@ -347,15 +347,14 @@ class TestSimulation(unittest.TestCase):
                     {"movement": "D_up", "color": "blue", "location": [0.0, 0.0]},
                     {"movement": "D_up", "color": "orange", "location": [0.0, 0.0]},
                     {"movement": "D_up", "color": "purple", "location": [0.0, 0.0]}
-                ], 
+                ],
                 "Barriers":
                 [
-                    {"center": [6.0, 20.0], "length": 8.0, "angle": -1.5},
-                    {"center": [-6.0, 20.0], "length": 8.0, "angle": 1.5}
+                    {"center": [6.0, 20.0], "length": 8.0, "angle": -1.5}
                 ],
                 "Portals":
                 [
-                    {"center": [0.0, 40.0], "endpoint": [0.0, 0.0], "radius": 1.5}
+                    {"center": [0.0, 60.0], "endpoint": [0.0, 0.0], "radius": 1.5}
                 ],
                 "Mudspots": [],
                 "Simulation": {"type": "graph", "n": 100, "iterations": 100,

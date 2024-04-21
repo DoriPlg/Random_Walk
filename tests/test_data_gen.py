@@ -16,16 +16,16 @@ class TestDataGen(unittest.TestCase):
         """
         Tests the generate_data function.
         """
-        data = generate_data(10)
-        for value in data.values():
-            print(value)
-            self.assertTrue(check_data(value))
+        for _ in range(10):
+            data1, data2 = generate_data()
+            self.assertTrue(check_data(data1))
+            self.assertTrue(check_data(data2))
 
     def test_save_data(self):
         """
         Tests the save_data function.
         """
-        save_data(10, "temp.json")
-        os.remove("temp.json")
+        save_data(10, "temp.dat")
+        os.remove("temp.dat")
 
         
