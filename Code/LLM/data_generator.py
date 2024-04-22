@@ -3,7 +3,7 @@ import math
 import string
 import shelve
 import inflect
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import T5ForConditionalGeneration, T5Tokenizer
 from Code.walker import COLORS, MOVEMENTS
 
 def data_for_simulation(
@@ -88,19 +88,19 @@ def create_description(data: dict) -> str:
         description += f" {len(value)} {key}, "
         for index, item in enumerate(value):
             if key == "Walkers":
-                description += f"The {p.ordinal(index + 1)} {key[:-1]} \
+                description += f"The {p.ordinal(index + 1)} {key[:-1].lower()} \
 should start at {item['location']}, \
 move in a {MOVEMENTS[item['movement']]}, and be colored {item['color']}.\n"
             elif key == "Barriers":
-                description += f"The {p.ordinal(index + 1)} {key[:-1]} \
+                description += f"The {p.ordinal(index + 1)} {key[:-1].lower()} \
 should be centered at {item['center']}, \
 have a length of {item['length']}, and be at an angle of {item['angle']}.\n"
             elif key == "Portals":
-                description += f"The {p.ordinal(index + 1)} {key[:-1]} \
+                description += f"The {p.ordinal(index + 1)} {key[:-1].lower()} \
 should be centered at {item['center']}, \
 have a radius of {item['radius']}, and lead to {item['endpoint']}.\n"
             elif key == "Mudspots":
-                description += f"The {p.ordinal(index + 1)} {key[:-1]} \
+                description += f"The {p.ordinal(index + 1)} {key[:-1].lower()} \
 should start from {item['bottom_left']} (bottom left), \
 have a height of {item['height']}, and a width of {item['width']}.\n"
         description += "\n"
@@ -118,25 +118,25 @@ def paraphrase(paragraph: str) -> str:
 
 def paraphrase_sentence(sentence: str) -> str:
     """
-    This function paraphrases the sentence.
+    This function creates a paraphrase of the given sentence.
     """
-    tokenizer = AutoTokenizer.from_pretrained("eugenesiow/bart-paraphrase")
-    model = AutoModelForSeq2SeqLM.from_pretrained("eugenesiow/bart-paraphrase")
-    encoding = tokenizer.encode_plus(sentence, padding=True, return_tensors="pt")
-    input_ids, attention_mask = encoding["input_ids"], encoding["attention_mask"]
+    # Initialize the tokenizer and model
+    tokenizer = T5Tokenizer.from_pretrained('t5-3b')
+    model = T5ForConditionalGeneration.from_pretrained('t5-3b')
 
-    output = model.generate(
-        input_ids=input_ids,
-        attention_mask=attention_mask,
-        do_sample=True,
-        max_length=256,
-        top_k=120,
-        top_p=0.95,
-        early_stopping=True,
-        num_return_sequences=1
-    )
-    output = tokenizer.decode(output[0], skip_special_tokens=True, clean_up_tokenization_spaces=True)
-    return output
+    for word in sentence.split(" "):
+        print(is_word_in_vocab(word, tokenizer), word)
+    # Prepare the sentence for T5
+    text = "paraphrase: " + sentence
+
+    # Encode the sentence and generate a response
+    encoding = tokenizer.encode_plus(text, return_tensors='pt')
+    output = model.generate(**encoding, max_length=300, num_return_sequences=1, temperature=1.1)
+
+    # Decode the response
+    paraphrased = tokenizer.decode(output[0], skip_special_tokens=True)
+
+    return paraphrased
 
 def print_data(path: str) -> None:
     """
@@ -146,3 +146,9 @@ def print_data(path: str) -> None:
         for key, item in shelve_file.items():
             print(f"{key}:\n{item}\n")
 
+def is_word_in_vocab(word: str, tokenizer: T5Tokenizer) -> bool:
+    """
+    This function checks if a word is in the tokenizer's vocabulary.
+    """
+    vocab = tokenizer.get_vocab()
+    return word in vocab

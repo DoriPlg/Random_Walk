@@ -45,3 +45,8 @@ if __name__ == "__min__":
 
 if __name__ == "__min__":
     print_data("./Code/LLM/data.dat")
+
+if __name__ == "__main__":
+    text = create_description(generate_data()[0])
+    print(text)
+    print(paraphrase(text))
