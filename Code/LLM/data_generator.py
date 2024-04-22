@@ -151,4 +151,10 @@ def is_word_in_vocab(word: str, tokenizer: T5Tokenizer) -> bool:
     This function checks if a word is in the tokenizer's vocabulary.
     """
     vocab = tokenizer.get_vocab()
-    return word in vocab
+    is_in  = True
+    subwords = tokenizer.tokenize(word)
+    for subword in subwords:
+        if subword not in vocab:
+            is_in = False
+            break
+    return is_in
