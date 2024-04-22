@@ -1,8 +1,14 @@
+
+"""
+This module contains functions for generating and manipulating data for a simulation, and devising
+descriptions of said data.
+"""
+
 import random
 import math
 import string
-import torch
 import shelve
+import torch
 import inflect
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from Code.walker import COLORS, MOVEMENTS
@@ -47,6 +53,7 @@ def simulation_variables() -> tuple[dict,dict]:
                     "max_depth": n+buffer,
                     "n": n,
                     "steps": n/steps,
+                    "gravity": gravity,
                     "filename": f"./{filename}"}
     plottings_data = {"type": "plot",
                       "n": n,
@@ -71,7 +78,7 @@ def save_data(size: int, filename: str = "data.json") -> None:
     """
     This function saves the data to a JSON file.
     """
-    for _ in range(0,size,2):
+    for _ in range(0,size+1,2):
         with shelve.open(filename) as shelve_file:
             data_1, data_2 = generate_data()
             shelve_file[create_description(data_1)], shelve_file[create_description(data_2)] = data_1, data_2
@@ -102,17 +109,36 @@ def describe_mudspot(mudspot: dict) -> str:
     return f"mudspot should start from {mudspot['bottom_left']} (bottom left), \
 have a height of {mudspot['height']}, \
 and a width of {mudspot['width']}"
+def describe_simulation(data: dict) -> str:
+    """
+    This function creates a description for the simulation.
+    """
+    description =  f"simulation that makes a {data['type']}, "
+
+    if data['type'] == "graph":
+        description += f"for {data['iterations']} iterations, \
+a maximum depth of {data['max_depth']}, \
+and a datapoint every {data['steps']} steps, up to {data['n']}, \
+gravity should be {data['gravity']}, \
+the graphs should be saved to {data['filename']}."
+
+    elif data['type'] == "plot":
+        description += f"with {data['n']} steps, \
+gravity = {data['gravity']}, \
+and the plots should be saved to {data['filename']}."
+
+    return description + "\n"
+
 
 def create_description(data: dict) -> str:
     """
     This function creates a description for the simulation.
     """
     p = inflect.engine()
-    description = "I want to simulate"
+    description = "I want a " + describe_simulation(data["Simulation"])
     for key, value in data.items():
         if key == "Simulation":
             continue
-            # Return here later
         description += f" {len(value)} {key}, "
         for index, item in enumerate(value):
             if key == "Walkers":
@@ -203,3 +229,15 @@ def print_data(path: str) -> None:
     with shelve.open(path) as shelve_file:
         for key, item in shelve_file.items():
             print(f"{key}:\n{item}\n")
+
+def paraphrase_data(path: str) -> None:
+    """
+    This function paraphrases the data from the file.
+    """
+    with shelve.open(path) as shelve_file:
+        for count, (key, item) in enumerate(shelve_file.items()):
+            print(count)
+            paraphrases = paraphrase(key)
+            for query in paraphrases:
+                shelve_file[query] = item
+            shelve_file.sync()

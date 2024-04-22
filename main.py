@@ -40,15 +40,13 @@ You may view the results in the same directory as the JSON file.")
         print("Invalid number of arguments. Please provide either no arguments or a single JSON path.")
 
 
-if __name__ == "__min__":
-    save_data(1000, "./Code/LLM/data.dat")
 
 if __name__ == "__min__":
+    pass
+
+if __name__ == "__main__":
+    save_data(200, "./Code/LLM/data.dat")
+    print("Data saved successfully.")
+    paraphrase_data("./Code/LLM/data.dat")
+    print("Data paraphrased successfully.")
     print_data("./Code/LLM/data.dat")
-
-if __name__ == "__min__":
-    data = generate_data()[0]
-    text = create_description(data).split("\n")[0:3]
-    text = "\n".join(text)
-    print(text)
-    print("big","\n\n\n".join(paraphrase(text)))
