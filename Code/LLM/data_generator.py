@@ -1,9 +1,10 @@
 import random
 import math
 import string
+import torch
 import shelve
 import inflect
-from transformers import T5ForConditionalGeneration, T5Tokenizer
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from Code.walker import COLORS, MOVEMENTS
 
 def data_for_simulation(
@@ -76,6 +77,32 @@ def save_data(size: int, filename: str = "data.json") -> None:
             shelve_file[create_description(data_1)], shelve_file[create_description(data_2)] = data_1, data_2
             shelve_file.sync()
 
+def describe_walker(walker: dict) -> str:
+    """
+    This function creates a description for the walker.
+    """
+    return f"walker should start at {walker['location']}, \
+move in a {MOVEMENTS[walker['movement']]}, and be colored {walker['color']}"
+def describe_barrier(barrier: dict) -> str:
+    """
+    This function creates a description for the barrier.
+    """
+    return f"barrier should be centered at {barrier['center']}, \
+have a length of {barrier['length']}, and be at an angle of {barrier['angle']}"
+def describe_portal(portal: dict) -> str:
+    """
+    This function creates a description for the portal.
+    """
+    return f"portal should be centered at {portal['center']}, \
+have a radius of {portal['radius']}, and lead to {portal['endpoint']}"
+def describe_mudspot(mudspot: dict) -> str:
+    """
+    This function creates a description for the mudspot.
+    """
+    return f"mudspot should start from {mudspot['bottom_left']} (bottom left), \
+have a height of {mudspot['height']}, \
+and a width of {mudspot['width']}"
+
 def create_description(data: dict) -> str:
     """
     This function creates a description for the simulation.
@@ -85,58 +112,89 @@ def create_description(data: dict) -> str:
     for key, value in data.items():
         if key == "Simulation":
             continue
+            # Return here later
         description += f" {len(value)} {key}, "
         for index, item in enumerate(value):
             if key == "Walkers":
-                description += f"The {p.ordinal(index + 1)} {key[:-1].lower()} \
-should start at {item['location']}, \
-move in a {MOVEMENTS[item['movement']]}, and be colored {item['color']}.\n"
+                description += \
+                    f"The {p.ordinal(p.number_to_words(index + 1))} {describe_walker(item)}.\n"
             elif key == "Barriers":
-                description += f"The {p.ordinal(index + 1)} {key[:-1].lower()} \
-should be centered at {item['center']}, \
-have a length of {item['length']}, and be at an angle of {item['angle']}.\n"
+                description += \
+                    f"The {p.ordinal(p.number_to_words(index + 1))} {describe_barrier(item)}.\n"
             elif key == "Portals":
-                description += f"The {p.ordinal(index + 1)} {key[:-1].lower()} \
-should be centered at {item['center']}, \
-have a radius of {item['radius']}, and lead to {item['endpoint']}.\n"
+                description += \
+                    f"The {p.ordinal(p.number_to_words(index + 1))} {describe_portal(item)}.\n"
             elif key == "Mudspots":
-                description += f"The {p.ordinal(index + 1)} {key[:-1].lower()} \
-should start from {item['bottom_left']} (bottom left), \
-have a height of {item['height']}, and a width of {item['width']}.\n"
-        description += "\n"
-    description = description.rstrip(', ')
+                description += \
+                    f"The {p.ordinal(p.number_to_words(index + 1))} {describe_mudspot(item)}.\n"
     return description
 
-def paraphrase(paragraph: str) -> str:
+def paraphrase(paragraph: str) -> list[str]:
     """
     This function paraphrases the paragraph.
     """
-    new_paragraph = ""
+    new_paragraphs = []
     for sentence in paragraph.split("\n"):
-        new_paragraph += paraphrase_sentence(sentence) + "\n"
-    return new_paragraph
+        if len(sentence) == 0:
+            continue
+        phrases = paraphrase_sentence(sentence)
+        updated_phrases = []
+        for paragraph in new_paragraphs:
+            for paraphrased in phrases:
+                updated_phrases.append(paragraph + "\n" + paraphrased)
+        if len(new_paragraphs) == 0:
+            new_paragraphs = phrases
+        else:
+            new_paragraphs = updated_phrases
+    return new_paragraphs
 
-def paraphrase_sentence(sentence: str) -> str:
+def paraphrase_sentence(sentence: str) -> list[str]:
     """
     This function creates a paraphrase of the given sentence.
     """
     # Initialize the tokenizer and model
-    tokenizer = T5Tokenizer.from_pretrained('t5-3b')
-    model = T5ForConditionalGeneration.from_pretrained('t5-3b')
+    tokenizer = AutoTokenizer.from_pretrained(
+        "ramsrigouthamg/t5-large-paraphraser-diverse-high-quality")
+    model= AutoModelForSeq2SeqLM.from_pretrained(
+        "ramsrigouthamg/t5-large-paraphraser-diverse-high-quality")
+    device = torch.device("cpu")
+    model = model.to(device)
 
-    for word in sentence.split(" "):
-        print(is_word_in_vocab(word, tokenizer), word)
     # Prepare the sentence for T5
-    text = "paraphrase: " + sentence
+    text = "paraphrase:" + sentence + " </s>"
 
     # Encode the sentence and generate a response
-    encoding = tokenizer.encode_plus(text, return_tensors='pt')
-    output = model.generate(**encoding, max_length=300, num_return_sequences=1, temperature=1.1)
+    encoding = tokenizer.encode_plus(text,max_length =128, padding=True, return_tensors="pt")
+    input_ids,attention_mask  = encoding["input_ids"].to(device), encoding["attention_mask"].to(device)
+    model.eval()
+    diverse_beam_outputs = model.generate(
+        input_ids=input_ids,attention_mask=attention_mask,
+        max_length=128,
+        early_stopping=True,
+        num_beams=3,
+        num_beam_groups = 3,
+        num_return_sequences=3,
+        diversity_penalty = 0.70
+    )
 
     # Decode the response
-    paraphrased = tokenizer.decode(output[0], skip_special_tokens=True)
-
+    paraphrased = []
+    for beam_output in diverse_beam_outputs:
+        sent = tokenizer.decode(beam_output, skip_special_tokens=True,clean_up_tokenization_spaces=True)
+        paraphrased.append(sent.removeprefix("paraphrasedoutput: "))
     return paraphrased
+
+def is_word_in_vocab(word: str, tokenizer: AutoTokenizer) -> bool:
+    """
+    This function checks if a word is in the tokenizer's vocabulary.
+    """
+    vocab = tokenizer.get_vocab()
+    token_exists = True
+    for subword in tokenizer.tokenize(word):
+        if subword not in vocab:
+            token_exists = False
+            break
+    return token_exists
 
 def print_data(path: str) -> None:
     """
@@ -145,16 +203,3 @@ def print_data(path: str) -> None:
     with shelve.open(path) as shelve_file:
         for key, item in shelve_file.items():
             print(f"{key}:\n{item}\n")
-
-def is_word_in_vocab(word: str, tokenizer: T5Tokenizer) -> bool:
-    """
-    This function checks if a word is in the tokenizer's vocabulary.
-    """
-    vocab = tokenizer.get_vocab()
-    is_in  = True
-    subwords = tokenizer.tokenize(word)
-    for subword in subwords:
-        if subword not in vocab:
-            is_in = False
-            break
-    return is_in

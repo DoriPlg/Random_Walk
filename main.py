@@ -46,7 +46,9 @@ if __name__ == "__min__":
 if __name__ == "__min__":
     print_data("./Code/LLM/data.dat")
 
-if __name__ == "__main__":
-    text = create_description(generate_data()[0])
+if __name__ == "__min__":
+    data = generate_data()[0]
+    text = create_description(data).split("\n")[0:3]
+    text = "\n".join(text)
     print(text)
-    print(paraphrase(text))
+    print("big","\n\n\n".join(paraphrase(text)))

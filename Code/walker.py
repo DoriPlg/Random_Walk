@@ -17,8 +17,8 @@ Coordinates = Tuple[float, float]
 PI = math.pi
 MOVEMENTS = {
             'A': "random direction, step size 1 unit",
-            'B': "random direction, step size chosen equally between [0.5,1.5]",
-            'C': "random direction chosen equally between (Up,Down,Right,Left), step size 1 unit",
+            'B': "random direction, step size chosen equally between [0.5, 1.5]",
+            'C': "random direction chosen equally between (Up, Down, Right, Left), step size 1 unit",
             'D_up': "direction chosen at random but favoring up, step size 1 unit",
             'D_down': "direction chosen at random but favoring down, step size 1 unit",
             'D_right': "direction chosen at random but favoring right, step size 1 unit",
