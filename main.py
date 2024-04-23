@@ -14,7 +14,7 @@ import sys
 import os
 from Code.walker_gui import SimulationGUI
 from Code.simulation import run_from_json, run_and_plot
-from Code.data_generator import *
+from Code.data_generator import generate_data, save_json
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
@@ -39,6 +39,7 @@ You may view the results in the same directory as the JSON file.")
     else:
         print("Invalid number of arguments. Please provide either no arguments or a single JSON path.")
 
+# Used to generate random data for a simulation
 if __name__ == "__min__":
     data = generate_data()[1]
     print(data)
