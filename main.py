@@ -14,9 +14,9 @@ import sys
 import os
 from Code.walker_gui import SimulationGUI
 from Code.simulation import run_from_json, run_and_plot
-from Code.LLM.data_generator import *
+from Code.data_generator import *
 
-if __name__ == "__min__":
+if __name__ == "__main__":
     if len(sys.argv) == 1:
         root = tk.Tk()
         app = SimulationGUI(root)
@@ -39,14 +39,7 @@ You may view the results in the same directory as the JSON file.")
     else:
         print("Invalid number of arguments. Please provide either no arguments or a single JSON path.")
 
-
-
 if __name__ == "__min__":
-    pass
-
-if __name__ == "__main__":
-    save_data(200, "./Code/LLM/data.dat")
-    print("Data saved successfully.")
-    paraphrase_data("./Code/LLM/data.dat")
-    print("Data paraphrased successfully.")
-    print_data("./Code/LLM/data.dat")
+    data = generate_data()[1]
+    print(data)
+    save_json(data)

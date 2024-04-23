@@ -1,8 +1,8 @@
-{"Walkers": [{"movement": "D_up", "color": "R", "location": [0.0, 0.0]},
- {"movement": "D_up", "color": "G", "location": [0.0, 0.0]},
-  {"movement": "D_up", "color": "Bl", "location": [0.0, 0.0]}, 
-  {"movement": "D_up", "color": "Or", "location": [0.0, 0.0]}, 
-  {"movement": "D_up", "color": "P", "location": [0.0, 0.0]}], 
+{"Walkers": [{"movement": "D_up", "color": "red", "location": [0.0, 0.0]},
+ {"movement": "D_up", "color": "green", "location": [0.0, 0.0]},
+  {"movement": "D_up", "color": "blue", "location": [0.0, 0.0]}, 
+  {"movement": "D_up", "color": "orange", "location": [0.0, 0.0]}, 
+  {"movement": "D_up", "color": "purple", "location": [0.0, 0.0]}], 
   "Barriers": 
   [{"center": [4.0, 20.0], "length": 8.0, "angle": -1.5}, 
   {"center": [-4.0, 20.0], "length": 8.0, "angle": 1.5}], 
@@ -10,4 +10,4 @@
   [{"center": [0.0, 40.0], "endpoint": [0.0, 0.0], "radius": 1.5}], 
   "Mudspots": [], 
   "Simulation": 
-  {"type": "plot", "n": 1000, "filename": "/home/dori/Documents/UNI/Intro/final_project/Results/bottleneck"}}
+  {"type": "plot", "n": 1000, "gravity": 0, "filename": "/home/dori/Documents/UNI/Intro/final_project/Results/bottleneck"}}

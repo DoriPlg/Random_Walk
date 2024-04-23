@@ -67,13 +67,13 @@ def show_walker_way(name:str, movement_log: list[Coordinates],
 
     for portal in portals:
         circle = patches.Circle((portal[0][0], portal[0][1]),
-                                       radius=portal[1], edgecolor='purple')
+                                       radius=portal[1], edgecolor='purple', facecolor='purple')
         endpoints_x.append(portal[2][0])
         endpoints_y.append(portal[2][1])
         ax.add_patch(circle)
 
     for mud in muds:
-        rectangle = patches.Rectangle(*mud)
+        rectangle = patches.Rectangle(*mud, facecolor='brown', edgecolor='brown')
         ax.add_patch(rectangle)
     ax.axis('equal')
     ax.scatter(endpoints_x,endpoints_y, marker= "*")
@@ -122,13 +122,13 @@ def walkers_unision(graph_name: str, data: dict[int, list[Coordinates]],
     endpoints_y = []
     for portal in portals:
         circle = patches.Circle((portal[0][0], portal[0][1]),
-                                       radius=portal[1], edgecolor='purple')
+                                       radius=portal[1], edgecolor='purple', facecolor='purple')
         
         endpoints_x.append(portal[2][0])
         endpoints_y.append(portal[2][1])
         ax.add_patch(circle)
     for mud in muds:
-        rectangle = patches.Rectangle(*mud)
+        rectangle = patches.Rectangle(*mud, edgecolor='brown', facecolor='brown')
         
         ax.add_patch(rectangle)
        

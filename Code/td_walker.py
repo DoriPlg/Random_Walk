@@ -61,7 +61,7 @@ def gravitate(walkers: list[Walker3D], degree: int = 2, gravity: int = 0) -> Non
     """
     A function that applies gravity to a list of walkers in 3D space.
     :param walkers: a list of Walker3D objects
-    :param degree: an integer representing the degree of gravity, defaults to 2
+    :param degree: an integer representing the degree of gravity, defaults to 5
     :param gravity: an integer representing the direction of gravity, defaults to 0
     """
     if len(walkers) <= 1 or gravity == 0:

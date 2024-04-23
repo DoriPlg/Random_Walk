@@ -298,8 +298,8 @@ class Simulation:
         color_list = [walker.color for walker in self.__walkers]
         obstacles = (barriers, portals, mudspots)
         for index, locations in locations_dict.items():
-            graph_name = f"Graph number {index + 1},\
-                  showing a walker with {self.__walkers[index].movement} type movement"
+            graph_name = f"Graph number {index + 1}, \
+showing a walker with {self.__walkers[index].movement} type movement"
             gr.show_walker_way(graph_name,locations, obstacles,
                                    f"{file_name}_{index}", color_list[index])
         graph_name = f"Graph number {len(color_list) + 1}, showing all walkers in unision"
@@ -359,7 +359,7 @@ def run_from_json(filename: str|None = None) -> Tuple[dict, str]:
 
     returns the base path to the file saved
     """
-    if not filename:
+    if not filename or not os.path.exists(filename):
         filename = helper.get_filepath_to_json()
     if not filename.endswith('_simulation.json'):
         raise ValueError("Simulation filename must end with '_simulation.json'")
