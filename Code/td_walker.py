@@ -69,7 +69,7 @@ def gravitate(walkers: list[Walker3D], degree: int = 2, gravity: int = 0) -> Non
     nonrelative_locations = {}
     ratio  = float(degree * len(walkers) * (gravity))
     for walker in walkers:
-        bearing: tuple[float] = (0, 0,0)
+        bearing: tuple[float, float, float] = (0.0, 0.0, 0.0)
         for other_walker in walkers:
             if other_walker is walker:
                 continue

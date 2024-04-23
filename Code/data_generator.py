@@ -6,6 +6,7 @@ This module contains functions for generating and manipulating data for a simula
 import random
 import math
 import string
+from typing import Any
 from Code.walker import COLORS, MOVEMENTS
 from Code.helper_functions import save_to_json
 
@@ -14,6 +15,7 @@ def data_for_simulation(
     """
     This function generates data for the graphing of the simulation.
     """
+    data: dict[str, Any]
     data = {"Walkers": [], "Barriers": [], "Portals": [], "Mudspots": []}
     for _ in range(num_walkers):
         data["Walkers"].append({"movement": random.choice([key for key in MOVEMENTS.keys()]),

@@ -1,6 +1,6 @@
 import unittest
 import os
-from Code.LLM.data_generator import generate_data, save_data
+import Code.data_generator as dgen
 from Code.simulation import check_data
 
 class TestDataGen(unittest.TestCase):
@@ -17,15 +17,20 @@ class TestDataGen(unittest.TestCase):
         Tests the generate_data function.
         """
         for _ in range(10):
-            data1, data2 = generate_data()
+            data1, data2 = dgen.generate_data()
             self.assertTrue(check_data(data1))
             self.assertTrue(check_data(data2))
 
-    def test_save_data(self):
+    def test_save(self):
         """
-        Tests the save_data function.
+        Tests the save_to_json function.
         """
-        save_data(10, "temp.dat")
-        os.remove("temp.dat")
+        data1, data2 = dgen.generate_data()
+        dgen.save_to_json(data1, "test1.json")
+        dgen.save_to_json(data2, "test2.json")
+        self.assertTrue(os.path.exists("test1.json"))
+        self.assertTrue(os.path.exists("test2.json"))
+        os.remove("test1.json")
+        os.remove("test2.json")
 
         
