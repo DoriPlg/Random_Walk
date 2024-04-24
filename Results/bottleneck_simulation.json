@@ -10,4 +10,4 @@
   [{"center": [0.0, 40.0], "endpoint": [0.0, 0.0], "radius": 1.5}], 
   "Mudspots": [], 
   "Simulation": 
-  {"type": "plot", "n": 1000, "gravity": 0, "filename": "/home/dori/Documents/UNI/Intro/final_project/Results/bottleneck"}}
+  {"type": "plot", "n": 1000, "gravity": 0, "filename": "./Results/bottleneck"}}

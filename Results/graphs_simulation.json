@@ -3,4 +3,4 @@
     {"movement": "C", "color": "red", "location": [0.0, 0.0]},
     {"movement": "B", "color": "yellow", "location": [0.0, 0.0]},
     {"movement": "A", "color": "green", "location": [0.0, 0.0]}],
-    "Barriers": [], "Portals": [], "Mudspots": [], "Simulation": {"type": "graph", "iterations": 5, "max_depth": 1000000, "n": 10000, "steps": 200, "filename": "/home/dori/Documents/UNI/Intro/final_project/Results/graphs"}}
+    "Barriers": [], "Portals": [], "Mudspots": [], "Simulation": {"type": "graph", "iterations": 5, "max_depth": 1000000, "n": 10000, "steps": 200, "filename": "./Results/graphs"}}

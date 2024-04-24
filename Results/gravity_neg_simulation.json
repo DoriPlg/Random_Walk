@@ -5,4 +5,4 @@
     {"movement": "D_axis", "color": "blue", "location": [10.0, 0.0]},
     {"movement": "D_axis", "color": "purple", "location": [0.0, 10.0]}], 
     "Barriers": [], "Portals": [], "Mudspots": [], 
-    "Simulation": {"type": "plot", "n": 2000, "gravity": -1, "filename": "/home/dori/Documents/UNI/Intro/final_project/Results/gravity_neg"}}
+    "Simulation": {"type": "plot", "n": 2000, "gravity": -1, "filename": "./Results/gravity_neg"}}
