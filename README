@@ -4,8 +4,9 @@ An application for creating differrent kinds of random walk simulations.
 Expansions:
     Has an extensive GUI allowing users to build a simulation manually or upload one from a *.json file - and view results.
     Option for a 3D simulation - all obstacles exist, including bi-polar gravity. Activated through the GUI, shows on new window.
-    Allows for bi-polar gravity between walkers. Activated either through GUI or the json file
+    Allows for bi-polar gravity between walkers. Activated either through GUI or the json file.
     Has a class which generates graphs detailing the path a walker went through.
+    Allows user to set (both GUI and json) a "reset constant" to randomly send walker to it's starting point
     Mudspots, rectangles where the walkers are "slowed down".
     Aditional class for generating random simulations
     Tests written >95% coverage (w/o GUI)

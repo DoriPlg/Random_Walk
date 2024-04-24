@@ -172,11 +172,13 @@ class SimulationGUI:
             var = var_type()
             entry = tk.Entry(input_frame, textvariable=var, width=width)
             if def_values and len(def_values)>i:
-                var.set(value=def_values[i])
+                var.set(value=def_values[i] if def_values[i] != 0 else "")
             entry.pack(side=tk.LEFT)
-            # Apply validation to walker_center_entry_x and walker_center_entry_y
+
+            # Apply validation
             entry.config(validate="key", validatecommand=validate)
             variables.append(var)
+
         input_frame.pack()
         return variables
     single_int_user_input = ft.partial(user_input,var_type=tk.IntVar,n_inputs=1)
@@ -697,8 +699,13 @@ data for different number of iterations)")
         gravity_checkbox.config(width=20)
         gravity_checkbox.pack()
         self.__simulation_variables["gravity"] = gravity
-        self.__simulation_variables["dimension"] = tk.IntVar(value=dimension)
 
+        reset = self.single_int_user_input(self,
+            simulation_input_frame, def_values=[0],
+            message="What are the odds of a walker resetting?", width= 5)[0]
+        self.__simulation_variables["reset"] = reset
+
+        self.__simulation_variables["dimension"] = tk.IntVar(value=dimension)
 
         if dimension == 2:
             directory_path_var = tk.StringVar()
@@ -720,7 +727,6 @@ data for different number of iterations)")
                                             text="Choose where the simulation data will be saved",
                                             command=browse_directory)
             browse_button.pack(pady=10)
-    # Errors to correct: filename without directory defulation
             file_path_label = tk.Label(self.root, text="Simulation name:")
             file_path_label.pack(pady=10)
             file_path_var = tk.StringVar()
@@ -744,60 +750,65 @@ data for different number of iterations)")
         self.clear_frame()
         simulation_data: dict = {"Walkers": [], "Barriers": [], "Portals": [], "Mudspots": [], "Simulation": {}}
 
-        if dimension == 2:
-            for walker in self.__walkers_data:
-                location = [walker["Locationx"].get(), walker["Locationy"].get()]
-                simulation_data["Walkers"].append({"movement": MOVE_DICT[walker["Type"].get()],
-                                                    "color": walker["Color"].get(),
-                                                    "location": location})
+        try:
+            if dimension == 2:
+                for walker in self.__walkers_data:
+                    location = [walker["Locationx"].get(), walker["Locationy"].get()]
+                    simulation_data["Walkers"].append({"movement": MOVE_DICT[walker["Type"].get()],
+                                                        "color": walker["Color"].get(),
+                                                        "location": location})
 
-            for barrier in self.__barriers_data:
-                location = [barrier["Locationx"].get(), barrier["Locationy"].get()]
-                simulation_data["Barriers"].append({"center": location,
-                                                    "length": barrier["Length"].get(),
-                                                    "angle": barrier["Angle"].get()})
+                for barrier in self.__barriers_data:
+                    location = [barrier["Locationx"].get(), barrier["Locationy"].get()]
+                    simulation_data["Barriers"].append({"center": location,
+                                                        "length": barrier["Length"].get(),
+                                                        "angle": barrier["Angle"].get()})
 
-            for portal in self.__portals_data:
-                center_location = [portal["Centerx"].get(), portal["Centery"].get()]
-                dest_location = [portal["Destinationx"].get(), portal["Destinationy"].get()]
-                simulation_data["Portals"].append({"center": center_location,
-                                                    "endpoint": dest_location,
-                                                    "radius": portal["Radius"].get()})
+                for portal in self.__portals_data:
+                    center_location = [portal["Centerx"].get(), portal["Centery"].get()]
+                    dest_location = [portal["Destinationx"].get(), portal["Destinationy"].get()]
+                    simulation_data["Portals"].append({"center": center_location,
+                                                        "endpoint": dest_location,
+                                                        "radius": portal["Radius"].get()})
 
-            for mudspot in self.__mudspots_data:
-                location = [mudspot["Locationx"].get(), mudspot["Locationy"].get()]
-                simulation_data["Mudspots"].append({"bottom_left": location,
-                                                    "width": mudspot["Width"].get(),
-                                                    "height": mudspot["Height"].get()})
-        elif dimension == 3:
-            for walker in self.__walkers_data:
-                location_t = (walker["Locationx"].get(), walker["Locationy"].get(), walker["Locationz"].get())
-                simulation_data["Walkers"].append({"position": location_t})
+                for mudspot in self.__mudspots_data:
+                    location = [mudspot["Locationx"].get(), mudspot["Locationy"].get()]
+                    simulation_data["Mudspots"].append({"bottom_left": location,
+                                                        "width": mudspot["Width"].get(),
+                                                        "height": mudspot["Height"].get()})
+            elif dimension == 3:
+                for walker in self.__walkers_data:
+                    location_t = (walker["Locationx"].get(), walker["Locationy"].get(), walker["Locationz"].get())
+                    simulation_data["Walkers"].append({"position": location_t})
 
-            for barrier in self.__barriers_data:
-                corner_t = (barrier["Cornerx"].get(), barrier["Cornery"].get(), barrier["Cornerz"].get())
-                point1_t = (barrier["Point1x"].get(), barrier["Point1y"].get(), barrier["Point1z"].get())
-                point2_t = (barrier["Point2x"].get(), barrier["Point2y"].get(), barrier["Point2z"].get())
-                simulation_data["Barriers"].append({"corner": corner_t,
-                                                    "point_1": point1_t,
-                                                    "point_2": point2_t})
+                for barrier in self.__barriers_data:
+                    corner_t = (barrier["Cornerx"].get(), barrier["Cornery"].get(), barrier["Cornerz"].get())
+                    point1_t = (barrier["Point1x"].get(), barrier["Point1y"].get(), barrier["Point1z"].get())
+                    point2_t = (barrier["Point2x"].get(), barrier["Point2y"].get(), barrier["Point2z"].get())
+                    simulation_data["Barriers"].append({"corner": corner_t,
+                                                        "point_1": point1_t,
+                                                        "point_2": point2_t})
 
-            for portal in self.__portals_data:
-                center_location_t = (portal["Centerx"].get(), portal["Centery"].get(), portal["Centerz"].get())
-                dest_location_t = (portal["Destinationx"].get(), portal["Destinationy"].get(), portal["Destinationz"].get())
-                simulation_data["Portals"].append({"center": center_location_t,
-                                                    "endpoint": dest_location_t,
-                                                    "radius": portal["Radius"].get()})
+                for portal in self.__portals_data:
+                    center_location_t = (portal["Centerx"].get(), portal["Centery"].get(), portal["Centerz"].get())
+                    dest_location_t = (portal["Destinationx"].get(), portal["Destinationy"].get(), portal["Destinationz"].get())
+                    simulation_data["Portals"].append({"center": center_location_t,
+                                                        "endpoint": dest_location_t,
+                                                        "radius": portal["Radius"].get()})
 
-            for mudspot in self.__mudspots_data:
-                location_t = (mudspot["Locationx"].get(), mudspot["Locationy"].get(), mudspot["Locationz"].get())
-                simulation_data["Mudspots"].append({"bottom_left": location_t,
-                                                    "width": mudspot["Width"].get(),
-                                                    "height": mudspot["Height"].get(),
-                                                    "depth": mudspot["Depth"].get()})
+                for mudspot in self.__mudspots_data:
+                    location_t = (mudspot["Locationx"].get(), mudspot["Locationy"].get(), mudspot["Locationz"].get())
+                    simulation_data["Mudspots"].append({"bottom_left": location_t,
+                                                        "width": mudspot["Width"].get(),
+                                                        "height": mudspot["Height"].get(),
+                                                        "depth": mudspot["Depth"].get()})
 
-        simulation_data["Simulation"] =\
-            {item[0]: item[1].get() for item in self.__simulation_variables.items()}
+            simulation_data["Simulation"] =\
+                {item[0]: item[1].get() for item in self.__simulation_variables.items()}
+
+        except tk.TclError:
+            self.build_simulation(dimension, err_message="Invalid input, please re-enter")
+            return
 
         simulation_data["Simulation"]["gravity"] =\
             self.__gravity_dictionary[simulation_data["Simulation"]["gravity"]]

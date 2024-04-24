@@ -45,6 +45,7 @@ def simulation_variables() -> tuple[dict,dict]:
     buffer = random.randint(1, 100)
     n = random.randint(1, 1000)
     steps = random.randint(3, 14)
+    reset = random.randint(1, 100)
     gravity = random.choice([1, 0, -1])
     graphing_data = {"type": "graph",
                     "iterations": iterations,
@@ -52,11 +53,13 @@ def simulation_variables() -> tuple[dict,dict]:
                     "n": n,
                     "steps": n/steps,
                     "gravity": gravity,
+                    "reset": reset,
                     "filename": f"./Results/{filename}"}
     plottings_data = {"type": "plot",
-                      "n": n,
-                      "gravity": gravity,
-                      "filename": f"./Results/{filename}"}
+                    "n": n,
+                    "gravity": gravity,
+                    "reset": reset,
+                    "filename": f"./Results/{filename}"}
     return graphing_data, plottings_data
 
 def generate_data() -> tuple[dict, dict]:

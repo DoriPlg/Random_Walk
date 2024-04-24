@@ -85,3 +85,10 @@ class TestHelperFunctions(unittest.TestCase):
         self.assertFalse(is_float("abc"))
         self.assertFalse(is_float([1, 2, 3]))
 
+    def test_subtract_vectors(self):
+        # Test subtracting two vectors
+        a = (1, 2, 3)
+        b = (4, 5, 6)
+        result = subtract_vectors(a, b)
+        # Assert that the result is (-3, -3, -3)
+        self.assertEqual(result, (-3, -3, -3))

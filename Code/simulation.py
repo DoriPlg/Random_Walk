@@ -9,6 +9,7 @@ NOTES: ...
 """
 
 import os
+from random import randint
 from copy import deepcopy
 from typing import Tuple, Optional
 from Code.walker import Walker, gravitate
@@ -37,9 +38,12 @@ class Simulation:
     :attribute __iteration: counts the iterations of the simulation
     """
 
-    def __init__(self, gravity = 0) -> None:
+    def __init__(self, gravity = 0, reset: Optional[int]= None) -> None:
         """
         The constructor for Simulation objects
+        :param gravity: the gravity value of the simulation
+        :param reset: the reset odds of the simulation, the greater the value\
+            the more likely the walker will reset
         """
         self.__walkers: list[Walker] = []
         self.__location_log: dict[int, list[Coordinates]] = {}
@@ -51,6 +55,12 @@ class Simulation:
         if gravity not in gravity_values:
             raise ValueError(f"Gravity can only be {gravity_values}")
         self.__gravity = gravity
+        if reset:
+            if reset <= 0:
+                raise ValueError("The reset value must be a positive integer")
+            self.__reset = reset
+        else:
+            self.__reset = 0
 
     def add_walker(self, walker: Walker) -> None:
         """
@@ -89,6 +99,11 @@ class Simulation:
         """
         MAX_BARRIER_HITS = 10**3
         for index, walker in enumerate(self.__walkers):
+            if self.__reset:
+                if randint(0, self.__reset) == 0:
+                    walker.jump(self.__location_log[index][0])
+                    self.__location_log[index].append(walker.location)
+                    continue
             current_place = walker.location
             self.__location_log[index].append(current_place)
             next_place = walker.next_location()
@@ -337,9 +352,15 @@ def check_data(data: dict) -> bool:
 
                 if "gravity" in data["Simulation"]:
                     if isinstance(data["Simulation"]["gravity"],int):
-                        Simulation(data["Simulation"]["gravity"])
+                        Simulation(gravity=data["Simulation"]["gravity"])
                     else:
                         raise ValueError("Something wrong with the gravity type")
+                    
+                if "reset" in data["Simulation"]:
+                    if isinstance(data["Simulation"]["reset"],int):
+                        Simulation(reset=data["Simulation"]["reset"])
+                    else:
+                        raise ValueError("Something wrong with the reset type")
 
                 #check if the filename leads to a valid path
                 split_path = data["Simulation"]["filename"].split("/")
@@ -377,10 +398,16 @@ def run_and_plot(data: dict, filename: str) -> str:
     """
     runs the simulation from the data given
     """
-    if "gravity" in data["Simulation"]:
-        simulation = Simulation(data["Simulation"]["gravity"])
+    if "gravity" in data["Simulation"] and "reset" in data["Simulation"]:
+        simulation = Simulation(gravity=data["Simulation"]["gravity"],
+                                reset=data["Simulation"]["reset"])
+    elif "gravity" in data["Simulation"]:
+        simulation = Simulation(gravity=data["Simulation"]["gravity"])
+    elif "reset" in data["Simulation"]:
+        simulation = Simulation(reset=data["Simulation"]["reset"])
     else:
         simulation = Simulation()
+
     for walker in data["Walkers"]:
         simulation.add_walker(Walker(**walker))
     for barrier in data["Barriers"]:
@@ -401,4 +428,3 @@ def run_and_plot(data: dict, filename: str) -> str:
         simulation.graph_simulation(iterations, n, max_depth, step, file_name)
 
     return filename.removesuffix("_simulation.json")
-

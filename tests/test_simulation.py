@@ -165,7 +165,7 @@ class TestSimulation(unittest.TestCase):
                     {"center": [0.0, 40.0], "endpoint": [0.0, 0.0], "radius": 1.5}
                 ],
                 "Mudspots": [{"bottom_left": [10,10], "width": 2, "height": 2}],
-                "Simulation": {"type": "plot", "n": 100, "filename": f"{DEST}/_test"}
+                "Simulation": {"type": "plot", "n": 100, "reset": 100, "filename": f"{DEST}/_test"}
                 }
         result = check_data(data)
         self.assertTrue(result)

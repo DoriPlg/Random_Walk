@@ -1,4 +1,6 @@
 
+from typing import Optional
+from random import randint
 from Code.td_walker import Walker3D as w3d
 from Code.td_walker import gravitate
 from Code.td_barrier import Barrier3D as b3d
@@ -22,9 +24,12 @@ class Simulation_3D:
     :attribute __iteration: counts the iterations of the simulation
     """
 
-    def __init__(self, gravity: int = 0) -> None:
+    def __init__(self, gravity: int = 0, reset: Optional[int]= None) -> None:
         """
         The constructor for Simulation objects
+        :param gravity: the gravity value of the simulation
+        :param reset: the reset odds of the simulation, the greater the value\
+            the more likely the walker will reset
         """
         self.__walkers: list[w3d] = []
         self.__barriers: list[b3d]= []
@@ -35,6 +40,12 @@ class Simulation_3D:
         if gravity not in gravity_values:
             raise ValueError("The gravity value must be -1, 0 or 1")
         self.__gravity = gravity
+        if reset:
+            if reset <= 0:
+                raise ValueError("The reset value must be a positive integer")
+            self.__reset = reset
+        else:
+            self.__reset = 0
 
     def add_walker(self, walker: w3d) -> None:
         """
@@ -72,6 +83,9 @@ class Simulation_3D:
         """
         MAX_BARRIER_HITS = 10**3
         for _, walker in enumerate(self.__walkers):
+            if randint(0, self.__reset) == 0:
+                walker.jump(walker.log[0])
+                continue
             current_place = walker.position
             next_place = walker.next_location()
             if next_place:
@@ -128,7 +142,15 @@ def load_simulation_from_dict(data: dict) -> Simulation_3D:
     :param data: the data to load the simulation from
     :return: the loaded simulation
     """
-    sim = Simulation_3D(gravity=data["Simulation"]["gravity"])
+    if "gravity" in data["Simulation"] and "reset" in data["Simulation"]:
+        sim = Simulation_3D(gravity=data["Simulation"]["gravity"], reset=data["Simulation"]["reset"])
+    elif "gravity" in data["Simulation"]:
+        sim = Simulation_3D(gravity=data["Simulation"]["gravity"])
+    elif "reset" in data["Simulation"]:
+        sim = Simulation_3D(reset=data["Simulation"]["reset"])
+    else:
+        sim = Simulation_3D()
+
     for walker in data["Walkers"]:
         sim.add_walker(w3d(**walker))
     for barrier in data["Barriers"]:
