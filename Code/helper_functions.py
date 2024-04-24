@@ -38,7 +38,7 @@ def load_simulation(file_path) -> dict:
     """
     loads data from a json from a chosen location"""
     if file_path:
-        with open(file_path, 'r', encoding='utf-8') as file:
+        with open(file_path, 'r', encoding='UTF-8') as file:
             simulation_data = json.load(file)
         return simulation_data
     return {}

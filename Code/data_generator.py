@@ -23,16 +23,16 @@ def data_for_simulation(
                                 "location": (round(random.uniform(-100, 100),2), round(random.uniform(-100, 100),2))})
     for _ in range(num_barriers):
         data["Barriers"].append({"center": (round(random.uniform(-100, 100),2), round(random.uniform(-100, 100),2)),
-                                 "length": round(random.uniform(0, 50),2),
+                                 "length": round(random.uniform(0.1, 50),2),
                                  "angle": round(random.uniform(0, 2 * math.pi),4)})
     for _ in range(num_portals):
         data["Portals"].append({"center": (round(random.uniform(-100, 100),2), round(random.uniform(-100, 100),2)),
-                                "radius": round(random.uniform(0, 10),2),
+                                "radius": round(random.uniform(0.1, 10),2),
                                 "endpoint": (round(random.uniform(-100, 100),2), round(random.uniform(-100, 100),2))})
     for _ in range(num_mudspots):
         data["Mudspots"].append({"bottom_left": (round(random.uniform(-100, 100),2), round(random.uniform(-100, 100),2)),
-                                 "height": round(random.uniform(0, 50),2),
-                                 "width": round(random.uniform(0, 50),2)})
+                                 "height": round(random.uniform(0.1, 50),2),
+                                 "width": round(random.uniform(0.1, 50),2)})
     return data
 
 def simulation_variables() -> tuple[dict,dict]:

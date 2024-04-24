@@ -1,8 +1,6 @@
 import unittest
 import os
-import matplotlib.pyplot as plt
-import tkinter as tk
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt # type: ignore
 from Code.graph import *
 
 

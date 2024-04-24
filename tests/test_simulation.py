@@ -6,7 +6,7 @@ EXERCISE : intro2cs final_project 2024
 
 import unittest
 import os
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt # type: ignore
 from Code.simulation import Simulation, \
     check_data, run_from_json, run_and_plot
 from Code.walker import Walker

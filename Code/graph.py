@@ -9,11 +9,11 @@ NOTES: ...
 """
 
 from typing import Tuple, Optional
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
+import matplotlib.pyplot as plt # type: ignore
+import matplotlib.patches as patches # type: ignore
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection # type: ignore
 from mpl_toolkits.mplot3d import Axes3D # type: ignore
-import numpy as np
+import numpy as np # type: ignore
 
 Coordinates = Tuple[float,float]
 Triordinates = Tuple[float, float, float]

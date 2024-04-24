@@ -30,7 +30,7 @@ class TestDataGen(unittest.TestCase):
         dgen.save_to_json(data2, "test2.json")
         self.assertTrue(os.path.exists("test1.json"))
         self.assertTrue(os.path.exists("test2.json"))
-        os.remove("test1.json")
-        os.remove("test2.json")
+        os.system("rm -rf test2.json")
+        os.system("rm -rf test1.json")
 
         

@@ -8,7 +8,7 @@ WEB PAGES I USED:
 NOTES: ...
 """
 from typing import Tuple
-from numpy import cross,dot
+from numpy import cross,dot # type: ignore
 from Code.helper_functions import subtract_vectors
 
 Trioordinates = Tuple[float,float,float]

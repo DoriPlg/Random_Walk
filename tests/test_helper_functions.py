@@ -13,7 +13,7 @@ class TestHelperFunctions(unittest.TestCase):
         # Assert that the file exists
         self.assertTrue(os.path.exists(filename))
         # Clean up the file
-        os.remove(filename)
+        os.system(f"rm -rf {filename}")
 
     def test_load_simulation(self):
         # Test loading simulation from JSON file
@@ -26,7 +26,7 @@ class TestHelperFunctions(unittest.TestCase):
         # Assert that the loaded data matches the test data
         self.assertEqual(result, {"name": "John", "age": 30})
         # Clean up the file
-        os.remove(file_path)
+        os.system(f"rm -rf {file_path}")
 
     def test_passes_0(self):
         # Test counting the number of elements that pass the condition

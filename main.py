@@ -22,7 +22,7 @@ if __name__ == "__main__":
         app = SimulationGUI(root)
         root.mainloop()
     elif sys.argv[1] == "--help":
-        with open("help.txt", "r", encoding="utc-8") as f:
+        with open("help.txt", "r", encoding="UTF-8") as f:
             print(f.read())
     elif len(sys.argv) == 2:
         json_path = sys.argv[1]
