@@ -41,7 +41,7 @@ class Simulation_3D:
             raise ValueError("The gravity value must be -1, 0 or 1")
         self.__gravity = gravity
         if reset:
-            if reset <= 0:
+            if reset < 0:
                 raise ValueError("The reset value must be a positive integer")
             self.__reset = reset
         else:
@@ -83,8 +83,9 @@ class Simulation_3D:
         """
         MAX_BARRIER_HITS = 10**3
         for _, walker in enumerate(self.__walkers):
-            if randint(0, self.__reset) == 0:
-                walker.jump(walker.log[0])
+            if randint(0, self.__reset) == 0 and self.__reset != 0:
+                if len(walker.log) > 0:
+                    walker.jump(walker.log[0])
                 continue
             current_place = walker.position
             next_place = walker.next_location()

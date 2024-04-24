@@ -803,11 +803,17 @@ data for different number of iterations)")
                                                         "height": mudspot["Height"].get(),
                                                         "depth": mudspot["Depth"].get()})
 
-            simulation_data["Simulation"] =\
-                {item[0]: item[1].get() for item in self.__simulation_variables.items()}
+            try:
+                self.__simulation_variables["reset"].get()
+            except tk.TclError:
+                self.__simulation_variables["reset"].set(0)
+            finally:
+                simulation_data["Simulation"] =\
+                    {item[0]: item[1].get() for item in self.__simulation_variables.items()}
 
         except tk.TclError:
-            self.build_simulation(dimension, err_message="Invalid input, please re-enter")
+            self.build_simulation(dimension, err_message="Invalid input, please re-enter.\n\
+Did you remember to fill in all the fields?")
             return
 
         simulation_data["Simulation"]["gravity"] =\
