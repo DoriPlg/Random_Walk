@@ -8,7 +8,7 @@ WEB PAGES I USED:
 NOTES: ...
 """
 
-from typing import Tuple
+from typing import Tuple, Optional
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection # type: ignore
@@ -22,7 +22,7 @@ DESTINATION_PATH = "./Results/"
 
 
 def show_walker_way(name:str, movement_log: list[Coordinates],
-                    obstacles: Tuple[list, list, list]|None = None,
+                    obstacles: Optional[Tuple[list, list, list]] = None,
                     file_to_save: str = f"{DESTINATION_PATH}scatterplot", color: str = "black") -> None:
     """
     A function that plots on a graph the path a waker went through.
@@ -82,8 +82,8 @@ def show_walker_way(name:str, movement_log: list[Coordinates],
     fig.savefig(file_to_save+".png")
 
 def walkers_unision(graph_name: str, data: dict[int, list[Coordinates]],
-                    color_list: list|None = None,
-                    obstacles: tuple[list,list, list]|None = None,
+                    color_list: Optional[list] = None,
+                    obstacles: Optional[tuple[list,list, list]] = None,
                     file_to_save: str = f"{DESTINATION_PATH}_plot") -> None:
     """
     A function that plots on a graph the data picked up by the walker.

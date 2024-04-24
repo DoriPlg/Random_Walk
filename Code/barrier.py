@@ -7,7 +7,7 @@ STUDENTS I DISCUSSED THE EXERCISE WITH:
 WEB PAGES I USED:
 NOTES: ...
 """
-from typing import Tuple
+from typing import Tuple, Union
 import math
 
 Coordinates = Tuple[float,float]
@@ -68,7 +68,7 @@ class Barrier:
         return (self.__point1,self.__point2)
 
     @staticmethod
-    def get_function(a: Tuple[float,float], b: Tuple[float,float]) -> Tuple[float, float] | str:
+    def get_function(a: Tuple[float,float], b: Tuple[float,float]) -> Union[Tuple[float, float], str]:
         """
         recieves two points and returns a tuple containing the ratio between them and
         the additional part to add to offset from the x axis as a tuple: (ratio, aditional)

@@ -12,6 +12,7 @@ import os
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import functools as ft
+from typing import Optional
 from Code.helper_functions import SimulationError, is_intable,is_int,is_float,save_to_json
 from Code.simulation import run_and_plot, run_from_json
 from Code.td_simulation import run_from_dict
@@ -145,7 +146,7 @@ class SimulationGUI:
             widgets.destroy()
 
     def user_input(self, frame: tk.Frame, var_type = tk.Variable, n_inputs: int =1,
-                   message: str|None = None, def_values: list|None = None, width: int =5)\
+                   message: Optional[str] = None, def_values: Optional[list] = None, width: int =5)\
                       -> list[tk.Variable]:
         """
         A function for recieving user input
@@ -236,7 +237,7 @@ class SimulationGUI:
         button_frame.pack(side=tk.BOTTOM, pady=5)
 
 
-    def build_simulation(self, dimension: int, err_message: str|None = None) ->None:
+    def build_simulation(self, dimension: int, err_message: Optional[str] = None) ->None:
         """
         Builds the simulation GUI by creating and packing the necessary widgets.
         
@@ -875,7 +876,7 @@ data for different number of iterations)")
         finally:
             self.bottom_buttons()
 
-    def run_simulation(self, path: str|None = None) -> None:
+    def run_simulation(self, path: Optional[str] = None) -> None:
         """
         Runs the simulation with the user input data.
 

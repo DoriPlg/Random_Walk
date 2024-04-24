@@ -8,7 +8,7 @@ WEB PAGES I USED:
 NOTES: ...
 """
 
-from typing import Tuple
+from typing import Tuple, Optional
 import math
 import random
 
@@ -113,7 +113,7 @@ class Walker:
 
         raise AttributeError("Somewhere the movement type changed")
 
-    def directional_angle(self, coordinate: Coordinates = (0,0)) -> float|None:
+    def directional_angle(self, coordinate: Coordinates = (0,0)) -> Optional[float]:
         """
         a function to get the angle from a walker to a given coordinate
         if the walker is on the coordinate returns None

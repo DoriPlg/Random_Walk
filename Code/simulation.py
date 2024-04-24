@@ -10,7 +10,7 @@ NOTES: ...
 
 import os
 from copy import deepcopy
-from typing import Tuple
+from typing import Tuple, Optional
 from Code.walker import Walker, gravitate
 from Code.barrier import Barrier
 from Code.portal import Portal
@@ -152,7 +152,7 @@ class Simulation:
         # "Zero"s the variables
         stunt_double = deepcopy(self)
         info_dict: dict[int,dict[int, dict[str, object]]] = {}
-        escape: dict[int, int|None] = {}
+        escape: dict[int, Optional[int]] = {}
         for index, _ in enumerate(self.__walkers):
             info_dict[index] = {1: {"escape": None}}
             escape[index] = None
@@ -352,7 +352,7 @@ def check_data(data: dict) -> bool:
                 print("Exception", e)
     return False
 
-def run_from_json(filename: str|None = None) -> Tuple[dict, str]:
+def run_from_json(filename: Optional[str] = None) -> Tuple[dict, str]:
     """
     loads a simulation from a json file and runs the desired simulation
     :param filename: the path to the json
