@@ -17,6 +17,7 @@ from Code.helper_functions import SimulationError, is_intable,is_int,is_float,sa
 from Code.simulation import run_and_plot, run_from_json
 from Code.td_simulation import run_from_dict
 from Code.walker import Walker
+from Code.data_generator import random_simulation
 
 MOVE_DICT = {Walker.move_dict()[k]: k for k in Walker.move_dict()}
 COLOR_PALLET = Walker.color_pallet()
@@ -101,6 +102,11 @@ class SimulationGUI:
                                        text="Manually Build 2D Simulation",
                                        command=ft.partial(self.build_simulation,dimension=2))
         self.manual_button_2d.pack()
+
+        random_2d_button = tk.Button(self.root,
+                                        text="Randomly Build 2D Simulation",
+                                        command=self.run_random_simulation)
+        random_2d_button.pack()
         
         self.manual_button_3d = tk.Button(self.root,
                                        text="Manually Build 3D Simulation, plotting only",
@@ -186,7 +192,6 @@ class SimulationGUI:
     double_float_user_input = ft.partial(user_input,var_type=tk.DoubleVar,n_inputs=2)
     triple_float_user_input = ft.partial(user_input,var_type=tk.DoubleVar,n_inputs=3)
 
-
     def bottom_buttons(self) -> None:
         """
         Adds the home and exit buttons to the GUI.
@@ -237,7 +242,6 @@ class SimulationGUI:
         add_home_button(button_frame)
         add_exit_button(button_frame)
         button_frame.pack(side=tk.BOTTOM, pady=5)
-
 
     def build_simulation(self, dimension: int, err_message: Optional[str] = None) ->None:
         """
@@ -606,7 +610,6 @@ with the second two points serving as the corners between a diagonal. The fourth
         next_button.pack()
         self.bottom_buttons()
 
-
     __gravity_dictionary = {"No gravity": 0, "Possitive gravity": 1, "Negative gravity": -1}
     __plotting_simulation = True
     def simulation_variables(self, dimension: int) -> None:
@@ -922,6 +925,16 @@ Did you remember to fill in all the fields?")
         self.clear_frame()
         self.show_results(path)
 
+    def run_random_simulation(self) -> None:
+        """
+        Runs a random simulation.
+
+        Returns:
+            None
+        """
+        path = random_simulation()
+        self.run_simulation(path)
+
     def simulation_3d(self, data: dict) -> None:
         """
         Runs the 3D simulation with the user input data.
@@ -950,4 +963,3 @@ Did you remember to fill in all the fields?")
             loading_screen.destroy()
             self.clear_frame()
             self.bottom_buttons()
-        

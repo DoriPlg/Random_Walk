@@ -1,0 +1,1 @@
+{"Walkers": [{"movement": "D_axis", "color": "black", "location": [50.0, 30.0]}], "Barriers": [], "Portals": [{"center": [0.0, 0.0], "endpoint": [-30.0, -50.0], "radius": 15.0}], "Mudspots": [], "Simulation": {"type": "plot", "n": 2000, "gravity": 0, "reset": 0, "dimension": 2, "filename": "/home/dori/Documents/UNI/Intro/final_project/Results/portal"}}

@@ -40,18 +40,18 @@ def simulation_variables() -> tuple[dict,dict]:
     This function generates the variables for the simulation.
     """
     letters = string.ascii_lowercase
-    filename = ''.join(random.choice(letters) for i in range(6))
+    filename = "rand_"+''.join(random.choice(letters) for i in range(6))
     iterations = random.randint(1, 10)
     buffer = random.randint(1, 100)
     n = random.randint(1, 1000)
     steps = random.randint(3, 14)
-    reset = random.randint(1, 100)
+    reset = random.randint(1, 2000)
     gravity = random.choice([1, 0, -1])
     graphing_data = {"type": "graph",
                     "iterations": iterations,
                     "max_depth": n+buffer,
                     "n": n,
-                    "steps": n/steps,
+                    "steps": int(n/steps),
                     "gravity": gravity,
                     "reset": reset,
                     "filename": f"./Results/{filename}"}
@@ -80,3 +80,12 @@ def save_json(data: dict) -> None:
     """
     path = data["Simulation"]["filename"] + "_simulation.json"
     save_to_json(data, path)
+
+def random_simulation() -> str:
+    """
+    This function that generates a random simulation.
+    Returns the filename of the simulation.
+    """
+    simulation = generate_data()[random.randint(0, 1)]
+    save_json(simulation)
+    return simulation["Simulation"]["filename"]
