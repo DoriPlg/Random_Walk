@@ -82,7 +82,7 @@ class Simulation_3D:
         Returns the number of the step preformed.
         """
         MAX_BARRIER_HITS = 10**3
-        for _, walker in enumerate(self.__walkers):
+        for walker in self.__walkers:
             if randint(0, self.__reset) == 0 and self.__reset != 0:
                 if len(walker.log) > 0:
                     walker.jump(walker.log[0])

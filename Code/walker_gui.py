@@ -179,6 +179,8 @@ class SimulationGUI:
             entry = tk.Entry(input_frame, textvariable=var, width=width)
             if def_values and len(def_values)>i:
                 var.set(value=def_values[i] if def_values[i] != 0 else "")
+            else:
+                var.set("")
             entry.pack(side=tk.LEFT)
 
             # Apply validation
@@ -383,7 +385,7 @@ class SimulationGUI:
                 walker_frame.pack()
 
                 walker_center_x, walker_center_y, walker_center_z =\
-                    self.triple_float_user_input(self, walker_frame, def_values=[0, 0, 0],
+                    self.triple_float_user_input(self, walker_frame,
                                                  message="Starting location (x,y,z):", width=5)
                 
                 self.__walkers_data.append({
@@ -423,15 +425,15 @@ class SimulationGUI:
 
             if dimension == 2:
                 barrier_center_x, barrier_center_y = self.double_float_user_input(
-                    self, barrier_frame, def_values=[0, 0],
+                    self, barrier_frame,
                     message=f"Input for Barrier {i+1}: Center Location (x, y):", width=5
                 )
                 barrier_length = self.single_float_user_input(
-                    self, barrier_frame, def_values=[1], message="Length"
+                    self, barrier_frame, message="Length"
                 )[0]
 
                 barrier_angle = self.single_float_user_input(
-                    self, barrier_frame, def_values=[0], message="Angle:"
+                    self, barrier_frame, message="Angle:"
                 )[0]
 
                 self.__barriers_data.append(
@@ -443,19 +445,19 @@ class SimulationGUI:
                     })
             elif dimension == 3:
                 instrustions =\
-                    "Barrieres are defined by three points projected to a parallelogram,\
+                    "Barrieres are defined by three points projected to a parallelogram,\n\
 with the second two points serving as the corners between a diagonal. The fourth corner will be projected from the first corner."
                 message = tk.Label(barrier_input_frame, text=instrustions)
                 message.pack(side=tk.TOP)
 
                 barrier_corner_x, barrier_corner_y, barrier_corner_z =\
-                    self.triple_float_user_input(self, barrier_frame, def_values=[0, 0, 0],
+                    self.triple_float_user_input(self, barrier_frame,
                                                     message="First corner (x,y,z):", width=5)
                 barrier_point1_x, barrier_point1_y, barrier_point1_z =\
-                    self.triple_float_user_input(self, barrier_frame, def_values=[1, 0, 0],
+                    self.triple_float_user_input(self, barrier_frame,
                                                     message="Second corner (x,y,z):", width=5)
                 barrier_point2_x, barrier_point2_y, barrier_point2_z =\
-                    self.triple_float_user_input(self, barrier_frame, def_values=[0, 1, 0],
+                    self.triple_float_user_input(self, barrier_frame,
                                                     message="Third corner (x,y,z):", width=5)
                 
                 self.__barriers_data.append({
@@ -501,15 +503,15 @@ with the second two points serving as the corners between a diagonal. The fourth
 
             if dimension == 2:
                 portal_center_x, portal_center_y = \
-                    self.double_float_user_input(self, portal_frame, def_values=[0, 0],
+                    self.double_float_user_input(self, portal_frame,
                                         message=f"Input for Portal {i+1}: Center Location (x,y):",
                                         width=5)
                 portal_radius = \
-                    self.single_float_user_input(self, portal_frame, def_values=[1],
+                    self.single_float_user_input(self, portal_frame,
                                                 message="Portal radius:")[0]
 
                 portal_dest_x, portal_dest_y = \
-                    self.double_float_user_input(self, portal_frame, def_values=[0, 0],
+                    self.double_float_user_input(self, portal_frame,
                                                 message="Destination (x,y):", width=5)
 
                 self.__portals_data.append({"Centerx": portal_center_x,
@@ -519,14 +521,14 @@ with the second two points serving as the corners between a diagonal. The fourth
                                             "Destinationy": portal_dest_y})
             elif dimension == 3:
                 portal_center_x, portal_center_y, portal_center_z =\
-                    self.triple_float_user_input(self, portal_frame, def_values=[0, 0, 0],
+                    self.triple_float_user_input(self, portal_frame,
                                                  message=f"Input for Portal {i+1}: Center Location (x,y,z):",
                                                  width=5)
                 portal_radius = self.single_float_user_input(
                     self, portal_frame, def_values=[1], message="Portal radius:"
                 )[0]
                 portal_dest_x, portal_dest_y, portal_dest_z =\
-                    self.triple_float_user_input(self, portal_frame, def_values=[0, 0, 0],
+                    self.triple_float_user_input(self, portal_frame,
                                                  message="Destination (x,y,z):", width=5)
 
                 self.__portals_data.append({
@@ -569,7 +571,7 @@ with the second two points serving as the corners between a diagonal. The fourth
 
             if dimension == 2:
                 bottom_left_x, bottom_left_y = self.double_float_user_input(
-                    self, mudspot_frame, def_values=[0, 0],
+                    self, mudspot_frame,
                     message=f"Input for Mudspot{i+1} Bottom-left corner (x,y):"
                 )
                 width, height = self.double_float_user_input(
@@ -585,7 +587,7 @@ with the second two points serving as the corners between a diagonal. The fourth
                 })
             elif dimension == 3:
                 bottom_left_x, bottom_left_y, bottom_left_z =\
-                    self.triple_float_user_input(self, mudspot_frame, def_values=[0, 0, 0],
+                    self.triple_float_user_input(self, mudspot_frame,
                                                  message=f"Input for Mudspot{i+1} Bottom-left corner (x,y,z):",
                                                  width=5)
                 width, height, depth = self.triple_float_user_input(
@@ -704,7 +706,7 @@ data for different number of iterations)")
         self.__simulation_variables["gravity"] = gravity
 
         reset = self.single_int_user_input(self,
-            simulation_input_frame, def_values=[0],
+            simulation_input_frame,
             message="What are the odds of a walker resetting?", width= 5)[0]
         self.__simulation_variables["reset"] = reset
 

@@ -17,7 +17,7 @@ COLORS = ["red", "green", "yellow", "blue", "cyan", "orange","brown", "purple","
 PI = math.pi
 
 class Walker3D:
-    def __init__(self, position: Triordinates):
+    def __init__(self, position: Triordinates = (0, 0, 0)):
         self.__position = position
         self.__log: list[Triordinates] = []
 

@@ -33,4 +33,24 @@ class TestDataGen(unittest.TestCase):
         os.system("rm -rf test2.json")
         os.system("rm -rf test1.json")
 
+    def test_save_json(self):
+        """
+        Tests the save_json function.
+        """
+        data1, data2 = dgen.generate_data()
+        dgen.save_json(data1)
+        dgen.save_json(data2)
+        self.assertTrue(os.path.exists(data1["Simulation"]["filename"] + "_simulation.json"))
+        self.assertTrue(os.path.exists(data2["Simulation"]["filename"] + "_simulation.json"))
+        os.system(f"rm -rf {data1['Simulation']['filename']}_simulation.json")
+        os.system(f"rm -rf {data2['Simulation']['filename']}_simulation.json")
+
+    def test_random_simulation(self):
+        """
+        Tests the random_simulation function.
+        """
+        for _ in range(10):
+            filename = dgen.random_simulation()
+            self.assertTrue(os.path.exists(filename + "_simulation.json"))
+            os.system(f"rm -rf {filename}_simulation.json")
         
