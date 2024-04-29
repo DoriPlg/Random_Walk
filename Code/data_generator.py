@@ -51,7 +51,7 @@ def simulation_variables() -> tuple[dict,dict]:
                     "iterations": iterations,
                     "max_depth": n+buffer,
                     "n": n,
-                    "steps": int(n/steps),
+                    "steps": int(n/steps) + 1,
                     "gravity": gravity,
                     "reset": reset,
                     "filename": f"./Results/{filename}"}

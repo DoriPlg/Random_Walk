@@ -1,8 +1,0 @@
-{"Walkers": [{"movement": "D_axis", "color": "red", "location": [2.0, 0.0]}, {"movement": "D_axis", "color": "cyan", "location": [0.0, 2.0]}, {"movement": "D_axis", "color": "olive", "location": [-1.0, -1.0]}],
-"Barriers": 
-[
-    {"center": [11.0, 0.0], "length": 19.0, "angle": 1.57},
-    {"center": [-11.0, 0.0], "length": 19.0, "angle": 1.57},
-    {"center": [0.0, 11.0], "length": 19.0, "angle": 0.0},
-    {"center": [0.0, -11.0], "length": 19.0, "angle": 0.0}
-    ],"Portals": [], "Mudspots": [], "Simulation": {"type": "plot", "n": 2000, "gravity": -1, "reset": 0, "dimension": 2, "filename": "/home/dori/Documents/UNI/Intro/final_project/Results/box_fight"}}

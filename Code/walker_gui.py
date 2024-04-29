@@ -77,41 +77,41 @@ class SimulationGUI:
         Returns:
             None
         """
-        self.root = root
+        self.__root = root
         self.clear_frame()
-        self.root.title("Simulation App")
-        screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
+        self.__root.title("Simulation App")
+        screen_width = self.__root.winfo_screenwidth()
+        screen_height = self.__root.winfo_screenheight()
         window_width = int(screen_width * 0.8)
         window_height = int(screen_height * 0.8)
         window_position_x = int((screen_width - window_width) / 2)
         window_position_y = int((screen_height - window_height) / 2)
-        self.root.geometry(
+        self.__root.geometry(
             f"{window_width}x{window_height}+{window_position_x}+{window_position_y}")
 
-        self.welcome_label = tk.Label(self.root,
+        welcome_label = tk.Label(self.__root,
                                       text="Welcome to the Random Walker Simulation App!")
-        self.welcome_label.pack(pady=10)
+        welcome_label.pack(pady=10)
 
-        self.load_button = tk.Button(self.root,
+        load_button = tk.Button(self.__root,
                                      text="Load Simulation from JSON",
                                      command=self.load_from_file)
-        self.load_button.pack()
+        load_button.pack()
 
-        self.manual_button_2d = tk.Button(self.root,
+        manual_button_2d = tk.Button(self.__root,
                                        text="Manually Build 2D Simulation",
                                        command=ft.partial(self.build_simulation,dimension=2))
-        self.manual_button_2d.pack()
+        manual_button_2d.pack()
 
-        random_2d_button = tk.Button(self.root,
+        random_2d_button = tk.Button(self.__root,
                                         text="Randomly Build 2D Simulation",
                                         command=self.run_random_simulation)
         random_2d_button.pack()
         
-        self.manual_button_3d = tk.Button(self.root,
+        manual_button_3d = tk.Button(self.__root,
                                        text="Manually Build 3D Simulation, plotting only",
                                        command=ft.partial(self.build_simulation,dimension=3))
-        self.manual_button_3d.pack()
+        manual_button_3d.pack()
 
         # Setting the GUI attributes
         self.__num_walkers = tk.DoubleVar()
@@ -142,13 +142,13 @@ class SimulationGUI:
             self.build_simulation(2,err_message="Invalid input, please enter manually")
         except AttributeError:
             self.clear_frame()
-            SimulationGUI(root=self.root)
+            SimulationGUI(root=self.__root)
 
     def clear_frame(self) -> None:
         """
         Clears the frame by destroying all widgets.
         """
-        for widgets in self.root.winfo_children():
+        for widgets in self.__root.winfo_children():
             widgets.destroy()
 
     def user_input(self, frame: tk.Frame, var_type = tk.Variable, n_inputs: int =1,
@@ -169,10 +169,10 @@ class SimulationGUI:
             label.pack(side=tk.TOP)
         if var_type is tk.IntVar:
             # Function to validate entry input
-            validate = (self.root.register(is_intable), '%P')
+            validate = (self.__root.register(is_intable), '%P')
         elif var_type is tk.DoubleVar:
             # Function to validate entry input
-            validate = (self.root.register(is_float), '%P')
+            validate = (self.__root.register(is_float), '%P')
         input_frame = tk.Frame(frame)
         for i in range(n_inputs):
             var = var_type()
@@ -219,7 +219,7 @@ class SimulationGUI:
             Returns:
                 None
             """
-            exit_button = tk.Button(frame, text="Exit", command=self.root.quit)
+            exit_button = tk.Button(frame, text="Exit", command=self.__root.quit)
             exit_button.pack(side=tk.RIGHT, padx=10)
 
         def add_home_button(frame: tk.Frame):
@@ -237,10 +237,10 @@ class SimulationGUI:
                 None
             """
             home_button = tk.Button(frame, text="Home",
-                                    command=ft.partial(SimulationGUI,root=self.root))
+                                    command=ft.partial(SimulationGUI,root=self.__root))
             home_button.pack(side=tk.LEFT, padx=10)
 
-        button_frame = tk.Frame(self.root)
+        button_frame = tk.Frame(self.__root)
         add_home_button(button_frame)
         add_exit_button(button_frame)
         button_frame.pack(side=tk.BOTTOM, pady=5)
@@ -261,30 +261,30 @@ class SimulationGUI:
 
 
         if err_message:
-            error_message = tk.Label(self.root,text= err_message, fg="red2")
+            error_message = tk.Label(self.__root,text= err_message, fg="red2")
             error_message.pack()
-        num_walkers_label = tk.Label(self.root, text="Number of Walkers:")
+        num_walkers_label = tk.Label(self.__root, text="Number of Walkers:")
         num_walkers_label.pack()
-        num_walkers_entry = tk.Entry(self.root, textvariable=self.__num_walkers)
+        num_walkers_entry = tk.Entry(self.__root, textvariable=self.__num_walkers)
         num_walkers_entry.pack()
 
-        num_barriers_label = tk.Label(self.root, text="Number of Barriers:")
+        num_barriers_label = tk.Label(self.__root, text="Number of Barriers:")
         num_barriers_label.pack()
-        num_barriers_entry = tk.Entry(self.root, textvariable=self.__num_barriers)
+        num_barriers_entry = tk.Entry(self.__root, textvariable=self.__num_barriers)
         num_barriers_entry.pack()
 
-        num_portals_label = tk.Label(self.root, text="Number of Portals:")
+        num_portals_label = tk.Label(self.__root, text="Number of Portals:")
         num_portals_label.pack()
-        num_portals_entry = tk.Entry(self.root, textvariable=self.__num_portals)
+        num_portals_entry = tk.Entry(self.__root, textvariable=self.__num_portals)
         num_portals_entry.pack()
 
-        num_mudspots_label = tk.Label(self.root, text="Number of Mudspots:")
+        num_mudspots_label = tk.Label(self.__root, text="Number of Mudspots:")
         num_mudspots_label.pack()
-        num_mudspots_entry = tk.Entry(self.root, textvariable=self.__num_mudspots)
+        num_mudspots_entry = tk.Entry(self.__root, textvariable=self.__num_mudspots)
         num_mudspots_entry.pack()
 
 
-        build_button = tk.Button(self.root, text="Build", command=ft.partial(self.check_build_input,dimension=dimension))
+        build_button = tk.Button(self.__root, text="Build", command=ft.partial(self.check_build_input,dimension=dimension))
         build_button.pack()
 
         self.bottom_buttons()
@@ -340,7 +340,7 @@ class SimulationGUI:
         self.clear_frame()
 
 
-        walker_input_frame = tk.Frame(self.root)
+        walker_input_frame = tk.Frame(self.__root)
         walker_input_frame.pack()
 
         if dimension == 2:
@@ -393,7 +393,7 @@ class SimulationGUI:
                     "Locationy": walker_center_y,
                     "Locationz": walker_center_z
                 })
-        next_button = tk.Button(self.root, text="Next",
+        next_button = tk.Button(self.__root, text="Next",
                                 command=ft.partial(self.create_barrier_input,dimension=dimension))
         next_button.pack()
 
@@ -415,7 +415,7 @@ class SimulationGUI:
         """
         self.clear_frame()
 
-        barrier_input_frame = tk.Frame(self.root)
+        barrier_input_frame = tk.Frame(self.__root)
         barrier_input_frame.pack()
 
         num_barriers = int(self.__num_barriers.get())
@@ -476,7 +476,7 @@ with the second two points serving as the corners between a diagonal. The fourth
             self.create_portal_input(dimension=dimension)
             return
 
-        next_button = tk.Button(self.root, text="Next",
+        next_button = tk.Button(self.__root, text="Next",
                                 command=ft.partial(self.create_portal_input,dimension=dimension))
         next_button.pack()
 
@@ -493,7 +493,7 @@ with the second two points serving as the corners between a diagonal. The fourth
         Adds the home and exit buttons.
         """
         self.clear_frame()
-        portal_input_frame = tk.Frame(self.root)
+        portal_input_frame = tk.Frame(self.__root)
         portal_input_frame.pack()
 
         num_portals = int(self.__num_portals.get())
@@ -543,7 +543,7 @@ with the second two points serving as the corners between a diagonal. The fourth
         if num_portals == 0:
             self.create_mudspots_input(dimension=dimension)
             return
-        next_button = tk.Button(self.root, text="Next",
+        next_button = tk.Button(self.__root, text="Next",
                                 command=ft.partial(self.create_mudspots_input,dimension=dimension))
         next_button.pack()
 
@@ -561,7 +561,7 @@ with the second two points serving as the corners between a diagonal. The fourth
             None
         """
         self.clear_frame()
-        mudspot_input_frame = tk.Frame(self.root)
+        mudspot_input_frame = tk.Frame(self.__root)
         mudspot_input_frame.pack()
 
         num_mudspots = int(self.__num_mudspots.get())
@@ -607,7 +607,7 @@ with the second two points serving as the corners between a diagonal. The fourth
             self.simulation_variables(dimension=dimension)
             return
 
-        next_button = tk.Button(self.root, text="Next",
+        next_button = tk.Button(self.__root, text="Next",
                                 command=ft.partial(self.simulation_variables,dimension=dimension))
         next_button.pack()
         self.bottom_buttons()
@@ -634,7 +634,7 @@ with the second two points serving as the corners between a diagonal. The fourth
             None
         """
         self.clear_frame()
-        simulation_input_frame = tk.Frame(self.root)
+        simulation_input_frame = tk.Frame(self.__root)
         simulation_input_frame.pack()
 
 
@@ -655,7 +655,7 @@ with the second two points serving as the corners between a diagonal. The fourth
         # The parts differing between the two types of simulations
         if self.__plotting_simulation or dimension == 3:
             title =\
-                tk.Label(self.root,
+                tk.Label(self.__root,
                 text="\nPlotting simulation (will show graphs tracing each walker)")
             title.pack()
             iterations =self.single_int_user_input(self,
@@ -667,7 +667,7 @@ with the second two points serving as the corners between a diagonal. The fourth
                                     "n": iterations}
         else:
             title =\
-                    tk.Label(self.root,
+                    tk.Label(self.__root,
             text="\nGraphing simulation (will show graphs detailing different\
 data for different number of iterations)")
             title.pack()
@@ -722,27 +722,27 @@ data for different number of iterations)")
                 file_path = filedialog.askdirectory()
                 if file_path:
                     directory_path_var.set(file_path)
-            dir_path_label = tk.Label(self.root, text="Directory Path:")
+            dir_path_label = tk.Label(self.__root, text="Directory Path:")
             dir_path_label.pack(pady=10)
-            directory_path_entry = tk.Entry(self.root,
+            directory_path_entry = tk.Entry(self.__root,
                                             textvariable=directory_path_var,
                                             state="readonly", width=50)
             directory_path_entry.pack()
-            browse_button = tk.Button(self.root,
+            browse_button = tk.Button(self.__root,
                                             text="Choose where the simulation data will be saved",
                                             command=browse_directory)
             browse_button.pack(pady=10)
-            file_path_label = tk.Label(self.root, text="Simulation name:")
+            file_path_label = tk.Label(self.__root, text="Simulation name:")
             file_path_label.pack(pady=10)
             file_path_var = tk.StringVar()
-            file_path_entry = tk.Entry(self.root,
+            file_path_entry = tk.Entry(self.__root,
                                             textvariable=file_path_var, width=20)
             file_path_entry.pack()
 
 
             self.__simulation_path = {"Directory": directory_path_var,
                                     "Filename":file_path_var}
-        run_button = tk.Button(self.root, text="Run simulation",
+        run_button = tk.Button(self.__root, text="Run simulation",
                                 command=ft.partial(self.parse_simulation_data,dimension=dimension))
         run_button.pack()
         self.bottom_buttons()
@@ -848,7 +848,7 @@ Did you remember to fill in all the fields?")
             self.build_simulation(simulation_data["Simulation"]["dimension"], err_message="Invalid input, please re-enter")
         except AttributeError:
             self.clear_frame()
-            SimulationGUI(self.root)
+            SimulationGUI(self.__root)
 
     def show_results(self, path: str) -> None:
         """
@@ -878,7 +878,7 @@ Did you remember to fill in all the fields?")
                     image_label.configure(image=image)
 
         #self.clear_frame()
-        results_frame = tk.Frame(self.root)
+        results_frame = tk.Frame(self.__root)
         results_frame.pack()
 
         results_label = tk.Label(results_frame, text="Results")
@@ -911,7 +911,7 @@ Did you remember to fill in all the fields?")
         if path is None:
             path = ""
         data,path = run_from_json(path+SIMU_SUFIX)
-        loading_screen = tk.Toplevel(self.root)
+        loading_screen = tk.Toplevel(self.__root)
         loading_screen.title("Loading")
         loading_screen.geometry("400x300")
         loading_label = tk.Label(loading_screen,
@@ -947,7 +947,7 @@ Did you remember to fill in all the fields?")
         Returns:
             None
         """
-        loading_screen = tk.Toplevel(self.root)
+        loading_screen = tk.Toplevel(self.__root)
         loading_screen.title("Loading")
         loading_screen.geometry("400x300")
         loading_label = tk.Label(loading_screen,
