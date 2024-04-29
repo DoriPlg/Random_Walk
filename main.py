@@ -14,34 +14,48 @@ import sys
 import os
 from Code.walker_gui import SimulationGUI
 from Code.simulation import run_from_json, run_and_plot
-from Code.data_generator import generate_data, save_json
+
+def run_gui() -> None:
+    """
+    This function runs the GUI.
+    """
+    root = tk.Tk()
+    SimulationGUI(root)
+    root.mainloop()
+
+def print_help() -> None:
+    """
+    This function opens the help file.
+    """
+    path = os.getcwd() + "/src"
+    with open(f"{path}/help.txt", "r", encoding="UTF-8") as f:
+        print(f.read())
+    
+def run_json() -> None:
+    """
+    This function runs the simulation from a JSON file.
+    """
+    json_path = sys.argv[1]
+    if not os.path.isfile(json_path):
+        print(
+            "Invalid JSON path. Please provide a valid file path or run with no arguments to use the GUI.")
+        sys.exit(1)
+    try:
+        data, path = run_from_json(json_path)
+        run_and_plot(data, path)
+        print("Simulation completed successfully. \
+You may view the results in the same directory as the JSON file.")
+    except Exception as e:
+        print(f"An error occurred while running the simulation:\n{e}")
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
-        root = tk.Tk()
-        app = SimulationGUI(root)
-        root.mainloop()
-    elif sys.argv[1] == "--help":
-        path = os.getcwd() + "/src"
-        with open(f"{path}/help.txt", "r", encoding="UTF-8") as f:
-            print(f.read())
+        run_gui()
     elif len(sys.argv) == 2:
-        json_path = sys.argv[1]
-        if not os.path.isfile(json_path):
-            print("Invalid JSON path. Please provide a valid file path or run with no arguments to use the GUI.")
-            sys.exit(1)
-        try:
-            data, path = run_from_json(json_path)
-            run_and_plot(data, path)
-            print("Simulation completed successfully. \
-You may view the results in the same directory as the JSON file.")
-        except Exception as e:
-            print(f"An error occurred while running the simulation:\n{e}")
+        if sys.argv[1] == "--help":
+            help()
+        else:
+            run_json()
     else:
-        print("Invalid number of arguments. Please provide either no arguments or a single JSON path.")
-
-# Used to generate random data for a simulation
-if __name__ == "__min__":
-    data = generate_data()[1]
-    print(data)
-    save_json(data)
+        print(
+            "Invalid number of arguments. Please provide either no arguments or a single JSON path.")

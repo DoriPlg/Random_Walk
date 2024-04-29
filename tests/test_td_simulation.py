@@ -11,31 +11,31 @@ class TestSimulation3D(unittest.TestCase):
 
     def test_add_walker(self) -> None:
         simulation = Simulation_3D()
-        walker = Walker3D([0, 0, 0])
+        walker = Walker3D((0, 0, 0))
         simulation.add_walker(walker)
 
     def test_add_portal(self) -> None:
         simulation = Simulation_3D()
-        portal = Portal3D([0, 0, 0], 1, [1, 1, 1])
+        portal = Portal3D((0, 0, 0), 1, (1, 1, 1))
         simulation.add_portal(portal)
 
     def test_add_barrier(self) -> None:
         simulation = Simulation_3D()
-        barrier = Barrier3D([0, 0, 0], [0,1, 1], [1, 1, 1])
+        barrier = Barrier3D((0, 0, 0), (0,1, 1), (1, 1, 1))
         simulation.add_barrier(barrier)
 
     def test_add_mud(self) -> None:
         simulation = Simulation_3D()
-        mud = MudPatch3D([0, 0, 0], 1, 1, 1)
+        mud = MudPatch3D((0, 0, 0), 1, 1, 1)
         simulation.add_mud(mud)
 
     def test_step(self) -> None:
         # Add walkers, portals, barriers, and mud patches to the simulation
         simulation = Simulation_3D()
-        mud = MudPatch3D([0, 0, 0], 1, 1, 1)
-        walker = Walker3D([0, -10, 0])
-        barrier = Barrier3D([0, 10, 0], [20,1, 1], [10, 1, 1])
-        portal = Portal3D([30, 0, 0], 1, [1, 1, 1])
+        mud = MudPatch3D((0, 0, 0), 1, 1, 1)
+        walker = Walker3D((0, -10, 0))
+        barrier = Barrier3D((0, 10, 0), (20,1, 1), (10, 1, 1))
+        portal = Portal3D((30, 0, 0), 1, (1, 1, 1))
         simulation.add_walker(walker)
         simulation.add_portal(portal)
         simulation.add_barrier(barrier)
@@ -51,10 +51,10 @@ class TestSimulation3D(unittest.TestCase):
     def test_run_simulation(self) -> None:
         # Add walkers, portals, barriers, and mud patches to the simulation
         simulation = Simulation_3D()
-        mud = MudPatch3D([0, 0, 0], 1, 1, 1)
-        walker = Walker3D([0, -10, 0])
-        barrier = Barrier3D([0, 10, 0], [20,1, 1], [10, 1, 1])
-        portal = Portal3D([30, 0, 0], 1, [1, 1, 1])
+        mud = MudPatch3D((0, 0, 0), 1, 1, 1)
+        walker = Walker3D((0, -10, 0))
+        barrier = Barrier3D((0, 10, 0), (20,1, 1), (10, 1, 1))
+        portal = Portal3D((30, 0, 0), 1, (1, 1, 1))
         simulation.add_walker(walker)
         simulation.add_portal(portal)
         simulation.add_barrier(barrier)
@@ -81,18 +81,18 @@ class TestSimulation3D(unittest.TestCase):
 
         # Add barriers to the simulation that will trap the walker
         barriers = (
-            Barrier3D([0, 0, 0], [0, 0, 0.5], [0, 0.5, 0]),
-            Barrier3D([0, 0, 0], [0.5, 0, 0], [0, 0, 0.5]),
-            Barrier3D([0, 0, 0], [0, 0.5, 0], [0.5, 0, 0]),
-            Barrier3D([0.5, 0.5, 0.5], [0.5, 0.5, 0], [0.5, 0, 0.5]),
-            Barrier3D([0.5, 0.5, 0.5], [0.5, 0, 0.5], [0, 0.5, 0.5]),
-            Barrier3D([0.5, 0.5, 0.5], [0, 0.5, 0.5], [0.5, 0.5, 0])
+            Barrier3D((0, 0, 0), (0, 0, 0.5), (0, 0.5, 0)),
+            Barrier3D((0, 0, 0), (0.5, 0, 0), (0, 0, 0.5)),
+            Barrier3D((0, 0, 0), (0, 0.5, 0), (0.5, 0, 0)),
+            Barrier3D((0.5, 0.5, 0.5), (0.5, 0.5, 0), (0.5, 0, 0.5)),
+            Barrier3D((0.5, 0.5, 0.5), (0.5, 0, 0.5), (0, 0.5, 0.5)),
+            Barrier3D((0.5, 0.5, 0.5), (0, 0.5, 0.5), (0.5, 0.5, 0))
         )
         for barrier in barriers:
             simulation.add_barrier(barrier)
 
         # Add a walker to the simulation
-        walker = Walker3D([0.5, 0.5, 0.5])
+        walker = Walker3D((0.5, 0.5, 0.5))
         simulation.add_walker(walker)
 
         # Assert that the walker is trapped
@@ -110,10 +110,10 @@ class TestSimulation3D(unittest.TestCase):
 
     def test_load_dict(self) -> None:
         data = {
-            "Walkers": [{"position": [0, 0, 0]}],
-            "Portals": [{"center": [10, 0, 0], "radius": 1, "endpoint": [1, 1, 1]}],
-            "Barriers": [{"corner": [50, 0, 0], "point_1": [50, 1, 1], "point_2": [50, 1, 1]}],
-            "Mudspots": [{"bottom_left": [0, 0, 0], "height": 1, "width": 1, "depth": 1}],
+            "Walkers": [{"position": (0, 0, 0)}],
+            "Portals": [{"center": (10, 0, 0), "radius": 1, "endpoint": (1, 1, 1)}],
+            "Barriers": [{"corner": (50, 0, 0), "point_1": (50, 1, 1), "point_2": (50, 1, 1)}],
+            "Mudspots": [{"bottom_left": (0, 0, 0), "height": 1, "width": 1, "depth": 1}],
             "Simulation": {"gravity": 1, "reset": 1, "n": 10}
         }
         run_from_dict(data)
